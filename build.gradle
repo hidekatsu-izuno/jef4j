@@ -1,0 +1,94 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = 'net.arnx'
+archivesBaseName = 'jef4j'
+version = '0.1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+compileJava {
+	options.encoding = 'UTF-8'
+}
+
+compileTestJava {
+	options.encoding = 'UTF-8'
+}
+
+javadoc {
+	options {
+		links 'https://docs.oracle.com/javase/8/docs/api/'
+		locale = 'en_US'
+		encoding = 'UTF-8'
+		docEncoding = 'UTF-8'
+		charSet = 'UTF-8'
+		author = true
+	}
+}
+
+task javadocJar(type: Jar) {
+	classifier = 'javadoc'
+	from javadoc
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+artifacts {
+	archives javadocJar, sourcesJar
+}
+
+signing {
+	sign configurations.archives
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: "${sonatypeUsername}", password: "${sonatypePassword}")
+			}
+
+			pom.project {
+				name 'jef4j'
+				packaging 'jar'
+				description 'JEF charset support for Java'
+				url 'https://github.com/hidekatsu-izuno/jef4j'
+
+				scm {
+					url 'https://github.com/hidekatsu-izuno/jef4j'
+					connection 'scm:git:git://github.com/hidekatsu-izuno/jef4j.git'
+				}
+
+				licenses {
+					license {
+						name 'MIT License'
+						url 'http://www.opensource.org/licenses/mit-license.php'
+					}
+				}
+
+				developers {
+					developer {
+						id 'hidekatsu.izuno'
+						name 'Hidekatsu Izuno'
+						email 'hidekatsu.izuno@gmail.com'
+					}
+				}
+			}
+		}
+	}
+}
