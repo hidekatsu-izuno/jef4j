@@ -1824,6 +1824,8 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 	private final SingleByteEncoding encoding;
 	private final byte[] alnumMap;
 	private final byte[] kanaMap;
+	
+	private boolean isSinbleByteMode = true;
 
 	public FujitsuJefCharsetEncoder(Charset cs, SingleByteEncoding encoding) {
 		super(cs, 2, 2);
@@ -1867,22 +1869,23 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					} else {
 						return CoderResult.malformedForLength(1);
 					}
-				} else if (c == '\u0000') {
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
-					}
-					
-					out.put((byte)0x00);
-					mark++;
 				} else if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
 				} else if (c <= '\u0020') {
 					byte b = (encoding != SingleByteEncoding.NONE) ? CTRL_MAP[c] : 0;
-					if (b == 0) {
+					if (c != '\u0000' && b == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put(b);
 					mark++;
@@ -1891,18 +1894,34 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					if (b == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put(b);
 					mark++;
-				} else if (c == '\u00A3') { // ��
+				} else if (c == '\u00A3') { // £
 					if (encoding != SingleByteEncoding.EBCDIC
 							&& encoding != SingleByteEncoding.EBCDIK) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put((byte)0x4A);
 					mark++;
@@ -1910,8 +1929,16 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					if (encoding != SingleByteEncoding.EBCDIC) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put((byte)0x6A);
 					mark++;
@@ -1920,8 +1947,16 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 							&& encoding != SingleByteEncoding.EBCDIK) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put((byte)0x5F);
 					mark++;
@@ -1930,8 +1965,16 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					if (b == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
-					if (!out.hasRemaining()) {
-						return CoderResult.OVERFLOW;
+					if (isSinbleByteMode) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+					} else {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
+						out.put((byte)0x28);
+						isSinbleByteMode = true;
 					}
 					out.put(b);
 					mark++;
@@ -1950,8 +1993,16 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 								if (m4 != null && n4 < m4.length()) {
 									char mc = m4.charAt(n4);
 									if (mc != '\uFFFE') {
-										if (out.remaining() < 2) {
-											return CoderResult.OVERFLOW;
+										if (isSinbleByteMode) {
+											if (out.remaining() < 3) {
+												return CoderResult.OVERFLOW;
+											}
+											out.put((byte)0x29);
+											isSinbleByteMode = false;
+										} else {
+											if (out.remaining() < 2) {
+												return CoderResult.OVERFLOW;
+											}
 										}
 										
 										out.put((byte)((mc >> 8) & 0xFF));
@@ -1971,5 +2022,10 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 			in.position(mark);
 		}
 		return CoderResult.UNDERFLOW;
+	}
+	
+	@Override
+	protected void implReset() {
+		isSinbleByteMode = true;
 	}
 }
