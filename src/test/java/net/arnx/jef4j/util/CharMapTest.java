@@ -35,15 +35,32 @@ public class CharMapTest {
 
 	@Test
 	public void generateJefMap() throws IOException {
-		Map<String, String[]> encodeMap = new TreeMap<>();
-		Map<String, String[]> decodeMap = new TreeMap<>();
+		Map<String, String[]> unicode2asciiMap = new TreeMap<>();
+		Map<String, String[]> ascii2unicodeMap = new TreeMap<>();
 		
-		Map<String, String> cunicode = new HashMap<>();
-		Map<String, String> cjef = new HashMap<>();  
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/ascii_mapping.txt"), StandardCharsets.UTF_8)) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(" ");
+				String unicode = parts[0];
+				String ascii = parts[1];
+				
+				if (!unicode.startsWith("00")) {
+					continue;
+				}
+			}
+		}
 		
-		try (BufferedReader reader = new BufferedReader(
-				new InputStreamReader(
-						Files.newInputStream(Paths.get("./src/test/resources/jef_mapping.txt")), StandardCharsets.UTF_8))) {
+		Map<String, String[]> unicode2ebcdicMap = new TreeMap<>();
+		Map<String, String[]> ebcdic2unicodeMap = new TreeMap<>();
+		
+		Map<String, String[]> unicode2ebcdikMap = new TreeMap<>();
+		Map<String, String[]> ebcdik2unicodeMap = new TreeMap<>();
+		
+		Map<String, String[]> unicode2jefMap = new TreeMap<>();
+		Map<String, String[]> jef2unicodeMap = new TreeMap<>();
+		
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/jef_mapping.txt"), StandardCharsets.UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(" ");
@@ -51,37 +68,25 @@ public class CharMapTest {
 				String jef = parts[1];
 				
 				String prefix = unicode.substring(0, 3) + "0";
-				String[] values = encodeMap.get(prefix);
+				String[] values = unicode2jefMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
-					encodeMap.put(prefix, values);
+					unicode2jefMap.put(prefix, values);
 				}
 				values[Integer.parseInt(unicode.substring(3), 16)] = jef;
 				
-				if (cunicode.containsKey(unicode)) {
-					System.out.println(unicode);
-				} else {
-					cunicode.put(unicode, jef);
-				}
-				
 				prefix = jef.substring(0, 3) + "0";
-				values = decodeMap.get(prefix);
+				values = jef2unicodeMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
-					decodeMap.put(prefix, values);
+					jef2unicodeMap.put(prefix, values);
 				}
 				values[Integer.parseInt(jef.substring(3), 16)] = unicode;
-				
-				if (cjef.containsKey(jef)) {
-					System.out.println(jef);
-				} else {
-					cjef.put(jef, unicode);
-				}
 			}
 		}
 		
 		CharObjMap<char[]> encoder = new CharObjMap<>();
-		for (Map.Entry<String, String[]> entry : encodeMap.entrySet()) {
+		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
 			char key = (char)Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
@@ -106,13 +111,9 @@ public class CharMapTest {
 			
 			encoder.put(key, values);
 		}
-		
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefEncodeMap.dat"))) {
-			out.writeObject(encoder);
-		}
 
 		CharObjMap<char[]> decoder = new CharObjMap<>();
-		for (Map.Entry<String, String[]> entry : decodeMap.entrySet()) {
+		for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
 			char key = (char)Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
@@ -138,18 +139,12 @@ public class CharMapTest {
 			decoder.put(key, values);
 		}
 		
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefEncodeMap.dat"))) {
+			out.writeObject(encoder);
+		}
+		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefDecodeMap.dat"))) {
 			out.writeObject(decoder);
 		}
-	}
-	
-	private static String binary(char c) {
-		String hex = Integer.toBinaryString(c);
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < (16 - hex.length()); i++) {
-			sb.append('0');
-		}
-		sb.append(hex);
-		return sb.toString();
 	}
 }

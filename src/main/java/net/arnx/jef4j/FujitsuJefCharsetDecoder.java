@@ -1,5 +1,6 @@
 package net.arnx.jef4j;
 
+import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -7,23 +8,26 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 
 import net.arnx.jef4j.FujitsuJefCharset.SingleByteEncoding;
+import net.arnx.jef4j.util.CharObjMap;
 
+@SuppressWarnings("unchecked")
 class FujitsuJefCharsetDecoder extends CharsetDecoder {
-	private static final String CTRL_MAP = ""
-			+ "";
+	private static final CharObjMap<char[]> ASCII_MAP;
+	private static final CharObjMap<char[]> EBCDIC_MAP;
+	private static final CharObjMap<char[]> EBCDIK_MAP;
+	private static final CharObjMap<char[]> JEF_MAP;
 	
-	private static final String ASCII_MAP = ""
-			+ "";
-	
-	private static final String EBCDIC_MAP = ""
-			+ "";
-	
-	private static final String EBCDIK_MAP = ""
-			+ "";
-	
-	private static final String[][][] JEF_MAP = new String[][][] {
-		
-	};
+	static {
+		try (ObjectInputStream in = new ObjectInputStream(
+				FujitsuJefCharsetEncoder.class.getResourceAsStream("net/arnx/jef4j/JefDecodeMap.dat"))) {
+			ASCII_MAP = (CharObjMap<char[]>)in.readObject();
+			EBCDIC_MAP = (CharObjMap<char[]>)in.readObject();
+			EBCDIK_MAP = (CharObjMap<char[]>)in.readObject();
+			JEF_MAP = (CharObjMap<char[]>)in.readObject();
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
 	
 	private final SingleByteEncoding encoding;
 	
@@ -51,34 +55,38 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 					continue;
 				}
 				
-				if (!out.hasRemaining()) {
-					return CoderResult.OVERFLOW;
-				}
-				
 				if (!shiftin && encoding == SingleByteEncoding.NONE) {
-					char c = '\uFFFD';
-					if (b <= 0x40) {
-						c = CTRL_MAP.charAt(b);
-					} else {
-						switch (encoding) {
-						case ASCII:
-							c = ASCII_MAP.charAt(b - 0x41);
-							break;
-						case EBCDIC:
-							c = EBCDIC_MAP.charAt(b - 0x41);
-							break;
-						case EBCDIK:
-							c = EBCDIK_MAP.charAt(b - 0x41);
-							break;
-						default:
-							return CoderResult.unmappableForLength(1);
-						}
-					}
-					if (c == '\uFFFD') {
+					char c = (char)b;
+					char[] pattern;
+					switch (encoding) {
+					case ASCII:
+						pattern = ASCII_MAP.get((char)(c & 0xFFF0));
+						break;
+					case EBCDIC:
+						pattern = EBCDIC_MAP.get((char)(c & 0xFFF0));
+						break;
+					case EBCDIK:
+						pattern = EBCDIK_MAP.get((char)(c & 0xFFF0));
+						break;
+					default:
 						return CoderResult.unmappableForLength(1);
 					}
+					if (pattern == null) {
+						return CoderResult.malformedForLength(1);
+					}
 					
-					out.put(c);
+					int pos = c & 0xF;
+					if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+						return CoderResult.malformedForLength(1);
+					}
+					
+					char mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
+					
+					if (!out.hasRemaining()) {
+						return CoderResult.OVERFLOW;
+					}
+					
+					out.put(mc);
 					mark++;
 				} else if (b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {
@@ -86,32 +94,35 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 					}
 					
 					int b2 = in.get() & 0xFF;
-					if (b2 >= 0xA1 && b2 <= 0xFE) {
-						int n1 = ((b - 0x40) >> 4) & 0xF;
-						int n2 = (b - 0x40) & 0xF;
-						int n3 = ((b2 - 0xA1) >> 4) & 0xF;
-						int n4 = (b2 - 0xA1) & 0xF;
-						
-						String[][] m2 = JEF_MAP[n1];
-						if (m2 != null && n2 < m2.length) {
-							String[] m3 = m2[n2];
-							if (m3 != null && n3 < m3.length) {
-								String m4 = m3[n3];
-								if (m4 != null && n4 < m4.length()) {
-									char mc = m4.charAt(n4);
-									if (mc != '\uFFFE') {
-										if (out.remaining() < 2) {
-											return CoderResult.OVERFLOW;
-										}
-										out.put(mc);
-										mark++;
-										continue;
-									}
-								}
-							}
+					if (b == 0x77 && b2 == 0xA9) {
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
 						}
+						out.put('\uD83C');
+						out.put('\uDD00');
+						mark += 2;
+					} else if (b2 >= 0xA1 && b2 <= 0xFE) {
+						char c = (char)(b2 << 8 | b2);
+						char[] pattern = JEF_MAP.get((char)(c & 0xFFF0));
+						if (pattern == null) {
+							return CoderResult.malformedForLength(2);
+						}
+						
+						int pos = c & 0xF;
+						if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+							return CoderResult.malformedForLength(2);
+						}
+						
+						char mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
+						
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
+						
+						out.put(mc);
+						mark += 2;
 					} else {
-						return CoderResult.malformedForLength(1);
+						return CoderResult.malformedForLength(2);
 					}
 				} else {
 					return CoderResult.unmappableForLength(1);
