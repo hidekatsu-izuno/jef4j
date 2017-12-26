@@ -8,22 +8,24 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
 import net.arnx.jef4j.FujitsuJefCharset.SingleByteEncoding;
+import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.CharRecord;
 
 @SuppressWarnings("unchecked")
 class FujitsuJefCharsetEncoder extends CharsetEncoder {
-	private static final CharObjMap<byte[]> ASCII_MAP;
-	private static final CharObjMap<byte[]> EBCDIC_MAP;
-	private static final CharObjMap<byte[]> EBCDIK_MAP;
-	private static final CharObjMap<char[]> JEF_MAP;
+	private static final CharObjMap<ByteRecord> ASCII_MAP;
+	private static final CharObjMap<ByteRecord> EBCDIC_MAP;
+	private static final CharObjMap<ByteRecord> EBCDIK_MAP;
+	private static final CharObjMap<CharRecord> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuJefCharsetEncoder.class.getResourceAsStream("net/arnx/jef4j/JefEncodeMap.dat"))) {
-			ASCII_MAP = (CharObjMap<byte[]>)in.readObject();
-			EBCDIC_MAP = (CharObjMap<byte[]>)in.readObject();
-			EBCDIK_MAP = (CharObjMap<byte[]>)in.readObject();
-			JEF_MAP = (CharObjMap<char[]>)in.readObject();
+			ASCII_MAP = (CharObjMap<ByteRecord>)in.readObject();
+			EBCDIC_MAP = (CharObjMap<ByteRecord>)in.readObject();
+			EBCDIK_MAP = (CharObjMap<ByteRecord>)in.readObject();
+			JEF_MAP = (CharObjMap<CharRecord>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -93,30 +95,24 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 						|| (encoding == SingleByteEncoding.EBCDIK 
 								&& (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {
 					
-					byte[] pattern;
+					ByteRecord record;
 					switch (encoding) {
 					case ASCII:
-						pattern = ASCII_MAP.get((char)(c & 0xFFF0));
+						record = ASCII_MAP.get((char)(c & 0xFFF0));
 						break;
 					case EBCDIC:
-						pattern = EBCDIC_MAP.get((char)(c & 0xFFF0));
+						record = EBCDIC_MAP.get((char)(c & 0xFFF0));
 						break;
 					case EBCDIK:
-						pattern = EBCDIK_MAP.get((char)(c & 0xFFF0));
+						record = EBCDIK_MAP.get((char)(c & 0xFFF0));
 						break;
 					default:
 						return CoderResult.unmappableForLength(1);
 					}
-					if (pattern == null) {
-						return CoderResult.unmappableForLength(1);
-					}
-					
 					int pos = c & 0xF;
-					if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+					if (record == null || !record.exists(pos)) {
 						return CoderResult.unmappableForLength(1);
 					}
-					
-					byte mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
 					
 					if (shiftin) {
 						if (!out.hasRemaining()) {
@@ -129,20 +125,14 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					if (!out.hasRemaining()) {
 						return CoderResult.OVERFLOW;
 					}
-					out.put(mc);
+					out.put(record.get(pos));
 					mark++;
 				} else { // Double Bytes
-					char[] pattern = JEF_MAP.get((char)(c & 0xFFF0));
-					if (pattern == null) {
-						return CoderResult.unmappableForLength(1);
-					}
-					
+					CharRecord record = JEF_MAP.get((char)(c & 0xFFF0));
 					int pos = c & 0xF;
-					if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+					if (record == null || !record.exists(pos)) {
 						return CoderResult.unmappableForLength(1);
 					}
-					
-					char mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
 					
 					if (encoding != SingleByteEncoding.NONE && !shiftin) {
 						if (!out.hasRemaining()) {
@@ -155,6 +145,7 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 					if (out.remaining() < 2) {
 						return CoderResult.OVERFLOW;
 					}
+					char mc = record.get(pos);
 					out.put((byte)((mc >> 8) & 0xFF));
 					out.put((byte)(mc & 0xFF));
 					mark++;

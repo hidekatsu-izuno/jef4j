@@ -9,21 +9,22 @@ import java.nio.charset.CoderResult;
 
 import net.arnx.jef4j.FujitsuJefCharset.SingleByteEncoding;
 import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.CharRecord;
 
 @SuppressWarnings("unchecked")
 class FujitsuJefCharsetDecoder extends CharsetDecoder {
-	private static final CharObjMap<char[]> ASCII_MAP;
-	private static final CharObjMap<char[]> EBCDIC_MAP;
-	private static final CharObjMap<char[]> EBCDIK_MAP;
-	private static final CharObjMap<char[]> JEF_MAP;
+	private static final CharObjMap<CharRecord> ASCII_MAP;
+	private static final CharObjMap<CharRecord> EBCDIC_MAP;
+	private static final CharObjMap<CharRecord> EBCDIK_MAP;
+	private static final CharObjMap<CharRecord> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuJefCharsetEncoder.class.getResourceAsStream("net/arnx/jef4j/JefDecodeMap.dat"))) {
-			ASCII_MAP = (CharObjMap<char[]>)in.readObject();
-			EBCDIC_MAP = (CharObjMap<char[]>)in.readObject();
-			EBCDIK_MAP = (CharObjMap<char[]>)in.readObject();
-			JEF_MAP = (CharObjMap<char[]>)in.readObject();
+			ASCII_MAP = (CharObjMap<CharRecord>)in.readObject();
+			EBCDIC_MAP = (CharObjMap<CharRecord>)in.readObject();
+			EBCDIK_MAP = (CharObjMap<CharRecord>)in.readObject();
+			JEF_MAP = (CharObjMap<CharRecord>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -56,37 +57,30 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 				}
 				
 				if (!shiftin && encoding == SingleByteEncoding.NONE) {
-					char c = (char)b;
-					char[] pattern;
+					char c = (char)b;					
+					CharRecord record;
 					switch (encoding) {
 					case ASCII:
-						pattern = ASCII_MAP.get((char)(c & 0xFFF0));
+						record = ASCII_MAP.get((char)(c & 0xFFF0));
 						break;
 					case EBCDIC:
-						pattern = EBCDIC_MAP.get((char)(c & 0xFFF0));
+						record = EBCDIC_MAP.get((char)(c & 0xFFF0));
 						break;
 					case EBCDIK:
-						pattern = EBCDIK_MAP.get((char)(c & 0xFFF0));
+						record = EBCDIK_MAP.get((char)(c & 0xFFF0));
 						break;
 					default:
 						return CoderResult.unmappableForLength(1);
 					}
-					if (pattern == null) {
-						return CoderResult.malformedForLength(1);
-					}
-					
 					int pos = c & 0xF;
-					if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+					if (record == null || !record.exists(pos)) {
 						return CoderResult.malformedForLength(1);
 					}
-					
-					char mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
 					
 					if (!out.hasRemaining()) {
 						return CoderResult.OVERFLOW;
 					}
-					
-					out.put(mc);
+					out.put(record.get(pos));
 					mark++;
 				} else if (b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {
@@ -103,23 +97,16 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 						mark += 2;
 					} else if (b2 >= 0xA1 && b2 <= 0xFE) {
 						char c = (char)(b2 << 8 | b2);
-						char[] pattern = JEF_MAP.get((char)(c & 0xFFF0));
-						if (pattern == null) {
-							return CoderResult.malformedForLength(2);
-						}
-						
+						CharRecord record = JEF_MAP.get((char)(c & 0xFFF0));
 						int pos = c & 0xF;
-						if ((pattern[0] & (char)(1 << (16 - pos))) == 0) {
+						if (record == null || !record.exists(pos)) {
 							return CoderResult.malformedForLength(2);
 						}
-						
-						char mc = pattern[Integer.bitCount(pattern[0] >> (15 - pos))];
 						
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
-						
-						out.put(mc);
+						out.put(record.get(pos));
 						mark += 2;
 					} else {
 						return CoderResult.malformedForLength(2);
