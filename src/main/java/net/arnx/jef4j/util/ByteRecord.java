@@ -21,11 +21,17 @@ public class ByteRecord implements Serializable {
 	}
 	
 	public boolean exists(int pos) {
-		return (pattern & (char)(1 << (16 - pos))) != 0;
+		if (pattern == '\uFFFF') {
+			return true;
+		}
+		return (pattern & (char)(1 << (15 - pos))) != 0;
 	}
 	
 	public byte get(int pos) {
-		return array[Integer.bitCount(pattern >> (16 - pos - 1))];
+		if (pattern == '\uFFFF') {
+			return array[pos];
+		}
+		return array[Integer.bitCount(pattern >> (16 - pos))];
 	}
 	
 	public int size() {

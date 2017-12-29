@@ -20,10 +20,16 @@ public class CharRecord implements Serializable {
 	}
 	
 	public boolean exists(int pos) {
+		if (pos == '\uFFFF') {
+			return true;
+		}
 		return (pattern & (char)(1 << (15 - pos))) != 0;
 	}
 	
 	public char get(int pos) {
+		if (pos == '\uFFFF') {
+			return array[pos];
+		}
 		return array[Integer.bitCount(pattern >> (16 - pos))];
 	}
 	

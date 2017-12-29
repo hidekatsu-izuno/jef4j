@@ -8,8 +8,6 @@ import org.junit.Test;
 public class Jef4jCharsetProviderTest {
 	@Test
 	public void test() {
-		Charset fujitsuJef = Charset.forName("x-Fujitsu-JEF");
-		
 		assertArrayEquals(
 				new byte[] {
 						(byte)0xA4, (byte)0xA2, 
@@ -18,6 +16,16 @@ public class Jef4jCharsetProviderTest {
 						(byte)0xA4, (byte)0xA8,
 						(byte)0xA4, (byte)0xAA
 				}, 
-				"あいうえお".getBytes(fujitsuJef));
+				"あいうえお".getBytes(Charset.forName("x-Fujitsu-JEF")));
+	
+		assertArrayEquals(
+				new byte[] {
+						(byte)0xC1,
+						(byte)0x28,
+						(byte)0xA4, (byte)0xA2,
+						(byte)0x29,
+						(byte)0xC3
+				}, 
+				"AあC".getBytes(Charset.forName("x-Fujitsu-JEF-ASCII")));
 	}
 }
