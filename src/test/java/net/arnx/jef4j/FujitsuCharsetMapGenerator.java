@@ -18,7 +18,7 @@ import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.CharObjMap;
 import net.arnx.jef4j.util.CharRecord;
 
-public class FujitsuJefMapGenerator {
+public class FujitsuCharsetMapGenerator {
 
 	@Test
 	public void generateMap() throws IOException {
@@ -346,14 +346,14 @@ public class FujitsuJefMapGenerator {
 			jefDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefEncodeMap.dat"))) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
 			out.writeObject(asciiEncoder);
 			out.writeObject(ebcdicEncoder);
 			out.writeObject(ebcdikEncoder);
 			out.writeObject(jefEncoder);
 		}
 		
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefDecodeMap.dat"))) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat"))) {
 			out.writeObject(asciiDecoder);
 			out.writeObject(ebcdicDecoder);
 			out.writeObject(ebcdikDecoder);

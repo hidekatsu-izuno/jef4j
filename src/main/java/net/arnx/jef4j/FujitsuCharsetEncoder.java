@@ -7,13 +7,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
-import net.arnx.jef4j.FujitsuJefCharset.SingleByteEncoding;
 import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.CharObjMap;
 import net.arnx.jef4j.util.CharRecord;
 
 @SuppressWarnings("unchecked")
-class FujitsuJefCharsetEncoder extends CharsetEncoder {
+class FujitsuCharsetEncoder extends CharsetEncoder {
 	private static final CharObjMap<ByteRecord> ASCII_MAP;
 	private static final CharObjMap<ByteRecord> EBCDIC_MAP;
 	private static final CharObjMap<ByteRecord> EBCDIK_MAP;
@@ -21,7 +20,7 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuJefCharsetEncoder.class.getResourceAsStream("JefEncodeMap.dat"))) {
+				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
 			ASCII_MAP = (CharObjMap<ByteRecord>)in.readObject();
 			EBCDIC_MAP = (CharObjMap<ByteRecord>)in.readObject();
 			EBCDIK_MAP = (CharObjMap<ByteRecord>)in.readObject();
@@ -31,20 +30,24 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 		}
 	}
 	
-	private final SingleByteEncoding encoding;
+	private final FujitsuCharsetType encoding;
 	
 	private boolean shiftin = false;
 
-	public FujitsuJefCharsetEncoder(Charset cs, SingleByteEncoding encoding) {
+	public FujitsuCharsetEncoder(Charset cs, FujitsuCharsetType encoding) {
 		super(cs, 2, 2, getReplacementChar(encoding));
 		this.encoding = encoding;
 	}
 	
-	private static byte[] getReplacementChar(SingleByteEncoding encoding) {
-		if (encoding == SingleByteEncoding.NONE) {
+	private static byte[] getReplacementChar(FujitsuCharsetType encoding) {
+		if (encoding == FujitsuCharsetType.ASCII
+				|| encoding == FujitsuCharsetType.EBCDIC
+				|| encoding == FujitsuCharsetType.EBCDIK) {
+			return new byte[] { (byte)0x6F };
+		} else if (encoding == FujitsuCharsetType.JEF) {
 			return new byte[] { (byte)0xA1, (byte)0xA9 };
 		}
-		return new byte[] { 0x6F };
+		return new byte[] { 0x40, 0x40 };
 	}
 	
 	@Override
@@ -73,7 +76,7 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(2);
 					}
 					
-					if (encoding != SingleByteEncoding.NONE && !shiftin) {
+					if (encoding != FujitsuCharsetType.JEF && !shiftin) {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
@@ -90,20 +93,20 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 				} else if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
 				} else if (c <= '\u007F'
-						|| (encoding == SingleByteEncoding.EBCDIC 
+						|| (encoding == FujitsuCharsetType.JEF_EBCDIC 
 								&& (c == '\u00A3' || c == '\u00A6' || c == '\u00AC'))
-						|| (encoding == SingleByteEncoding.EBCDIK 
+						|| (encoding == FujitsuCharsetType.JEF_EBCDIK 
 								&& (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {
 					
 					ByteRecord record;
 					switch (encoding) {
-					case ASCII:
+					case JEF_ASCII:
 						record = ASCII_MAP.get((char)(c & 0xFFF0));
 						break;
-					case EBCDIC:
+					case JEF_EBCDIC:
 						record = EBCDIC_MAP.get((char)(c & 0xFFF0));
 						break;
-					case EBCDIK:
+					case JEF_EBCDIK:
 						record = EBCDIK_MAP.get((char)(c & 0xFFF0));
 						break;
 					default:
@@ -134,7 +137,7 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(1);
 					}
 					
-					if (encoding != SingleByteEncoding.NONE && !shiftin) {
+					if (encoding != FujitsuCharsetType.JEF && !shiftin) {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
@@ -159,7 +162,7 @@ class FujitsuJefCharsetEncoder extends CharsetEncoder {
 	
 	@Override
 	protected CoderResult implFlush(ByteBuffer out) {
-		if (encoding != SingleByteEncoding.NONE && shiftin) {
+		if (encoding != FujitsuCharsetType.JEF && shiftin) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}

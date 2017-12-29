@@ -7,12 +7,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 
-import net.arnx.jef4j.FujitsuJefCharset.SingleByteEncoding;
 import net.arnx.jef4j.util.CharObjMap;
 import net.arnx.jef4j.util.CharRecord;
 
 @SuppressWarnings("unchecked")
-class FujitsuJefCharsetDecoder extends CharsetDecoder {
+class FujitsuCharsetDecoder extends CharsetDecoder {
 	private static final CharObjMap<CharRecord> ASCII_MAP;
 	private static final CharObjMap<CharRecord> EBCDIC_MAP;
 	private static final CharObjMap<CharRecord> EBCDIK_MAP;
@@ -20,7 +19,7 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuJefCharsetEncoder.class.getResourceAsStream("JefDecodeMap.dat"))) {
+				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
 			ASCII_MAP = (CharObjMap<CharRecord>)in.readObject();
 			EBCDIC_MAP = (CharObjMap<CharRecord>)in.readObject();
 			EBCDIK_MAP = (CharObjMap<CharRecord>)in.readObject();
@@ -30,13 +29,13 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 		}
 	}
 	
-	private final SingleByteEncoding encoding;
+	private final FujitsuCharsetType type;
 	
 	private boolean shiftin = false;
 	
-	protected FujitsuJefCharsetDecoder(Charset cs, SingleByteEncoding encoding) {
+	protected FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
 		super(cs, 2, 2);
-		this.encoding = encoding;
+		this.type = type;
 	}
 
 	@Override
@@ -56,17 +55,17 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 					continue;
 				}
 				
-				if (!shiftin && encoding != SingleByteEncoding.NONE) {
+				if (!shiftin && type != FujitsuCharsetType.JEF) {
 					char c = (char)b;					
 					CharRecord record;
-					switch (encoding) {
-					case ASCII:
+					switch (type) {
+					case JEF_ASCII:
 						record = ASCII_MAP.get((char)(c & 0xFFF0));
 						break;
-					case EBCDIC:
+					case JEF_EBCDIC:
 						record = EBCDIC_MAP.get((char)(c & 0xFFF0));
 						break;
-					case EBCDIK:
+					case JEF_EBCDIK:
 						record = EBCDIK_MAP.get((char)(c & 0xFFF0));
 						break;
 					default:
