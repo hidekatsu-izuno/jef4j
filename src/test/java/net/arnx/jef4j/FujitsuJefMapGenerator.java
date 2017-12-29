@@ -14,7 +14,9 @@ import java.util.TreeMap;
 
 import org.junit.Test;
 
+import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.CharRecord;
 
 public class FujitsuJefMapGenerator {
 
@@ -54,6 +56,10 @@ public class FujitsuJefMapGenerator {
 		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/ebcdic_mapping.txt"), StandardCharsets.UTF_8)) {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) {
+					continue;
+				}
+				
 				String[] parts = line.split(" ");
 				String unicode = parts[0];
 				String ebcdic = parts[1];
@@ -132,11 +138,85 @@ public class FujitsuJefMapGenerator {
 			}
 		}
 		
-		CharObjMap<byte[]> asciiEncoder = new CharObjMap<>();
-		CharObjMap<byte[]> ebcdicEncoder = new CharObjMap<>();
-		CharObjMap<byte[]> ebcdikEncoder = new CharObjMap<>();
+		CharObjMap<ByteRecord> asciiEncoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : unicode2asciiMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			byte[] values = new byte[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			asciiEncoder.put(key, new ByteRecord((char)pattern, values));
+		}
 		
-		CharObjMap<char[]> jefEncoder = new CharObjMap<>();
+		CharObjMap<ByteRecord> ebcdicEncoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : unicode2ebcdicMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			byte[] values = new byte[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			ebcdicEncoder.put(key, new ByteRecord((char)pattern, values));
+		}
+		
+		CharObjMap<ByteRecord> ebcdikEncoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : unicode2ebcdikMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			byte[] values = new byte[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			ebcdikEncoder.put(key, new ByteRecord((char)pattern, values));
+		}
+		
+		CharObjMap<CharRecord> jefEncoder = new CharObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
 			char key = (char)Integer.parseInt(entry.getKey(), 16);
 			
@@ -151,23 +231,96 @@ public class FujitsuJefMapGenerator {
 				}
 			}
 			
-			char[] values = new char[len + 1];
-			values[0] = (char)pattern;
-			int index = 1;
+			char[] values = new char[len];
+			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
 					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
 				}
 			}
 			
-			jefEncoder.put(key, values);
+			jefEncoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		CharObjMap<char[]> asciiDecoder = new CharObjMap<>();
-		CharObjMap<char[]> ebcdicDecoder = new CharObjMap<>();
-		CharObjMap<char[]> ebcdikDecoder = new CharObjMap<>();
+		CharObjMap<CharRecord> asciiDecoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : ascii2unicodeMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			char[] values = new char[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			asciiDecoder.put(key, new CharRecord((char)pattern, values));
+		}
+		
+		CharObjMap<CharRecord> ebcdicDecoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : ebcdic2unicodeMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			char[] values = new char[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			ebcdicDecoder.put(key, new CharRecord((char)pattern, values));
+		}
+		
+		CharObjMap<CharRecord> ebcdikDecoder = new CharObjMap<>();
+		for (Map.Entry<String, String[]> entry : ebcdik2unicodeMap.entrySet()) {
+			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			
+			int len = 0;
+			int pattern = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					pattern = (pattern << 1) | 1;
+					len++;
+				} else {
+					pattern = pattern << 1;
+				}
+			}
+			
+			char[] values = new char[len];
+			int index = 0;
+			for (String value : entry.getValue()) {
+				if (value != null) {
+					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+				}
+			}
+			
+			ebcdikDecoder.put(key, new CharRecord((char)pattern, values));
+		}
 
-		CharObjMap<char[]> jefDecoder = new CharObjMap<>();
+		CharObjMap<CharRecord> jefDecoder = new CharObjMap<>();
 		for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
 			char key = (char)Integer.parseInt(entry.getKey(), 16);
 			
@@ -182,16 +335,15 @@ public class FujitsuJefMapGenerator {
 				}
 			}
 			
-			char[] values = new char[len + 1];
-			values[0] = (char)pattern;
-			int index = 1;
+			char[] values = new char[len];
+			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
 					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
 				}
 			}
 			
-			jefDecoder.put(key, values);
+			jefDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/JefEncodeMap.dat"))) {

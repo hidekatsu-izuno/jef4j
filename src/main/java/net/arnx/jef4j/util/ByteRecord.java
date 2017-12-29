@@ -1,14 +1,22 @@
 package net.arnx.jef4j.util;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
-public class ByteRecord implements Serializable {
-	private static final long serialVersionUID = -8979025926760081050L;
+public class ByteRecord implements Externalizable {
+	private char pattern;
+	private byte[] array;
 	
-	private final char pattern;
-	private final byte[] array;
+	public ByteRecord() {
+	}
 	
 	public ByteRecord(char pattern, byte[] array) {
+		set(pattern, array);
+	}
+	
+	public void set(char pattern, byte[] array) {
 		this.pattern = pattern;
 		this.array = array;
 	}
@@ -23,5 +31,17 @@ public class ByteRecord implements Serializable {
 	
 	public int size() {
 		return 16;
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeChar(pattern);
+		out.writeObject(array);
+	}
+	
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		pattern = in.readChar();
+		array = (byte[])in.readObject();
 	}
 }

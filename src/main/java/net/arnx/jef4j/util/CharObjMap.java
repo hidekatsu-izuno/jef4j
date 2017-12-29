@@ -1,22 +1,25 @@
 package net.arnx.jef4j.util;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  * Based on https://github.com/mikvor/hashmapTest
  * 
  * This code is licensed by The Unlicense <http://unlicense.org>
  */
-public class CharObjMap<T> implements Serializable {
-	private static final long serialVersionUID = -6828503203885178648L;
-	
+public class CharObjMap<T> implements Externalizable {	
 	private char[] keys;
-	private Object[] values;
+	private T[] values;
 	private int size;
 
 	private int mask;
 	private float fillFactor;
 	private int threshold;
+	
+	private T zeroValue;
 
 	public CharObjMap() {
 		this(16, 0.75F);
@@ -35,16 +38,17 @@ public class CharObjMap<T> implements Serializable {
 		}
 		int capacity = calcCapacity(size, loadFactor);
 		this.keys = new char[capacity];
-		this.values = new Object[keys.length];
+		this.values = newArray(keys.length);
 		this.mask = capacity - 1;
 		this.fillFactor = loadFactor;
 		this.threshold = (int) (capacity * loadFactor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public T put(char key, T value) {
 		if (key == '\u0000') {
-			throw new IllegalArgumentException("key and value must be legal char.");
+			T oldValue = zeroValue;
+			zeroValue = value;
+			return oldValue;
 		}
 
 		int ptr = hash(key);
@@ -60,18 +64,17 @@ public class CharObjMap<T> implements Serializable {
 				}
 				return null;
 			} else if (k == key) {
-				Object ret = values[ptr];
+				T ret = values[ptr];
 				values[ptr] = value;
-				return (T)ret;
+				return ret;
 			}
 			ptr = (ptr + 1) & mask;
 		} while (true);
 	}
 
-	@SuppressWarnings("unchecked")
 	public T get(char key) {
 		if (key == '\u0000') {
-			throw new IllegalArgumentException("key must be legal char.");
+			return zeroValue;
 		}
 		
 		int pos = hash(key);
@@ -87,7 +90,7 @@ public class CharObjMap<T> implements Serializable {
 	}
 
 	public int size() {
-		return size;
+		return size + (zeroValue != null ? 1 : 0);
 	}
 
 	private static int calcCapacity(int size, float f) {
@@ -116,16 +119,15 @@ public class CharObjMap<T> implements Serializable {
 		return ((h ^ (h >> 16)) & this.mask);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void rehash(int newCapacity) {
 		this.threshold = (int) (newCapacity * this.fillFactor);
 		this.mask = newCapacity - 1;
 
 		char[] oldKeys = this.keys;
-		Object[] oldValues = this.values;
+		T[] oldValues = this.values;
 
 		this.keys = new char[newCapacity];
-		this.values = new Object[newCapacity];
+		this.values = newArray(newCapacity);
 		this.size = 0;
 
 		for (int i = 0; i < oldKeys.length; i += 2) {
@@ -134,5 +136,33 @@ public class CharObjMap<T> implements Serializable {
 				put(oldKey, (T)oldValues[i + 1]);
 			}
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T> T[] newArray(int size) {
+		return (T[]) new Object[size];
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(keys);
+		out.writeObject(values);
+		out.writeInt(size);
+		out.writeInt(mask);
+		out.writeFloat(fillFactor);
+		out.writeInt(threshold);
+		out.writeObject(zeroValue);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		keys = (char[])in.readObject();
+		values = (T[])in.readObject();
+		size = in.readInt();
+		mask = in.readInt();
+		fillFactor = in.readFloat();
+		threshold = in.readInt();
+		zeroValue = (T)in.readObject();
 	}
 }

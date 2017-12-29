@@ -20,7 +20,7 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuJefCharsetEncoder.class.getResourceAsStream("net/arnx/jef4j/JefDecodeMap.dat"))) {
+				FujitsuJefCharsetEncoder.class.getResourceAsStream("JefDecodeMap.dat"))) {
 			ASCII_MAP = (CharObjMap<CharRecord>)in.readObject();
 			EBCDIC_MAP = (CharObjMap<CharRecord>)in.readObject();
 			EBCDIK_MAP = (CharObjMap<CharRecord>)in.readObject();
