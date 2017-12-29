@@ -157,7 +157,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (byte)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -183,7 +183,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (byte)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -209,7 +209,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (byte)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -235,7 +235,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (char)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -261,7 +261,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (char)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -287,7 +287,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (char)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -313,7 +313,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (char)Integer.parseInt(value, 16);
 				}
 			}
 			
@@ -339,7 +339,7 @@ public class FujitsuJefMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(entry.getKey(), 16);
+					values[index++] = (char)Integer.parseInt(value, 16);
 				}
 			}
 			

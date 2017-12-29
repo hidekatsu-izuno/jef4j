@@ -56,7 +56,7 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 					continue;
 				}
 				
-				if (!shiftin && encoding == SingleByteEncoding.NONE) {
+				if (!shiftin && encoding != SingleByteEncoding.NONE) {
 					char c = (char)b;					
 					CharRecord record;
 					switch (encoding) {
@@ -96,7 +96,7 @@ class FujitsuJefCharsetDecoder extends CharsetDecoder {
 						out.put('\uDD00');
 						mark += 2;
 					} else if (b2 >= 0xA1 && b2 <= 0xFE) {
-						char c = (char)(b2 << 8 | b2);
+						char c = (char)(b << 8 | b2);
 						CharRecord record = JEF_MAP.get((char)(c & 0xFFF0));
 						int pos = c & 0xF;
 						if (record == null || !record.exists(pos)) {

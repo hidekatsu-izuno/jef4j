@@ -1,16 +1,15 @@
 package net.arnx.jef4j.util;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 
 /**
  * Based on https://github.com/mikvor/hashmapTest
  * 
  * This code is licensed by The Unlicense <http://unlicense.org>
  */
-public class CharObjMap<T> implements Externalizable {	
+public class CharObjMap<T> implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private char[] keys;
 	private T[] values;
 	private int size;
@@ -58,7 +57,7 @@ public class CharObjMap<T> implements Externalizable {
 				keys[ptr] = key;
 				values[ptr] = value;
 				if (size >= threshold) {
-					rehash(keys.length);
+					rehash(keys.length * 2);
 				} else {
 					size++;
 				}
@@ -79,7 +78,7 @@ public class CharObjMap<T> implements Externalizable {
 		
 		int pos = hash(key);
 		do {
-			int k = keys[pos];
+			char k = keys[pos];
 			if (k == '\u0000') {
 				return null;
 			} else if (k == key) {
@@ -130,10 +129,10 @@ public class CharObjMap<T> implements Externalizable {
 		this.values = newArray(newCapacity);
 		this.size = 0;
 
-		for (int i = 0; i < oldKeys.length; i += 2) {
+		for (int i = 0; i < oldKeys.length; i++) {
 			char oldKey = oldKeys[i];
 			if (oldKey != '\u0000') {
-				put(oldKey, (T)oldValues[i + 1]);
+				put(oldKey, oldValues[i]);
 			}
 		}
 	}
@@ -141,28 +140,5 @@ public class CharObjMap<T> implements Externalizable {
 	@SuppressWarnings("unchecked")
 	private static <T> T[] newArray(int size) {
 		return (T[]) new Object[size];
-	}
-	
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeObject(keys);
-		out.writeObject(values);
-		out.writeInt(size);
-		out.writeInt(mask);
-		out.writeFloat(fillFactor);
-		out.writeInt(threshold);
-		out.writeObject(zeroValue);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		keys = (char[])in.readObject();
-		values = (T[])in.readObject();
-		size = in.readInt();
-		mask = in.readInt();
-		fillFactor = in.readFloat();
-		threshold = in.readInt();
-		zeroValue = (T)in.readObject();
 	}
 }
