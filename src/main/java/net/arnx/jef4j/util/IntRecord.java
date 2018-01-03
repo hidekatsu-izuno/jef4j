@@ -17,20 +17,20 @@ package net.arnx.jef4j.util;
 
 import java.io.Serializable;
 
-public class ByteRecord implements Record, Serializable {
+public class IntRecord implements Record, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private char pattern;
-	private byte[] array;
+	private int[] array;
 	
-	public ByteRecord() {
+	public IntRecord() {
 	}
 	
-	public ByteRecord(char pattern, byte[] array) {
+	public IntRecord(char pattern, int[] array) {
 		set(pattern, array);
 	}
 	
-	public void set(char pattern, byte[] array) {
+	public void set(char pattern, int[] array) {
 		this.pattern = pattern;
 		this.array = array;
 	}

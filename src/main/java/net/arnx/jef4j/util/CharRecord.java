@@ -16,7 +16,7 @@
 package net.arnx.jef4j.util;
 import java.io.Serializable;
 
-public class CharRecord implements Serializable {
+public class CharRecord implements Record, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private char pattern;
@@ -41,14 +41,10 @@ public class CharRecord implements Serializable {
 		return (pattern & (char)(1 << (15 - pos))) != 0;
 	}
 	
-	public char get(int pos) {
+	public int get(int pos) {
 		if (pos == '\uFFFF') {
 			return array[pos];
 		}
 		return array[Integer.bitCount(pattern >> (16 - pos))];
-	}
-	
-	public int size() {
-		return 16;
 	}
 }
