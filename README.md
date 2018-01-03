@@ -33,7 +33,7 @@ Maven Central Repository から取得できるようになる予定です（現�
 UTF-8、Windows-31J などの文字コードと同様に new String(byte[] chars, String charset)　や Charset.forName(String charset) の charset として次のいずれかを指定します。
 
 |文字セット名|説明|
-================
+|----------|----|
 |x-Fujitsu-ASCII|EBCDIC-ASCII のコード表です。|
 |x-Fujitsu-EBCDIC|英小文字用 EBCDIC のコード表です。|
 |x-Fujitsu-EBCDIK|カナ文字用 EBCDIC のコード表です。|
