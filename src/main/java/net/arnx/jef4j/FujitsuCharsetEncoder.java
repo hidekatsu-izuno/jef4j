@@ -123,6 +123,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					Record record;
 					int pos;
 					
+					int progress = 1;
 					if (Character.isSurrogate(c)) {
 						if (!Character.isHighSurrogate(c)) {
 							return CoderResult.malformedForLength(1);
@@ -136,8 +137,9 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							return CoderResult.malformedForLength(2);
 						}
 						
-						record = JEF_MAP.get((c << 16 | c2) & 0xFFFFFFF0);
+						record = JEF_MAP.get((c << 16) | (c2 & 0xFFF0));
 						pos = c2 & 0xF;
+						progress++;
 					} else {
 						record = JEF_MAP.get(c & 0xFFF0);
 						pos = c & 0xF;
@@ -161,7 +163,8 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					char mc = (char)record.get(pos);
 					out.put((byte)((mc >> 8) & 0xFF));
 					out.put((byte)(mc & 0xFF));
-					mark++;
+					
+					mark += progress;
 				} else {
 					return CoderResult.unmappableForLength(1);
 				}

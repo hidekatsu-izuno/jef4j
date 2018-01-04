@@ -40,7 +40,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					unicode2asciiMap.put(prefix, values);
 				}
-				values[Integer.parseInt(unicode.substring(3), 16)] = ascii;
+				values[Integer.parseUnsignedInt(unicode.substring(3), 16)] = ascii;
 				
 				prefix = ascii.substring(0, 1) + "0";
 				values = ascii2unicodeMap.get(prefix);
@@ -48,7 +48,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					ascii2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseInt(ascii.substring(1), 16)] = unicode;
+				values[Integer.parseUnsignedInt(ascii.substring(1), 16)] = unicode;
 			}
 		}
 		
@@ -72,7 +72,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					unicode2ebcdicMap.put(prefix, values);
 				}
-				values[Integer.parseInt(unicode.substring(3), 16)] = ebcdic;
+				values[Integer.parseUnsignedInt(unicode.substring(3), 16)] = ebcdic;
 				
 				prefix = ebcdic.substring(0, 1) + "0";
 				values = ebcdic2unicodeMap.get(prefix);
@@ -80,7 +80,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					ebcdic2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseInt(ebcdic.substring(1), 16)] = unicode;
+				values[Integer.parseUnsignedInt(ebcdic.substring(1), 16)] = unicode;
 			}
 		}
 		
@@ -100,7 +100,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					unicode2ebcdikMap.put(prefix, values);
 				}
-				values[Integer.parseInt(unicode.substring(3), 16)] = ebcdik;
+				values[Integer.parseUnsignedInt(unicode.substring(3), 16)] = ebcdik;
 				
 				prefix = ebcdik.substring(0, 1) + "0";
 				values = ebcdik2unicodeMap.get(prefix);
@@ -108,7 +108,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					ebcdik2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseInt(ebcdik.substring(1), 16)] = unicode;
+				values[Integer.parseUnsignedInt(ebcdik.substring(1), 16)] = unicode;
 			}
 		}
 		
@@ -128,7 +128,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					unicode2jefMap.put(prefix, values);
 				}
-				values[Integer.parseInt(unicode.substring(unicode.length()-1), 16)] = jef;
+				values[Integer.parseUnsignedInt(unicode.substring(unicode.length()-1), 16)] = jef;
 				
 				prefix = jef.substring(0, jef.length()-1) + "0";
 				values = jef2unicodeMap.get(prefix);
@@ -136,13 +136,13 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					jef2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseInt(jef.substring(jef.length()-1), 16)] = unicode;
+				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = unicode;
 			}
 		}
 		
 		IntObjMap<Record> asciiEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2asciiMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -159,7 +159,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(value, 16);
+					values[index++] = (byte)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -168,7 +168,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> ebcdicEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdicMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -185,7 +185,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(value, 16);
+					values[index++] = (byte)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -194,7 +194,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> ebcdikEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdikMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -211,7 +211,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (byte)Integer.parseInt(value, 16);
+					values[index++] = (byte)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -220,7 +220,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> jefEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -237,7 +237,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(value, 16);
+					values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -246,7 +246,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> asciiDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ascii2unicodeMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -263,7 +263,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(value, 16);
+					values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -272,7 +272,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> ebcdicDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdic2unicodeMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -289,7 +289,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(value, 16);
+					values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -298,7 +298,7 @@ public class FujitsuCharsetMapGenerator {
 		
 		IntObjMap<Record> ebcdikDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdik2unicodeMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -315,7 +315,7 @@ public class FujitsuCharsetMapGenerator {
 			int index = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					values[index++] = (char)Integer.parseInt(value, 16);
+					values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 				}
 			}
 			
@@ -324,7 +324,7 @@ public class FujitsuCharsetMapGenerator {
 
 		IntObjMap<Record> jefDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
-			int key = Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -344,7 +344,7 @@ public class FujitsuCharsetMapGenerator {
 				int index = 0;
 				for (String value : entry.getValue()) {
 					if (value != null) {
-						values[index++] = Integer.parseInt(value, 16);
+						values[index++] = Integer.parseUnsignedInt(value, 16);
 					}
 				}
 				jefDecoder.put(key, new IntRecord((char)pattern, values));
@@ -353,7 +353,7 @@ public class FujitsuCharsetMapGenerator {
 				int index = 0;
 				for (String value : entry.getValue()) {
 					if (value != null) {
-						values[index++] = (char)Integer.parseInt(value, 16);
+						values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 					}
 				}				
 				jefDecoder.put(key, new CharRecord((char)pattern, values));

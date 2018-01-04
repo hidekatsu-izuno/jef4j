@@ -107,7 +107,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					
 					int b2 = in.get() & 0xFF;
 					if (b2 >= 0xA1 && b2 <= 0xFE) {
-						Record record = JEF_MAP.get((b << 8 | b2) & 0xFFF0);
+						Record record = JEF_MAP.get((b << 8) | (b2 & 0xF0));
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.malformedForLength(2);

@@ -27,5 +27,11 @@ public class Jef4jCharsetProviderTest {
 						(byte)0xC3
 				}, 
 				"AあC".getBytes(Charset.forName("x-Fujitsu-JEF-ASCII")));
+		
+		assertArrayEquals(
+				new byte[] {
+						(byte)0x77, (byte)0xA9
+				}, 
+				"🄀".getBytes(Charset.forName("x-Fujitsu-JEF")));
 	}
 }
