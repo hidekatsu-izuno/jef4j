@@ -21,10 +21,10 @@ import java.io.Serializable;
  * Based on https://github.com/mikvor/hashmapTest
  * This code is licensed by The Unlicense <http://unlicense.org>
  */
-public class CharObjMap<T> implements Serializable {
+public class IntObjMap<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private char[] keys;
+	private int[] keys;
 	private T[] values;
 	private int size;
 
@@ -34,15 +34,15 @@ public class CharObjMap<T> implements Serializable {
 	
 	private T zeroValue;
 
-	public CharObjMap() {
+	public IntObjMap() {
 		this(16, 0.75F);
 	}
 	
-	public CharObjMap(int size) {
+	public IntObjMap(int size) {
 		this(size, 0.75F);
 	}
 	
-	public CharObjMap(int size, float loadFactor) {
+	public IntObjMap(int size, float loadFactor) {
 		if (size <= 0) {
 			throw new IllegalArgumentException("size must be positive!");
 		}
@@ -50,15 +50,15 @@ public class CharObjMap<T> implements Serializable {
 			throw new IllegalArgumentException("loadFactor must be in (0, 1)");
 		}
 		int capacity = calcCapacity(size, loadFactor);
-		this.keys = new char[capacity];
+		this.keys = new int[capacity];
 		this.values = newArray(keys.length);
 		this.mask = capacity - 1;
 		this.fillFactor = loadFactor;
 		this.threshold = (int) (capacity * loadFactor);
 	}
 
-	public T put(char key, T value) {
-		if (key == '\u0000') {
+	public T put(int key, T value) {
+		if (key == 0) {
 			T oldValue = zeroValue;
 			zeroValue = value;
 			return oldValue;
@@ -67,7 +67,7 @@ public class CharObjMap<T> implements Serializable {
 		int ptr = hash(key);
 		do {
 			int k = keys[ptr];
-			if (k == '\u0000') {
+			if (k == 0) {
 				keys[ptr] = key;
 				values[ptr] = value;
 				if (size >= threshold) {
@@ -85,15 +85,15 @@ public class CharObjMap<T> implements Serializable {
 		} while (true);
 	}
 
-	public T get(char key) {
-		if (key == '\u0000') {
+	public T get(int key) {
+		if (key == 0) {
 			return zeroValue;
 		}
 		
 		int pos = hash(key);
 		do {
-			char k = keys[pos];
-			if (k == '\u0000') {
+			int k = keys[pos];
+			if (k == 0) {
 				return null;
 			} else if (k == key) {
 				return (T) values[pos];
@@ -136,16 +136,16 @@ public class CharObjMap<T> implements Serializable {
 		this.threshold = (int) (newCapacity * this.fillFactor);
 		this.mask = newCapacity - 1;
 
-		char[] oldKeys = this.keys;
+		int[] oldKeys = this.keys;
 		T[] oldValues = this.values;
 
-		this.keys = new char[newCapacity];
+		this.keys = new int[newCapacity];
 		this.values = newArray(newCapacity);
 		this.size = 0;
 
 		for (int i = 0; i < oldKeys.length; i++) {
-			char oldKey = oldKeys[i];
-			if (oldKey != '\u0000') {
+			int oldKey = oldKeys[i];
+			if (oldKey != 0) {
 				put(oldKey, oldValues[i]);
 			}
 		}

@@ -22,30 +22,30 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
-import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.IntObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetEncoder extends CharsetEncoder {
-	private static final CharObjMap<Record> ASCII_MAP;
-	private static final CharObjMap<Record> EBCDIC_MAP;
-	private static final CharObjMap<Record> EBCDIK_MAP;
-	private static final CharObjMap<Record> JEF_MAP;
+	private static final IntObjMap<Record> ASCII_MAP;
+	private static final IntObjMap<Record> EBCDIC_MAP;
+	private static final IntObjMap<Record> EBCDIK_MAP;
+	private static final IntObjMap<Record> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
-			ASCII_MAP = (CharObjMap<Record>)in.readObject();
-			EBCDIC_MAP = (CharObjMap<Record>)in.readObject();
-			EBCDIK_MAP = (CharObjMap<Record>)in.readObject();
-			JEF_MAP = (CharObjMap<Record>)in.readObject();
+			ASCII_MAP = (IntObjMap<Record>)in.readObject();
+			EBCDIC_MAP = (IntObjMap<Record>)in.readObject();
+			EBCDIK_MAP = (IntObjMap<Record>)in.readObject();
+			JEF_MAP = (IntObjMap<Record>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
 	private final FujitsuCharsetType type;
-	private final CharObjMap<Record> map;
+	private final IntObjMap<Record> map;
 	
 	private boolean shiftin = false;
 
@@ -100,7 +100,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(1);
 					}
 					
-					Record record = map.get((char)(c & 0xFFF0));
+					Record record = map.get(c & 0xFFF0);
 					int pos = c & 0xF;
 					if (record == null || !record.exists(pos)) {
 						return CoderResult.unmappableForLength(1);
@@ -136,10 +136,10 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							return CoderResult.malformedForLength(2);
 						}
 						
-						record = JEF_MAP.get((char)(((c & 0x7FF) << 6) | (c2 & 0x7F0) >> 4));
+						record = JEF_MAP.get((c << 16 | c2) & 0xFFFFFFF0);
 						pos = c2 & 0xF;
 					} else {
-						record = JEF_MAP.get((char)(c & 0xFFF0));
+						record = JEF_MAP.get(c & 0xFFF0);
 						pos = c & 0xF;
 					}
 					

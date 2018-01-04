@@ -22,30 +22,30 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 
-import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.IntObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetDecoder extends CharsetDecoder {
-	private static final CharObjMap<Record> ASCII_MAP;
-	private static final CharObjMap<Record> EBCDIC_MAP;
-	private static final CharObjMap<Record> EBCDIK_MAP;
-	private static final CharObjMap<Record> JEF_MAP;
+	private static final IntObjMap<Record> ASCII_MAP;
+	private static final IntObjMap<Record> EBCDIC_MAP;
+	private static final IntObjMap<Record> EBCDIK_MAP;
+	private static final IntObjMap<Record> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
-			ASCII_MAP = (CharObjMap<Record>)in.readObject();
-			EBCDIC_MAP = (CharObjMap<Record>)in.readObject();
-			EBCDIK_MAP = (CharObjMap<Record>)in.readObject();
-			JEF_MAP = (CharObjMap<Record>)in.readObject();
+			ASCII_MAP = (IntObjMap<Record>)in.readObject();
+			EBCDIC_MAP = (IntObjMap<Record>)in.readObject();
+			EBCDIK_MAP = (IntObjMap<Record>)in.readObject();
+			JEF_MAP = (IntObjMap<Record>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
 	private final FujitsuCharsetType type;
-	private final CharObjMap<Record> map;
+	private final IntObjMap<Record> map;
 	
 	private boolean shiftin = false;
 	
@@ -89,9 +89,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 				}
 				
 				if (!shiftin && map != null) {
-					char c = (char)b;
-					Record record = map.get((char)(c & 0xFFF0));
-					int pos = c & 0xF;
+					Record record = map.get(b & 0xFFF0);
+					int pos = b & 0xF;
 					if (record == null || !record.exists(pos)) {
 						return CoderResult.malformedForLength(1);
 					}
@@ -108,9 +107,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					
 					int b2 = in.get() & 0xFF;
 					if (b2 >= 0xA1 && b2 <= 0xFE) {
-						char c = (char)(b << 8 | b2);
-						Record record = JEF_MAP.get((char)(c & 0xFFF0));
-						int pos = c & 0xF;
+						Record record = JEF_MAP.get((b << 8 | b2) & 0xFFF0);
+						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.malformedForLength(2);
 						}
@@ -118,7 +116,19 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
-						out.put((char)record.get(pos));
+						int mc = record.get(pos);
+						char hs = (char)((mc >> 16) & 0xFFFF);
+						char ls = (char)(mc & 0xFFFF);
+						if (hs != '\u0000') {
+							if (Character.isHighSurrogate(hs) && Character.isLowSurrogate(ls)) {
+								out.put(hs);
+								out.put(ls);
+							} else {
+								return CoderResult.malformedForLength(2);
+							}
+						} else {
+							out.put(ls);
+						}
 						mark += 2;
 					} else {
 						return CoderResult.malformedForLength(2);

@@ -15,7 +15,8 @@ import java.util.TreeMap;
 import org.junit.Test;
 
 import net.arnx.jef4j.util.ByteRecord;
-import net.arnx.jef4j.util.CharObjMap;
+import net.arnx.jef4j.util.IntObjMap;
+import net.arnx.jef4j.util.IntRecord;
 import net.arnx.jef4j.util.CharRecord;
 import net.arnx.jef4j.util.Record;
 
@@ -121,27 +122,27 @@ public class FujitsuCharsetMapGenerator {
 				String unicode = parts[0];
 				String jef = parts[1];
 				
-				String prefix = unicode.substring(0, 3) + "0";
+				String prefix = unicode.substring(0, unicode.length()-1) + "0";
 				String[] values = unicode2jefMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
 					unicode2jefMap.put(prefix, values);
 				}
-				values[Integer.parseInt(unicode.substring(3), 16)] = jef;
+				values[Integer.parseInt(unicode.substring(unicode.length()-1), 16)] = jef;
 				
-				prefix = jef.substring(0, 3) + "0";
+				prefix = jef.substring(0, jef.length()-1) + "0";
 				values = jef2unicodeMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
 					jef2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseInt(jef.substring(3), 16)] = unicode;
+				values[Integer.parseInt(jef.substring(jef.length()-1), 16)] = unicode;
 			}
 		}
 		
-		CharObjMap<Record> asciiEncoder = new CharObjMap<>();
+		IntObjMap<Record> asciiEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2asciiMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -165,9 +166,9 @@ public class FujitsuCharsetMapGenerator {
 			asciiEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> ebcdicEncoder = new CharObjMap<>();
+		IntObjMap<Record> ebcdicEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdicMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -191,9 +192,9 @@ public class FujitsuCharsetMapGenerator {
 			ebcdicEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> ebcdikEncoder = new CharObjMap<>();
+		IntObjMap<Record> ebcdikEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdikMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -217,9 +218,9 @@ public class FujitsuCharsetMapGenerator {
 			ebcdikEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> jefEncoder = new CharObjMap<>();
+		IntObjMap<Record> jefEncoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -243,9 +244,9 @@ public class FujitsuCharsetMapGenerator {
 			jefEncoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> asciiDecoder = new CharObjMap<>();
+		IntObjMap<Record> asciiDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ascii2unicodeMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -269,9 +270,9 @@ public class FujitsuCharsetMapGenerator {
 			asciiDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> ebcdicDecoder = new CharObjMap<>();
+		IntObjMap<Record> ebcdicDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdic2unicodeMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -295,9 +296,9 @@ public class FujitsuCharsetMapGenerator {
 			ebcdicDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		CharObjMap<Record> ebcdikDecoder = new CharObjMap<>();
+		IntObjMap<Record> ebcdikDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdik2unicodeMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
@@ -321,30 +322,42 @@ public class FujitsuCharsetMapGenerator {
 			ebcdikDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 
-		CharObjMap<Record> jefDecoder = new CharObjMap<>();
+		IntObjMap<Record> jefDecoder = new IntObjMap<>();
 		for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
-			char key = (char)Integer.parseInt(entry.getKey(), 16);
+			int key = Integer.parseInt(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
+			int size = 4;
 			for (String value : entry.getValue()) {
 				if (value != null) {
-					pattern = (pattern << 1) | 1;
 					len++;
+					pattern = (pattern << 1) | 1;
+					size = Math.max(size, value.length());
 				} else {
 					pattern = pattern << 1;
 				}
 			}
 			
-			char[] values = new char[len];
-			int index = 0;
-			for (String value : entry.getValue()) {
-				if (value != null) {
-					values[index++] = (char)Integer.parseInt(value, 16);
+			if (size > 4) {
+				int[] values = new int[len];
+				int index = 0;
+				for (String value : entry.getValue()) {
+					if (value != null) {
+						values[index++] = Integer.parseInt(value, 16);
+					}
 				}
+				jefDecoder.put(key, new IntRecord((char)pattern, values));
+			} else {
+				char[] values = new char[len];
+				int index = 0;
+				for (String value : entry.getValue()) {
+					if (value != null) {
+						values[index++] = (char)Integer.parseInt(value, 16);
+					}
+				}				
+				jefDecoder.put(key, new CharRecord((char)pattern, values));
 			}
-			
-			jefDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
