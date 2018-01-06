@@ -130,7 +130,7 @@ public class Jef4jCharsetProviderTest {
 					bb.put((byte)0x28);
 					bb.put((byte)b1);
 					bb.put((byte)b2);
-					bb.put((byte)0x38);
+					bb.put((byte)0x29);
 					bb.flip();
 					try {
 						CharBuffer cb = cd.decode(bb);

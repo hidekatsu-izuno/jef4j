@@ -71,39 +71,6 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		}
 	}
 	
-	private static float getAverageBytesPerChar(FujitsuCharsetType type) {
-		if (type == FujitsuCharsetType.ASCII
-				|| type == FujitsuCharsetType.EBCDIC
-				|| type == FujitsuCharsetType.EBCDIK) {
-			return 1;
-		} else if (type == FujitsuCharsetType.JEF) {
-			return 2;
-		}
-		return 2;
-	}
-	
-	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
-		if (type == FujitsuCharsetType.ASCII
-				|| type == FujitsuCharsetType.EBCDIC
-				|| type == FujitsuCharsetType.EBCDIK) {
-			return 1;
-		} else if (type == FujitsuCharsetType.JEF) {
-			return 2;
-		}
-		return 4;
-	}
-	
-	private static byte[] getReplacementChar(FujitsuCharsetType type) {
-		if (type == FujitsuCharsetType.ASCII
-				|| type == FujitsuCharsetType.EBCDIC
-				|| type == FujitsuCharsetType.EBCDIK) {
-			return new byte[] { (byte)0x6F };
-		} else if (type == FujitsuCharsetType.JEF) {
-			return new byte[] { (byte)0xA1, (byte)0xA9 };
-		}
-		return new byte[] { 0x40, 0x40 };
-	}
-	
 	@Override
 	protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
 		int mark = in.position();
@@ -141,7 +108,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					}
 					out.put((byte)record.get(pos));
 					mark++;
-				} else if (type.containsJEF()) { // Double Bytes
+				} else if (containsJef(type)) { // Double Bytes
 					Record record;
 					int pos;
 					
@@ -212,5 +179,52 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	@Override
 	protected void implReset() {
 		shiftin = false;
+	}
+	
+	private static float getAverageBytesPerChar(FujitsuCharsetType type) {
+		switch (type) {
+		case ASCII:
+		case EBCDIC:
+		case EBCDIK:
+			return 1;
+		default:
+			return 2;
+		}
+	}
+	
+	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
+		switch (type) {
+		case ASCII:
+		case EBCDIC:
+		case EBCDIK:
+			return 1;
+		case JEF:
+			return 2;
+		default:
+			return 4;
+		}
+	}
+	
+	private static byte[] getReplacementChar(FujitsuCharsetType type) {
+		switch (type) {
+		case ASCII:
+		case EBCDIC:
+		case EBCDIK:
+			return new byte[] { 0x40 };
+		default:
+			return new byte[] { 0x40, 0x40 };
+		}
+	}
+	
+	private static boolean containsJef(FujitsuCharsetType type) {
+		switch (type) {
+		case JEF:
+		case JEF_EBCDIC:
+		case JEF_EBCDIK:
+		case JEF_ASCII:
+			return true;
+		default:
+			return false;
+		}
 	}
 }

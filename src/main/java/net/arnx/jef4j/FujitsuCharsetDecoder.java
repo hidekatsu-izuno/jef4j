@@ -49,7 +49,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	
 	private boolean shiftin = false;
 	
-	protected FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
+	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
 		super(cs, 1, 1);
 		this.type = type;
 		
@@ -100,13 +100,14 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					}
 					out.put((char)record.get(pos));
 					mark++;
-				} else if (type.containsJEF() && b >= 0x40 && b <= 0xFE) {
+				} else if (containsJef(type) && b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
 					
 					int b2 = in.get() & 0xFF;
-					if (b2 >= 0xA1 && b2 <= 0xFE) {
+					if ((b == 0x40 && b2 == 0x40)
+							|| (b != 0x40 && b2 >= 0xA1 && b2 <= 0xFE)) {
 						Record record = JEF_MAP.get((b << 8) | (b2 & 0xF0));
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
@@ -146,5 +147,17 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	@Override
 	protected void implReset() {
 		shiftin = false;
+	}
+	
+	private static boolean containsJef(FujitsuCharsetType type) {
+		switch (type) {
+		case JEF:
+		case JEF_EBCDIC:
+		case JEF_EBCDIK:
+		case JEF_ASCII:
+			return true;
+		default:
+			return false;
+		}
 	}
 }

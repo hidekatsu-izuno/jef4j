@@ -18,7 +18,7 @@ JEF漢字コード体系は、Unicodeの整備も進んだ今となっては消�
 
 ## JEF漢字コード体系の構造
 
-JEF漢字コード体系自体はJIS非漢字、JIS第一水準、第二水準からなる標準コード域と拡張漢字、拡張非漢字と呼ばれる追加のコード域から構成される2バイトのコード体系です。JISコード域の字体は、78JIS(JIS C 6226:1978)にもとづいており、83JIS(JIS X 0208:1983)での字形変更は拡張漢字への文字の追加という形で対処されています。
+JEF漢字コード体系自体はJIS非漢字、JIS第一水準、第二水準からなる標準のコード域と拡張漢字、拡張非漢字と呼ばれる追加のコード域から構成される2バイトのコード体系です。JISコード域の字体は、78JIS(JIS C 6226:1978)にもとづいており、83JIS(JIS X 0208:1983)での字形変更は拡張漢字への文字の追加という形で対処されています。
 
 |カテゴリ|コード域|
 |-----|------|
@@ -31,10 +31,11 @@ JEF漢字コード体系自体はJIS非漢字、JIS第一水準、第二水準�
 
 通常は、メインフレームで一般的に使われる EBCDIC と組み合わせて使用されます。EBCDICのコード体系としては、IBM-EBCDIC 相当、日立製作所 EBCDIK 相当、US-ASCII 可換の3種類が存在しています。これらは1バイトのコード体系ですが、SHIFT_JISのように2バイトコード体系と混在しての利用ができないため、シフトコードを使って1バイトコード体系と2バイトコード体系を切り替えます。
 
-|カテゴリ|コード値|
-|-----|------|
-|シフトイン|0x28/0x38|
-|シフトアウト|0x29|
+|カテゴリ|コード値|備考|
+|-----|------|----|
+|シフトイン(12pt)|0x28||
+|シフトイン(9pt)|0x38|エンコード時は 0x28 を使用します。|
+|シフトアウト|0x29||
 
 ## インストール
 
@@ -50,23 +51,31 @@ Maven Central Repository から取得できるようになる予定です（現�
 
 ## 使い方
 
-UTF-8、Windows-31J などの文字コードと同様に new String(byte[] chars, String charset)　や Charset.forName(String charset) の charset として次のいずれかを指定します。
-
-|文字セット名|説明|
-|----------|----|
-|x-Fujitsu-ASCII|EBCDIC-ASCII のコード表です。|
-|x-Fujitsu-EBCDIC|英小文字用 EBCDIC のコード表です。|
-|x-Fujitsu-EBCDIK|カナ文字用 EBCDIC のコード表です。|
-|x-Fujitsu-JEF|JEF漢字のみのコード表です。|
-|x-Fujitsu-JEF-ASCII|1バイト領域の EBCDIC-ASCII と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
-|x-Fujitsu-JEF-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
-|x-Fujitsu-JEF-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
+jef4j 用に特別なAPIが用意されているわけではありませんので、クラスパスに追加だけ行えば、
+- new String(byte[] chars, String charset)
+- String.getBytes(String charset)
+- Charset.forName(String charset)
+などの Java 標準 API を介して利用することができます。
 
 ```java
 Charset charset = Charset.forName("x-Fujitsu-JEF");
 String text = new String(bytes, charset);
 byte[] bytes = text.getBytes(charset);
 ```
+
+指定できる文字セット名は次の通りです。
+
+|文字セット名|説明|
+|----------|----|
+|x-Fujitsu-EBCDIC|英小文字用 EBCDIC のコード表です。|
+|x-Fujitsu-EBCDIK|カナ文字用 EBCDIC のコード表です。|
+|x-Fujitsu-ASCII|ASCII互換用 EBCDIC のコード表です。|
+|x-Fujitsu-JEF|JEF漢字のみのコード表です。|
+|x-Fujitsu-JEF-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
+|x-Fujitsu-JEF-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
+|x-Fujitsu-JEF-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。|
+
+変換に失敗した場合の置換文字としては、半角/全角空白が使用されます。Windows-31J など他の文字コードでは'?'が使用されますが、シフトイン/シフトアウトでの切り替えがあるため、どちらでも有効な文字として解釈できる空白文字に置換しています。
 
 ## ライセンス
 

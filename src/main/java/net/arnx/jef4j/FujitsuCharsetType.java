@@ -16,27 +16,21 @@
 package net.arnx.jef4j;
 
 enum FujitsuCharsetType {
-	EBCDIC("x-Fujitsu-EBCDIC", false),
-	EBCDIK("x-Fujitsu-EBCDIK", false),
-	ASCII("x-Fujitsu-ASCII", false),
-	JEF("x-Fujitsu-JEF", true),
-	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true),
-	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true),
-	JEF_ASCII("x-Fujitsu-JEF-ASCII", true);
+	EBCDIC("x-Fujitsu-EBCDIC"),
+	EBCDIK("x-Fujitsu-EBCDIK"),
+	ASCII("x-Fujitsu-ASCII"),
+	JEF("x-Fujitsu-JEF"),
+	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC"),
+	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK"),
+	JEF_ASCII("x-Fujitsu-JEF-ASCII");
 	
 	private final String charsetName;
-	private final boolean containsJEF;
 	
-	FujitsuCharsetType(String charsetName, boolean containsJEF) {
+	FujitsuCharsetType(String charsetName) {
 		this.charsetName = charsetName;
-		this.containsJEF = containsJEF;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
-	}
-	
-	public boolean containsJEF() {
-		return containsJEF;
 	}
 }
