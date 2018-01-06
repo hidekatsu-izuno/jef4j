@@ -9,10 +9,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.Test;
+
 public class Jef4jCharsetProviderTest {
 	@Test
 	public void test() {
@@ -59,7 +59,7 @@ public class Jef4jCharsetProviderTest {
 					.onMalformedInput(CodingErrorAction.REPORT);
 			CharBuffer cb = CharBuffer.allocate(2);
 		
-			for (int cp = 0; cp < Character.MAX_CODE_POINT; cp++) {
+			for (int cp = 0; cp <= Character.MAX_CODE_POINT; cp++) {
 				cb.clear();
 				cb.put(Character.toChars(cp));
 				cb.flip();
@@ -71,6 +71,100 @@ public class Jef4jCharsetProviderTest {
 				}
 				
 				ce.reset();
+			}
+		}
+	}
+	
+	@Test
+	public void testDecoder() {
+		for (Charset cs : Arrays.asList(
+				Charset.forName("x-Fujitsu-EBCDIC"),
+				Charset.forName("x-Fujitsu-EBCDIK"),
+				Charset.forName("x-Fujitsu-ASCII"))) {
+			
+			CharsetDecoder cd = cs.newDecoder()
+					.onUnmappableCharacter(CodingErrorAction.REPORT)
+					.onMalformedInput(CodingErrorAction.REPORT);
+			ByteBuffer bb = ByteBuffer.allocate(2);
+			
+			for (int b = 0; b < 0xFF; b++) {
+				bb.clear();
+				bb.put((byte)b);
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					System.out.println(hex(bb) + " " + hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+				cd.reset();
+			}
+		}
+		
+		for (Charset cs : Arrays.asList(
+				Charset.forName("x-Fujitsu-JEF-EBCDIC"),
+				Charset.forName("x-Fujitsu-JEF-EBCDIK"),
+				Charset.forName("x-Fujitsu-JEF-ASCII"))) {
+			
+			CharsetDecoder cd = cs.newDecoder()
+					.onUnmappableCharacter(CodingErrorAction.REPORT)
+					.onMalformedInput(CodingErrorAction.REPORT);
+			ByteBuffer bb = ByteBuffer.allocate(4);
+			
+			for (int b = 0; b < 0xFF; b++) {
+				bb.clear();
+				bb.put((byte)b);
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					System.out.println(hex(bb) + " " + hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+				cd.reset();
+			}
+			
+			for (int b1 = 0; b1 <= 0xFF; b1++) {
+				for (int b2 = 0; b2 <= 0xFF; b2++) {
+					bb.clear();
+					bb.put((byte)0x28);
+					bb.put((byte)b1);
+					bb.put((byte)b2);
+					bb.put((byte)0x38);
+					bb.flip();
+					try {
+						CharBuffer cb = cd.decode(bb);
+						bb.flip();
+						System.out.println(hex(bb) + " " + hex(cb));
+					} catch (CharacterCodingException e) {
+					}
+					cd.reset();
+				}
+			}
+		}
+		
+		for (Charset cs : Arrays.asList(
+				Charset.forName("x-Fujitsu-JEF"))) {
+			
+			CharsetDecoder cd = cs.newDecoder()
+					.onUnmappableCharacter(CodingErrorAction.REPORT)
+					.onMalformedInput(CodingErrorAction.REPORT);
+			ByteBuffer bb = ByteBuffer.allocate(2);
+			
+			for (int b1 = 0; b1 <= 0xFF; b1++) {
+				for (int b2 = 0; b2 <= 0xFF; b2++) {
+					bb.clear();
+					bb.put((byte)b1);
+					bb.put((byte)b2);
+					bb.flip();
+					try {
+						CharBuffer cb = cd.decode(bb);
+						bb.flip();
+						System.out.println(hex(bb) + " " + hex(cb));
+					} catch (CharacterCodingException e) {
+					}
+					cd.reset();
+				}
 			}
 		}
 	}

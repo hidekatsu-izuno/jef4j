@@ -50,7 +50,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	private boolean shiftin = false;
 
 	public FujitsuCharsetEncoder(Charset cs, FujitsuCharsetType type) {
-		super(cs, 2, 2, getReplacementChar(type));
+		super(cs, 2, getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		
 		switch (type) {
@@ -69,6 +69,17 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		default:
 			map = null;
 		}
+	}
+	
+	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
+		if (type == FujitsuCharsetType.ASCII
+				|| type == FujitsuCharsetType.EBCDIC
+				|| type == FujitsuCharsetType.EBCDIK) {
+			return 1;
+		} else if (type == FujitsuCharsetType.JEF) {
+			return 2;
+		}
+		return 4;
 	}
 	
 	private static byte[] getReplacementChar(FujitsuCharsetType type) {
