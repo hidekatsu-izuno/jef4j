@@ -1,7 +1,5 @@
 package net.arnx.jef4j;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,8 +10,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.Test;
-
 import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.IntObjMap;
 import net.arnx.jef4j.util.IntRecord;
@@ -21,9 +17,7 @@ import net.arnx.jef4j.util.CharRecord;
 import net.arnx.jef4j.util.Record;
 
 public class FujitsuCharsetMapGenerator {
-
-	@Test
-	public void generateMap() throws IOException {
+	public static void main(String[] args) throws IOException {
 		Map<String, String[]> unicode2asciiMap = new TreeMap<>();
 		Map<String, String[]> ascii2unicodeMap = new TreeMap<>();
 		

@@ -107,24 +107,22 @@ public class IntObjMap<T> implements Serializable {
 	}
 
 	private static int calcCapacity(int size, float f) {
-		long capacity;
 		long x = (long) Math.ceil(size / f);
-		if (x == 0) {
-			capacity = 2;
-		} else {
+		if (x != 0) {
 			x--;
 			x |= x >> 1;
 			x |= x >> 2;
 			x |= x >> 4;
 			x |= x >> 8;
 			x |= x >> 16;
-			capacity = Math.max(2, (x | x >> 32) + 1);
+			x |= x >> 32;
+			x++;
+			if (x > (1 << 30)) {
+				throw new IllegalArgumentException(
+						"Too large (" + size + " expected elements with load factor " + f + ")");
+			}
 		}
-		if (capacity > (1 << 30)) {
-			throw new IllegalArgumentException(
-					"Too large (" + size + " expected elements with load factor " + f + ")");
-		}
-		return (int) capacity;
+		return Math.max(2, (int) x);
 	}
 
 	private int hash(int x) {
