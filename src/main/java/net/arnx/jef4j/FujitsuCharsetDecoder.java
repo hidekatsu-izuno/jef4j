@@ -50,7 +50,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private boolean shiftin = false;
 	
 	protected FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
-		super(cs, 2, 2);
+		super(cs, 1, 1);
 		this.type = type;
 		
 		switch (type) {
