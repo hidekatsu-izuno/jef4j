@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 /**
  * Based on https://github.com/mikvor/hashmapTest
- * This code is licensed by The Unlicense <http://unlicense.org>
+ * This code is licensed by The Unlicense (http://unlicense.org)
  */
 public class IntObjMap<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
