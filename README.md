@@ -39,7 +39,7 @@ JEF漢字コード体系自体はJIS非漢字、JIS第一水準、第二水準�
 
 ## インストール
 
-Maven Central Repository から取得できるようになる予定です（現在作業中）。
+Maven Central Repository から取得できます。
 
 ```xml
 <dependency>
