@@ -92,7 +92,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					Record record = map.get(b & 0xFFF0);
 					int pos = b & 0xF;
 					if (record == null || !record.exists(pos)) {
-						return CoderResult.malformedForLength(1);
+						return CoderResult.unmappableForLength(1);
 					}
 					
 					if (!out.hasRemaining()) {
@@ -111,7 +111,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						Record record = JEF_MAP.get((b << 8) | (b2 & 0xF0));
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
-							return CoderResult.malformedForLength(2);
+							return CoderResult.unmappableForLength(2);
 						}
 						
 						if (!out.hasRemaining()) {
@@ -132,7 +132,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						}
 						mark += 2;
 					} else {
-						return CoderResult.malformedForLength(2);
+						return CoderResult.unmappableForLength(2);
 					}
 				} else {
 					return CoderResult.unmappableForLength(1);

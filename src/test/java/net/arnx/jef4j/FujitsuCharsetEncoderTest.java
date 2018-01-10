@@ -1,6 +1,7 @@
 package net.arnx.jef4j;
 
 import static org.junit.Assert.*;
+import static net.arnx.jef4j.util.ByteUtils.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -303,29 +304,6 @@ public class FujitsuCharsetEncoderTest {
 			}
 		}
 	}
-	
-	private static final String HEX = "0123456789ABCDEF";
-	
-	private static String hex(CharBuffer cb) {
-		StringBuilder sb = new StringBuilder();
-		while (cb.hasRemaining()) {
-			char c = cb.get();
-			sb.append(HEX.charAt((c >> 12) & 0xF));
-			sb.append(HEX.charAt((c >> 8) & 0xF));
-			sb.append(HEX.charAt((c >> 4) & 0xF));
-			sb.append(HEX.charAt(c & 0xF));
-		}
-		return sb.toString();
-	}
-	
-	private static String hex(ByteBuffer bb) {
-		StringBuilder sb = new StringBuilder();
-		while (bb.hasRemaining()) {
-			byte b = bb.get();
-			sb.append(HEX.charAt((b >> 4) & 0xF));
-			sb.append(HEX.charAt(b & 0xF));
-		}
-		return sb.toString();
-	}
+
 
 }
