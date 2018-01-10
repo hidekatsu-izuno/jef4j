@@ -3,6 +3,7 @@ package net.arnx.jef4j;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,7 +22,9 @@ public class FujitsuCharsetMapGenerator {
 		Map<String, String[]> unicode2asciiMap = new TreeMap<>();
 		Map<String, String[]> ascii2unicodeMap = new TreeMap<>();
 		
-		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/ascii_mapping.txt"), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/ascii_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(" ");
@@ -49,7 +52,9 @@ public class FujitsuCharsetMapGenerator {
 		Map<String, String[]> unicode2ebcdicMap = new TreeMap<>();
 		Map<String, String[]> ebcdic2unicodeMap = new TreeMap<>();
 		
-		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/ebcdic_mapping.txt"), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/ebcdic_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.isEmpty()) {
@@ -81,7 +86,9 @@ public class FujitsuCharsetMapGenerator {
 		Map<String, String[]> unicode2ebcdikMap = new TreeMap<>();
 		Map<String, String[]> ebcdik2unicodeMap = new TreeMap<>();
 		
-		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/ebcdik_mapping.txt"), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/ebcdik_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(" ");
@@ -109,7 +116,9 @@ public class FujitsuCharsetMapGenerator {
 		Map<String, String[]> unicode2jefMap = new TreeMap<>();
 		Map<String, String[]> jef2unicodeMap = new TreeMap<>();
 		
-		try (BufferedReader reader = Files.newBufferedReader(Paths.get("./src/test/resources/jef_mapping.txt"), StandardCharsets.UTF_8)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(" ");
