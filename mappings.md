@@ -1,7 +1,4 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
+
 <style>
 .charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; font-family: monospace; margin-bottom: 16px; }
 .charmap caption { line-height: 1.4; font-family: sans-serif; }
@@ -11,8 +8,7 @@
 .special { font-size: 8px; }
 .unmapped { background: silver; }
 </style>
-</head>
-<body>
+
 <table class="charmap">
 <caption>x-Fujitsu-EBCDIC</caption>
 <tr><th><sub>H</sub><sup>L<sup></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
@@ -1023,5 +1019,3 @@
 <tr><th>7FE</th><td class="char">⌒</td><td class="char">∂</td><td class="char">∇</td><td class="char">≪</td><td class="char">≫</td><td class="char">√</td><td class="char">∽</td><td class="char">∝</td><td class="char">∫</td><td class="char">∬</td><td class="char">♯</td><td class="char">♭</td><td class="char">♪</td><td class="char">†</td><td class="char">‡</td><td class="char">¶</td></tr>
 <tr><th>7FF</th><td class="char">◯</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td><td class="unmapped">&nbsp;</td></tr>
 <table>
-</body>
-</html>

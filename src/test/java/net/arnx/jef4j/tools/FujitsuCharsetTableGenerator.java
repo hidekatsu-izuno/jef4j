@@ -14,11 +14,7 @@ import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetTableGenerator {
 	public static void main(String[] args) throws IOException {
-		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("mappings.html"))) {
-			out.append("<!doctype html>\n");
-			out.append("<html lang=\"ja\">\n");
-			out.append("<head>\n");
-			out.append("<meta charset=\"UTF-8\">\n");
+		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("mappings.md"))) {
 			out.append("<style>\n");
 			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; font-family: monospace; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
@@ -28,8 +24,6 @@ public class FujitsuCharsetTableGenerator {
 			out.append(".special { font-size: 8px; }\n");
 			out.append(".unmapped { background: silver; }\n");
 			out.append("</style>\n");
-			out.append("</head>\n");
-			out.append("<body>\n");
 			
 			for (String[] pair : new String[][] {
 				{ "/ebcdic_mapping.txt", "x-Fujitsu-EBCDIC" },
@@ -145,9 +139,6 @@ public class FujitsuCharsetTableGenerator {
 				}
 				out.append("<table>\n");
 			}
-			
-			out.append("</body>\n");
-			out.append("</html>\n");
 		}
 	}
 }
