@@ -14,7 +14,7 @@ import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetTableGenerator {
 	public static void main(String[] args) throws IOException {
-		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("mappings.html"))) {
+		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("docs/mappings.html"), StandardCharsets.UTF_8)) {
 			out.append("<!doctype html>\n");
 			out.append("<html lang=\"ja\">\n");
 			out.append("<head>\n");
