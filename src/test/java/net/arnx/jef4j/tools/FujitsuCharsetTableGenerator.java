@@ -39,7 +39,7 @@ public class FujitsuCharsetTableGenerator {
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>" + pair[1] + "</caption>\n");
 				out.append("<tr>");
-				out.append("<th><sub>H</sub><sup>L<sup></th>");
+				out.append("<th><sub>H</sub><sup>L</sup></th>");
 				for (int j = 0; j <= 0xF; j++) {
 					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
 				}
@@ -80,7 +80,7 @@ public class FujitsuCharsetTableGenerator {
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>JEF標準漢字/標準非漢字</caption>\n");
 				out.append("<tr>");
-				out.append("<th><sub>H</sub><sup>L<sup></th>");
+				out.append("<th><sub>H</sub><sup>L</sup></th>");
 				for (int j = 0x0; j <= 0xF; j++) {
 					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
 				}
@@ -107,7 +107,7 @@ public class FujitsuCharsetTableGenerator {
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>JEF拡張漢字/拡張非漢字</caption>\n");
 				out.append("<tr>");
-				out.append("<th><sub>H</sub><sup>L<sup></th>");
+				out.append("<th><sub>H</sub><sup>L</sup></th>");
 				for (int j = 0x0; j <= 0xF; j++) {
 					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
 				}
