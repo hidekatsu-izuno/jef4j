@@ -1,4 +1,4 @@
-package net.arnx.jef4j;
+package net.arnx.jef4j.tools;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
