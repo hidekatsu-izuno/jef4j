@@ -1,0 +1,7 @@
+.charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; font-family: monospace; margin-bottom: 16px; }
+.charmap caption { line-height: 1.4; font-family: sans-serif; }
+.charmap th,
+.charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 20px; height: 20px; line-height: 1; }
+.charmap th { font-weight: bold; background: #C1FFFF; }
+.special { font-size: 8px; }
+.unmapped { background: silver; }

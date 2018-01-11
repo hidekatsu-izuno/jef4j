@@ -1,14 +1,4 @@
-
-<style>
-.charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; font-family: monospace; margin-bottom: 16px; }
-.charmap caption { line-height: 1.4; font-family: sans-serif; }
-.charmap th,
-.charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 20px; height: 20px; line-height: 1; }
-.charmap th { font-weight: bold; background: #C1FFFF; }
-.special { font-size: 8px; }
-.unmapped { background: silver; }
-</style>
-
+<link href="docs/css/global.css" rel="stylesheet"></link>
 <table class="charmap">
 <caption>x-Fujitsu-EBCDIC</caption>
 <tr><th><sub>H</sub><sup>L<sup></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
