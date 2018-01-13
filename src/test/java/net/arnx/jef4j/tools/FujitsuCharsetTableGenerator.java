@@ -19,12 +19,14 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<html lang=\"ja\">\n");
 			out.append("<head>\n");
 			out.append("<meta charset=\"UTF-8\">\n");
+			out.append("<link href=\"https://fonts.googleapis.com/earlyaccess/notosansjapanese.css\" rel=\"stylesheet\" />\n");
 			out.append("<style>\n");
-			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; font-family: monospace; margin-bottom: 16px; }\n");
+			out.append("body { font-family: \"Noto Sans Japanese\"; }\n");
+			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
 			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 20px; height: 20px; line-height: 1; }\n");
-			out.append(".charmap th { font-weight: bold; background: #C1FFFF; }\n");
+			out.append(".charmap th { font-weight: bold; background: #C1FFFF; font-family: monospace; }\n");
 			out.append(".special { font-size: 8px; }\n");
 			out.append(".unmapped { background: silver; }\n");
 			out.append("</style>\n");
@@ -65,7 +67,7 @@ public class FujitsuCharsetTableGenerator {
 						String value = map.get((i << 4) | j);
 						if (value == null) {
 							out.append("<td class=\"unmapped\">&nbsp;</td>");
-						} else if (value.length() > 1) {
+						} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
 							out.append("<td class=\"special\">" + value + "</td>");
 						} else {
 							out.append("<td class=\"char\">" + value + "</td>");
@@ -107,7 +109,7 @@ public class FujitsuCharsetTableGenerator {
 							String value = map.get((i << 8) | (i2 << 4) | j);
 							if (value == null) {
 								out.append("<td class=\"unmapped\">&nbsp;</td>");
-							} else if (value.length() > 1) {
+							} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
 								out.append("<td class=\"special\">" + value + "</td>");
 							} else {
 								out.append("<td class=\"char\">" + value + "</td>");
@@ -134,7 +136,7 @@ public class FujitsuCharsetTableGenerator {
 							String value = map.get((i << 8) | (i2 << 4) | j);
 							if (value == null) {
 								out.append("<td class=\"unmapped\">&nbsp;</td>");
-							} else if (value.length() > 1) {
+							} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
 								out.append("<td class=\"special\">" + value + "</td>");
 							} else {
 								out.append("<td class=\"char\">" + value + "</td>");
