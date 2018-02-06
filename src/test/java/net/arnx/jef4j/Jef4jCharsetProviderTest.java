@@ -15,9 +15,17 @@ public class Jef4jCharsetProviderTest {
 						(byte)0xA4, (byte)0xA4, 
 						(byte)0xA4, (byte)0xA6, 
 						(byte)0xA4, (byte)0xA8,
-						(byte)0xA4, (byte)0xAA
+						(byte)0xA4, (byte)0xAA,
+						(byte)0xC4, (byte)0xD4
 				}, 
-				"あいうえお".getBytes(Charset.forName("x-Fujitsu-JEF")));
+				"あいうえお辻".getBytes(Charset.forName("x-Fujitsu-JEF")));
+		
+		assertEquals(
+				"辻辻",
+				new String(new byte[] {
+						(byte)0x67, (byte)0xA5, 
+						(byte)0xC4, (byte)0xD4
+				}, Charset.forName("x-Fujitsu-JEF")));
 	
 		assertArrayEquals(
 				new byte[] {
