@@ -145,7 +145,7 @@ public class FujitsuCharsetTableGenerator {
 						out.append("</tr>\n");
 					}
 				}
-				out.append("<table>\n");
+				out.append("</table>\n");
 			}
 			
 			out.append("</body>\n");
