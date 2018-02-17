@@ -22,10 +22,10 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<link href=\"https://fonts.googleapis.com/earlyaccess/notosansjapanese.css\" rel=\"stylesheet\" />\n");
 			out.append("<style>\n");
 			out.append("body { font-family: \"Noto Sans Japanese\"; }\n");
-			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 14px; margin-bottom: 16px; }\n");
+			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 16px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
-			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 20px; height: 20px; line-height: 1; }\n");
+			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 30px; height: 24px; line-height: 1; }\n");
 			out.append(".charmap th { font-weight: bold; background: #C1FFFF; font-family: monospace; }\n");
 			out.append(".special { font-size: 8px; }\n");
 			out.append(".unmapped { background: silver; }\n");
@@ -95,13 +95,14 @@ public class FujitsuCharsetTableGenerator {
 				
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>JEF標準漢字/標準非漢字</caption>\n");
-				out.append("<tr>");
-				out.append("<th><sub>H</sub><sup>L</sup></th>");
-				for (int j = 0x0; j <= 0xF; j++) {
-					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
-				}
-				out.append("</tr>\n");
 				for (int i = 0xA1; i <= 0xFE; i++) {
+					out.append("<tr>");
+					out.append("<th><sub>H</sub><sup>L</sup></th>");
+					for (int j = 0x0; j <= 0xF; j++) {
+						out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
+					}
+					out.append("</tr>\n");
+					
 					for (int i2 = 0xA; i2 <= 0xF; i2++) {
 						out.append("<tr>");
 						out.append("<th>" + ByteUtils.hex((i << 4) | i2, 3) + "</th>");
@@ -122,13 +123,14 @@ public class FujitsuCharsetTableGenerator {
 				
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>JEF拡張漢字/拡張非漢字</caption>\n");
-				out.append("<tr>");
-				out.append("<th><sub>H</sub><sup>L</sup></th>");
-				for (int j = 0x0; j <= 0xF; j++) {
-					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
-				}
-				out.append("</tr>\n");
 				for (int i = 0x41; i <= 0x7F; i++) {
+					out.append("<tr>");
+					out.append("<th><sub>H</sub><sup>L</sup></th>");
+					for (int j = 0x0; j <= 0xF; j++) {
+						out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
+					}
+					out.append("</tr>\n");
+					
 					for (int i2 = 0xA; i2 <= 0xF; i2++) {
 						out.append("<tr>");
 						out.append("<th>" + ByteUtils.hex((i << 4) | i2, 3) + "</th>");
