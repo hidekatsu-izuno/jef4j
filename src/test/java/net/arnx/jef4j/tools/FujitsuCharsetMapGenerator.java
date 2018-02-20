@@ -121,6 +121,10 @@ public class FujitsuCharsetMapGenerator {
 				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) {
+					continue;
+				}
+				
 				String[] parts = line.split(" ");
 				String unicode = parts[0];
 				String jef = parts[1];
