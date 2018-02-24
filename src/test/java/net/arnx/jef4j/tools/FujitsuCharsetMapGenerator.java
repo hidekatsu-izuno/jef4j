@@ -126,7 +126,7 @@ public class FujitsuCharsetMapGenerator {
 				}
 				
 				String[] parts = line.split(" ");
-				String unicode = parts[0];
+				String unicode = parts[0].replaceFirst("_.*$", "");
 				String jef = parts[1];
 				
 				String prefix = unicode.substring(0, unicode.length()-1) + "0";

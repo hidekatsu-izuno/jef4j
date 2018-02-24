@@ -110,8 +110,6 @@ public class FujitsuCharsetTableGenerator {
 							String value = map.get((i << 8) | (i2 << 4) | j);
 							if (value == null) {
 								out.append("<td class=\"unmapped\">&nbsp;</td>");
-							} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
-								out.append("<td class=\"special\">" + value + "</td>");
 							} else {
 								out.append("<td class=\"char\">" + value + "</td>");
 							}
@@ -138,8 +136,6 @@ public class FujitsuCharsetTableGenerator {
 							String value = map.get((i << 8) | (i2 << 4) | j);
 							if (value == null) {
 								out.append("<td class=\"unmapped\">&nbsp;</td>");
-							} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
-								out.append("<td class=\"special\">" + value + "</td>");
 							} else {
 								out.append("<td class=\"char\">" + value + "</td>");
 							}
