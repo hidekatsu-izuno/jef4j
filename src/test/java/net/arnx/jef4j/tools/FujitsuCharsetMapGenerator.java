@@ -9,7 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import net.arnx.jef4j.util.ByteRecord;
 import net.arnx.jef4j.util.IntObjMap;
@@ -110,6 +112,38 @@ public class FujitsuCharsetMapGenerator {
 					ebcdik2unicodeMap.put(prefix, values);
 				}
 				values[Integer.parseUnsignedInt(ebcdik.substring(1), 16)] = unicode;
+			}
+		}
+		
+		// For Checking 
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
+			
+			Set<String> unicodeMap = new TreeSet<>();
+			Set<String> jefMap = new TreeSet<>();
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) {
+					continue;
+				}
+				
+				String[] parts = line.split(" ");
+				String unicode = parts[0].replaceFirst("_.*$", "");
+				String jef = parts[1];
+				
+				if (unicodeMap.contains(unicode)) {
+					System.err.println("Unicode: " + unicode);
+				} else {
+					unicodeMap.add(unicode);
+				}
+				
+				if (jefMap.contains(jef)) {
+					System.err.println("JEF:" + jef);
+				} else {
+					jefMap.add(jef);
+				}
 			}
 		}
 		
