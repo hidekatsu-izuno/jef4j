@@ -163,6 +163,11 @@ public class FujitsuCharsetMapGenerator {
 				String unicode = parts[0].replaceFirst("_.*$", "");
 				String jef = parts[1];
 				
+				if (unicode.length() > 4) {
+					char[] pair = Character.toChars(Integer.parseInt(unicode, 16));
+					unicode = String.format("%04x%04x", (int)pair[0], (int)pair[1]).toUpperCase();
+				}
+				
 				String prefix = unicode.substring(0, unicode.length()-1) + "0";
 				String[] values = unicode2jefMap.get(prefix);
 				if (values == null) {
