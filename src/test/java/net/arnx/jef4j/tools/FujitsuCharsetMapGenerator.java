@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -115,12 +116,30 @@ public class FujitsuCharsetMapGenerator {
 			}
 		}
 		
-		// For Checking 
+		// For Checking
+		Map<String, String> ivs = new HashMap<>();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				FujitsuCharsetMapGenerator.class.getResourceAsStream("/ivs.txt"), 
+				StandardCharsets.UTF_8))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) {
+					continue;
+				}
+				
+				String[] parts = line.split("_");
+				String old = ivs.get(parts[0]);
+				if (old == null || line.compareTo(old) < 0) {
+					ivs.put(parts[0], line);
+				}
+			}
+		}
+		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
 				StandardCharsets.UTF_8))) {
 			
-			Set<String> unicodeMap = new TreeSet<>();
+			Map<String, String> unicodeMap = new TreeMap<>();
 			Set<String> jefMap = new TreeSet<>();
 			
 			String line;
@@ -132,17 +151,34 @@ public class FujitsuCharsetMapGenerator {
 				String[] parts = line.split(" ");
 				String unicode = parts[0].replaceFirst("_.*$", "");
 				String jef = parts[1];
+				String chars = parts[2];
+				String option = (parts.length > 3) ? parts[3] : "";
 				
-				if (unicodeMap.contains(unicode)) {
-					System.err.println("Unicode: " + unicode);
-				} else {
-					unicodeMap.add(unicode);
+				if (ivs.containsKey(unicode) && !parts[0].contains("_")) {
+					System.err.println("IVS: " + parts[0] + " -> " + ivs.get(unicode));
 				}
 				
-				if (jefMap.contains(jef)) {
-					System.err.println("JEF:" + jef);
-				} else {
-					jefMap.add(jef);
+				String cunicode = new String(Character.toChars(Integer.parseInt(unicode, 16)));
+				if (!cunicode.equals(chars)) {
+					System.err.println("Invalid: " + chars + " != " + cunicode);
+				}
+				
+				if (!"ALT".equals(option)) {
+					if (unicodeMap.containsKey(unicode)) {
+						if (!parts[0].contains("_") || !unicodeMap.get(unicode).contains("_")) {
+							System.err.println("Duplicate(U): " + unicode + " " + chars);
+						}
+					} else {
+						unicodeMap.put(unicode, parts[0]);
+					}					 
+				}
+				
+				if (!"CI".equals(option)) {
+					if (jefMap.contains(jef)) {
+						System.err.println("Duplicate(J):" + jef + " " + chars);
+					} else {
+						jefMap.add(jef);
+					}
 				}
 			}
 		}
