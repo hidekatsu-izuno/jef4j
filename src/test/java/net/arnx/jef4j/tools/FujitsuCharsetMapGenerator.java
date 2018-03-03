@@ -117,24 +117,6 @@ public class FujitsuCharsetMapGenerator {
 		}
 		
 		// For Checking
-		Map<String, String> ivs = new HashMap<>();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetMapGenerator.class.getResourceAsStream("/ivs.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
-				}
-				
-				String[] parts = line.split("_");
-				String old = ivs.get(parts[0]);
-				if (old == null || line.compareTo(old) < 0) {
-					ivs.put(parts[0], line);
-				}
-			}
-		}
-		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
 				StandardCharsets.UTF_8))) {
@@ -153,10 +135,6 @@ public class FujitsuCharsetMapGenerator {
 				String jef = parts[1];
 				String chars = parts[2];
 				String option = (parts.length > 3) ? parts[3] : "";
-				
-				if (ivs.containsKey(unicode) && !parts[0].contains("_")) {
-					System.err.println("IVS: " + parts[0] + " -> " + ivs.get(unicode));
-				}
 				
 				String cunicode = new String(Character.toChars(Integer.parseInt(unicode, 16)));
 				if (!cunicode.equals(chars)) {
