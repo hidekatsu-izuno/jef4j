@@ -136,12 +136,7 @@ public class FujitsuCharsetMapGenerator {
 				String chars = parts[2];
 				String option = (parts.length > 3) ? parts[3] : "";
 				
-				String cunicode = new String(Character.toChars(Integer.parseInt(unicode, 16)));
-				if (!cunicode.equals(chars)) {
-					System.err.println("Invalid: " + chars + " != " + cunicode);
-				}
-				
-				if (!"ALT".equals(option)) {
+				if (!"ALT".equals(option) && !"FFFD".equals(unicode)) {
 					if (unicodeMap.containsKey(unicode)) {
 						if (!parts[0].contains("_") || !unicodeMap.get(unicode).contains("_")) {
 							System.err.println("Duplicate(U): " + unicode + " " + chars);

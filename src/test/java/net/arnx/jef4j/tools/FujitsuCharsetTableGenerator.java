@@ -25,9 +25,10 @@ public class FujitsuCharsetTableGenerator {
 			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 16px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
-			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 30px; height: 22px; line-height: 1; }\n");
+			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 32px; height: 22px; line-height: 1; }\n");
 			out.append(".charmap th { font-weight: bold; background: #C1FFFF; font-family: monospace; }\n");
-			out.append(".special { font-size: 12px; }\n");
+			out.append(".special { font-size: 12px; font-family: monospace; }\n");
+			out.append(".nogriph { font-size: 9px; font-family: monospace; }\n");
 			out.append(".unmapped { background: silver; }\n");
 			out.append("</style>\n");
 			out.append("</head>\n");
@@ -136,6 +137,8 @@ public class FujitsuCharsetTableGenerator {
 							String value = map.get((i << 8) | (i2 << 4) | j);
 							if (value == null) {
 								out.append("<td class=\"unmapped\">&nbsp;</td>");
+							} else if (value.length() > 1 && (value.startsWith("[") || value.startsWith("(") || value.startsWith("{"))) {
+								out.append("<td class=\"nogriph\">" + value + "</td>");
 							} else {
 								out.append("<td class=\"char\">" + value + "</td>");
 							}
