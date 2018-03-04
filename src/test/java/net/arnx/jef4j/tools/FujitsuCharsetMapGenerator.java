@@ -136,7 +136,7 @@ public class FujitsuCharsetMapGenerator {
 				String chars = parts[2];
 				String option = (parts.length > 3) ? parts[3] : "";
 				
-				if (!"ALT".equals(option) && !"FFFD".equals(unicode)) {
+				if (!"FFFD".equals(unicode)) {
 					if (unicodeMap.containsKey(unicode)) {
 						if (!parts[0].contains("_") || !unicodeMap.get(unicode).contains("_")) {
 							System.err.println("Duplicate(U): " + unicode + " " + chars);
