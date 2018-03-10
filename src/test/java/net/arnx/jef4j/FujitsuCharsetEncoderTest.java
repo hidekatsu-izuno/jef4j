@@ -47,7 +47,7 @@ public class FujitsuCharsetEncoderTest {
 				.onMalformedInput(CodingErrorAction.REPORT);
 		CharBuffer cb = CharBuffer.allocate(2);
 	
-		for (int cp = 0; cp <= Character.MAX_CODE_POINT; cp++) {
+		for (int cp = 0; cp <= 0x2FFFF; cp++) {
 			cb.clear();
 			cb.put(Character.toChars(cp));
 			cb.flip();
@@ -86,7 +86,7 @@ public class FujitsuCharsetEncoderTest {
 				.onMalformedInput(CodingErrorAction.REPORT);
 		CharBuffer cb = CharBuffer.allocate(2);
 	
-		for (int cp = 0; cp <= Character.MAX_CODE_POINT; cp++) {
+		for (int cp = 0; cp <= 0x2FFFF; cp++) {
 			cb.clear();
 			cb.put(Character.toChars(cp));
 			cb.flip();
@@ -125,7 +125,7 @@ public class FujitsuCharsetEncoderTest {
 				.onMalformedInput(CodingErrorAction.REPORT);
 		CharBuffer cb = CharBuffer.allocate(2);
 	
-		for (int cp = 0; cp <= Character.MAX_CODE_POINT; cp++) {
+		for (int cp = 0; cp <= 0x2FFFF; cp++) {
 			cb.clear();
 			cb.put(Character.toChars(cp));
 			cb.flip();

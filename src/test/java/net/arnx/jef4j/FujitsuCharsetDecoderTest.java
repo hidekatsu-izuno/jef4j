@@ -208,11 +208,11 @@ public class FujitsuCharsetDecoderTest {
 		keys.addAll(actual.keySet());
 		for (String key : keys) {
 			assertEquals(key, expected.get(key), actual.get(key));
-		}		
+		}
 	}
 	
 	private String toChars(String unicode) {
-		unicode = unicode.replaceAll("_.*$", "");
+		unicode = unicode.replaceAll("_E.*$", "");
 		StringBuilder sb = new StringBuilder();
 		for (String c : unicode.split("_")) {
 			int cp = Integer.parseUnsignedInt(c, 16);
