@@ -149,6 +149,8 @@ public class FujitsuCharsetEncoderTest {
 				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) continue;
+
 				String[] parts = line.split(" ");
 				expected.put(parts[0], parts[1]);
 			}

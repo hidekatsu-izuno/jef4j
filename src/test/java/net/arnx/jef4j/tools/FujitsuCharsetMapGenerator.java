@@ -6,16 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import net.arnx.jef4j.util.ByteRecord;
-import net.arnx.jef4j.util.IntObjMap;
+import net.arnx.jef4j.util.LongObjMap;
+import net.arnx.jef4j.util.LongRecord;
 import net.arnx.jef4j.util.IntRecord;
 import net.arnx.jef4j.util.CharRecord;
 import net.arnx.jef4j.util.Record;
@@ -116,46 +114,6 @@ public class FujitsuCharsetMapGenerator {
 			}
 		}
 		
-		// For Checking
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			
-			Map<String, String> unicodeMap = new TreeMap<>();
-			Set<String> jefMap = new TreeSet<>();
-			
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
-				}
-				
-				String[] parts = line.split(" ");
-				String unicode = parts[0].replaceFirst("_.*$", "");
-				String jef = parts[1];
-				String chars = parts[2];
-				String option = (parts.length > 3) ? parts[3] : "";
-				
-				if (!"FFFD".equals(unicode)) {
-					if (unicodeMap.containsKey(unicode)) {
-						if (!parts[0].contains("_") || !unicodeMap.get(unicode).contains("_")) {
-							System.err.println("Duplicate(U): " + unicode + " " + chars);
-						}
-					} else {
-						unicodeMap.put(unicode, parts[0]);
-					}					 
-				}
-				
-				if (!"CI".equals(option)) {
-					if (jefMap.contains(jef)) {
-						System.err.println("Duplicate(J):" + jef + " " + chars);
-					} else {
-						jefMap.add(jef);
-					}
-				}
-			}
-		}
-		
 		Map<String, String[]> unicode2jefMap = new TreeMap<>();
 		Map<String, String[]> jef2unicodeMap = new TreeMap<>();
 		
@@ -169,12 +127,11 @@ public class FujitsuCharsetMapGenerator {
 				}
 				
 				String[] parts = line.split(" ");
-				String unicode = parts[0].replaceFirst("_.*$", "");
+				String unicode = toUnicodeKey(parts[0]);
 				String jef = parts[1];
 				
-				if (unicode.length() > 4) {
-					char[] pair = Character.toChars(Integer.parseInt(unicode, 16));
-					unicode = String.format("%04x%04x", (int)pair[0], (int)pair[1]).toUpperCase();
+				if (unicode.equals("FFFD")) {
+					continue;
 				}
 				
 				String prefix = unicode.substring(0, unicode.length()-1) + "0";
@@ -195,7 +152,7 @@ public class FujitsuCharsetMapGenerator {
 			}
 		}
 		
-		IntObjMap<Record> asciiEncoder = new IntObjMap<>();
+		LongObjMap<Record> asciiEncoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2asciiMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -221,7 +178,7 @@ public class FujitsuCharsetMapGenerator {
 			asciiEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> ebcdicEncoder = new IntObjMap<>();
+		LongObjMap<Record> ebcdicEncoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdicMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -247,7 +204,7 @@ public class FujitsuCharsetMapGenerator {
 			ebcdicEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> ebcdikEncoder = new IntObjMap<>();
+		LongObjMap<Record> ebcdikEncoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2ebcdikMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -273,9 +230,10 @@ public class FujitsuCharsetMapGenerator {
 			ebcdikEncoder.put(key, new ByteRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> jefEncoder = new IntObjMap<>();
+		LongObjMap<Record> jefEncoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
-			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
+			long key = Long.parseUnsignedLong(entry.getKey(), 16);
+			long skey = key & 0xFFFFF;
 			
 			int len = 0;
 			int pattern = 0;
@@ -296,10 +254,13 @@ public class FujitsuCharsetMapGenerator {
 				}
 			}
 			
+			if (skey != key) {
+				jefEncoder.put(skey, new CharRecord((char)pattern, values));
+			}
 			jefEncoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> asciiDecoder = new IntObjMap<>();
+		LongObjMap<Record> asciiDecoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : ascii2unicodeMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -325,7 +286,7 @@ public class FujitsuCharsetMapGenerator {
 			asciiDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> ebcdicDecoder = new IntObjMap<>();
+		LongObjMap<Record> ebcdicDecoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdic2unicodeMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -351,7 +312,7 @@ public class FujitsuCharsetMapGenerator {
 			ebcdicDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 		
-		IntObjMap<Record> ebcdikDecoder = new IntObjMap<>();
+		LongObjMap<Record> ebcdikDecoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : ebcdik2unicodeMap.entrySet()) {
 			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
 			
@@ -377,13 +338,13 @@ public class FujitsuCharsetMapGenerator {
 			ebcdikDecoder.put(key, new CharRecord((char)pattern, values));
 		}
 
-		IntObjMap<Record> jefDecoder = new IntObjMap<>();
+		LongObjMap<Record> jefDecoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
-			int key = Integer.parseUnsignedInt(entry.getKey(), 16);
+			long key = Long.parseUnsignedLong(entry.getKey(), 16);
 			
 			int len = 0;
 			int pattern = 0;
-			int size = 4;
+			int size = 0;
 			for (String value : entry.getValue()) {
 				if (value != null) {
 					len++;
@@ -394,7 +355,16 @@ public class FujitsuCharsetMapGenerator {
 				}
 			}
 			
-			if (size > 4) {
+			if (size == 10) {
+				long[] values = new long[len];
+				int index = 0;
+				for (String value : entry.getValue()) {
+					if (value != null) {
+						values[index++] = Long.parseUnsignedLong(value, 16);
+					}
+				}
+				jefDecoder.put(key, new LongRecord((char)pattern, values));
+			} else if (size == 5) {
 				int[] values = new int[len];
 				int index = 0;
 				for (String value : entry.getValue()) {
@@ -403,7 +373,7 @@ public class FujitsuCharsetMapGenerator {
 					}
 				}
 				jefDecoder.put(key, new IntRecord((char)pattern, values));
-			} else {
+			} else if (size == 4) {
 				char[] values = new char[len];
 				int index = 0;
 				for (String value : entry.getValue()) {
@@ -412,6 +382,8 @@ public class FujitsuCharsetMapGenerator {
 					}
 				}				
 				jefDecoder.put(key, new CharRecord((char)pattern, values));
+			} else {
+				throw new IllegalStateException("size is invalid: " + size);
 			}
 		}
 		
@@ -430,4 +402,20 @@ public class FujitsuCharsetMapGenerator {
 		}
 	}
 
+	private static String toUnicodeKey(String unicode) {
+		String[] parts = unicode.split("_");
+		if (parts.length > 1) {
+			StringBuilder sb = new StringBuilder(6);
+			for (int i = 0; i < (5 - parts[1].length()); i++) {
+				sb.append("0");
+			}
+			sb.append(parts[1]);
+			for (int i = 0; i < (5 - parts[0].length()); i++) {
+				sb.append("0");
+			}
+			sb.append(parts[0]);
+			return sb.toString();
+		}
+		return parts[0];
+	}
 }

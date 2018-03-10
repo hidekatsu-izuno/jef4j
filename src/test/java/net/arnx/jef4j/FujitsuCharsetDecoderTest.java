@@ -156,6 +156,8 @@ public class FujitsuCharsetDecoderTest {
 				StandardCharsets.UTF_8))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) continue;
+				
 				String[] parts = line.split(" ");
 				expected.put(parts[1], parts[0]);
 			}

@@ -22,7 +22,7 @@ public class CharMapTest {
 
 	@Test
 	public void test() {
-		IntObjMap<Character> map = new IntObjMap<>();
+		LongObjMap<Character> map = new LongObjMap<>();
 		map.put('\u0001', '\u0003');
 		map.put('\u0002', '\u0100');
 		map.put('\u0060', '\u0002');

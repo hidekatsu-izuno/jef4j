@@ -22,30 +22,30 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
-import net.arnx.jef4j.util.IntObjMap;
+import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetEncoder extends CharsetEncoder {
-	private static final IntObjMap<Record> ASCII_MAP;
-	private static final IntObjMap<Record> EBCDIC_MAP;
-	private static final IntObjMap<Record> EBCDIK_MAP;
-	private static final IntObjMap<Record> JEF_MAP;
+	private static final LongObjMap<Record> ASCII_MAP;
+	private static final LongObjMap<Record> EBCDIC_MAP;
+	private static final LongObjMap<Record> EBCDIK_MAP;
+	private static final LongObjMap<Record> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
-			ASCII_MAP = (IntObjMap<Record>)in.readObject();
-			EBCDIC_MAP = (IntObjMap<Record>)in.readObject();
-			EBCDIK_MAP = (IntObjMap<Record>)in.readObject();
-			JEF_MAP = (IntObjMap<Record>)in.readObject();
+			ASCII_MAP = (LongObjMap<Record>)in.readObject();
+			EBCDIC_MAP = (LongObjMap<Record>)in.readObject();
+			EBCDIK_MAP = (LongObjMap<Record>)in.readObject();
+			JEF_MAP = (LongObjMap<Record>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
 	private final FujitsuCharsetType type;
-	private final IntObjMap<Record> map;
+	private final LongObjMap<Record> map;
 	
 	private boolean shiftin = false;
 

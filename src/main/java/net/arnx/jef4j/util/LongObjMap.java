@@ -21,10 +21,10 @@ import java.io.Serializable;
  * Based on https://github.com/mikvor/hashmapTest
  * This code is licensed by The Unlicense (http://unlicense.org)
  */
-public class IntObjMap<T> implements Serializable {
+public class LongObjMap<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private int[] keys;
+	private long[] keys;
 	private T[] values;
 	private int size;
 
@@ -34,15 +34,15 @@ public class IntObjMap<T> implements Serializable {
 	
 	private T zeroValue;
 
-	public IntObjMap() {
+	public LongObjMap() {
 		this(16, 0.75F);
 	}
 	
-	public IntObjMap(int size) {
+	public LongObjMap(int size) {
 		this(size, 0.75F);
 	}
 	
-	public IntObjMap(int size, float loadFactor) {
+	public LongObjMap(int size, float loadFactor) {
 		if (size <= 0) {
 			throw new IllegalArgumentException("size must be positive!");
 		}
@@ -50,14 +50,14 @@ public class IntObjMap<T> implements Serializable {
 			throw new IllegalArgumentException("loadFactor must be in (0, 1)");
 		}
 		int capacity = calcCapacity(size, loadFactor);
-		this.keys = new int[capacity];
+		this.keys = new long[capacity];
 		this.values = newArray(keys.length);
 		this.mask = capacity - 1;
 		this.fillFactor = loadFactor;
 		this.threshold = (int) (capacity * loadFactor);
 	}
 
-	public T put(int key, T value) {
+	public T put(long key, T value) {
 		if (key == 0) {
 			T oldValue = zeroValue;
 			zeroValue = value;
@@ -66,7 +66,7 @@ public class IntObjMap<T> implements Serializable {
 
 		int ptr = hash(key);
 		do {
-			int k = keys[ptr];
+			long k = keys[ptr];
 			if (k == 0) {
 				keys[ptr] = key;
 				values[ptr] = value;
@@ -92,7 +92,7 @@ public class IntObjMap<T> implements Serializable {
 		
 		int pos = hash(key);
 		do {
-			int k = keys[pos];
+			long k = keys[pos];
 			if (k == 0) {
 				return null;
 			} else if (k == key) {
@@ -125,8 +125,8 @@ public class IntObjMap<T> implements Serializable {
 		return Math.max(2, (int) x);
 	}
 
-	private int hash(int x) {
-		int h = x * 0x9E3779B9;
+	private int hash(long x) {
+		int h = (int)(x * 0x9E3779B9);
 		return ((h ^ (h >> 16)) & this.mask);
 	}
 
@@ -134,15 +134,15 @@ public class IntObjMap<T> implements Serializable {
 		this.threshold = (int) (newCapacity * this.fillFactor);
 		this.mask = newCapacity - 1;
 
-		int[] oldKeys = this.keys;
+		long[] oldKeys = this.keys;
 		T[] oldValues = this.values;
 
-		this.keys = new int[newCapacity];
+		this.keys = new long[newCapacity];
 		this.values = newArray(newCapacity);
 		this.size = 0;
 
 		for (int i = 0; i < oldKeys.length; i++) {
-			int oldKey = oldKeys[i];
+			long oldKey = oldKeys[i];
 			if (oldKey != 0) {
 				put(oldKey, oldValues[i]);
 			}

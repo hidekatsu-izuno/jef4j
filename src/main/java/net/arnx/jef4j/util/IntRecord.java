@@ -42,7 +42,7 @@ public class IntRecord implements Record, Serializable {
 		return (pattern & (char)(1 << (15 - pos))) != 0;
 	}
 	
-	public int get(int pos) {
+	public long get(int pos) {
 		if (pattern == '\uFFFF') {
 			return array[pos];
 		}
