@@ -15,9 +15,13 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.junit.Test;
+
+import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetDecoderTest {
 
@@ -159,7 +163,10 @@ public class FujitsuCharsetDecoderTest {
 				if (line.isEmpty()) continue;
 				
 				String[] parts = line.split(" ");
-				expected.put(parts[1], parts[0]);
+				String unicode = toChars(parts[0]);
+				if (!unicode.equals("FFFD")) {
+					expected.put(parts[1], unicode);
+				}
 			}
 			expected.put("2828", "");
 			expected.put("2829", "");
@@ -195,6 +202,27 @@ public class FujitsuCharsetDecoderTest {
 			
 			cd.reset();
 		}
-		assertEquals(expected, actual);
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(key, expected.get(key), actual.get(key));
+		}		
+	}
+	
+	private String toChars(String unicode) {
+		unicode = unicode.replaceAll("_.*$", "");
+		StringBuilder sb = new StringBuilder();
+		for (String c : unicode.split("_")) {
+			int cp = Integer.parseUnsignedInt(c, 16);
+			if (Character.isSupplementaryCodePoint(cp)) {
+				sb.append(ByteUtils.hex(Character.highSurrogate(cp), 4));
+				sb.append(ByteUtils.hex(Character.lowSurrogate(cp), 4));
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 }

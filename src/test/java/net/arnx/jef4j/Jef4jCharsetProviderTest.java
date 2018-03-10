@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class Jef4jCharsetProviderTest {
 	@Test
-	public void test() {
+	public void testEncoder() {
 		assertArrayEquals(
 				new byte[] {
 						(byte)0xA4, (byte)0xA2, 
@@ -19,13 +19,6 @@ public class Jef4jCharsetProviderTest {
 						(byte)0xC4, (byte)0xD4
 				}, 
 				"あいうえお辻".getBytes(Charset.forName("x-Fujitsu-JEF")));
-		
-		assertEquals(
-				"辻辻",
-				new String(new byte[] {
-						(byte)0x67, (byte)0xA5, 
-						(byte)0xC4, (byte)0xD4
-				}, Charset.forName("x-Fujitsu-JEF")));
 	
 		assertArrayEquals(
 				new byte[] {
@@ -45,4 +38,14 @@ public class Jef4jCharsetProviderTest {
 				"🄀𠆤".getBytes(Charset.forName("x-Fujitsu-JEF")));
 	}
 
+	@Test
+	public void testDecoder() {
+		assertEquals(
+				"辻辻岧",
+				new String(new byte[] {
+						(byte)0x67, (byte)0xA5,
+						(byte)0xC4, (byte)0xD4,
+						(byte)0x4A, (byte)0xF2
+				}, Charset.forName("x-Fujitsu-JEF")));		
+	}
 }
