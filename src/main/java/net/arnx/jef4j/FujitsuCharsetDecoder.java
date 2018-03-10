@@ -118,17 +118,14 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 							return CoderResult.OVERFLOW;
 						}
 						long mc = record.get(pos);
-						char hs = (char)((mc >> 16) & 0xFFFF);
-						char ls = (char)(mc & 0xFFFF);
-						if (hs != '\u0000') {
-							if (Character.isHighSurrogate(hs) && Character.isLowSurrogate(ls)) {
-								out.put(hs);
-								out.put(ls);
-							} else {
-								return CoderResult.malformedForLength(2);
-							}
+						int combi = (int)((mc >> 20) & 0xFFFFF);
+						int base = (int)(mc & 0xFFFFF);
+						
+						if (Character.isSupplementaryCodePoint(base)) {
+							out.put(Character.highSurrogate(base));
+							out.put(Character.lowSurrogate(base));
 						} else {
-							out.put(ls);
+							out.put((char)base);
 						}
 						mark += 2;
 					} else {

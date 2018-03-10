@@ -126,7 +126,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							return CoderResult.malformedForLength(2);
 						}
 						
-						record = JEF_MAP.get((c << 16) | (c2 & 0xFFF0));
+						record = JEF_MAP.get(Character.toCodePoint(c, c2) & 0xFFFF0);
 						pos = c2 & 0xF;
 						progress++;
 					} else {

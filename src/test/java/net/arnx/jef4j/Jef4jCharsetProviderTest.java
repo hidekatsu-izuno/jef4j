@@ -39,9 +39,10 @@ public class Jef4jCharsetProviderTest {
 		
 		assertArrayEquals(
 				new byte[] {
-						(byte)0x77, (byte)0xA9
+						(byte)0x77, (byte)0xA9,
+						(byte)0x41, (byte)0xE0
 				}, 
-				"🄀".getBytes(Charset.forName("x-Fujitsu-JEF")));
+				"🄀𠆤".getBytes(Charset.forName("x-Fujitsu-JEF")));
 	}
 
 }
