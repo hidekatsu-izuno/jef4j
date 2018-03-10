@@ -16,21 +16,38 @@
 package net.arnx.jef4j;
 
 enum FujitsuCharsetType {
-	EBCDIC("x-Fujitsu-EBCDIC"),
-	EBCDIK("x-Fujitsu-EBCDIK"),
-	ASCII("x-Fujitsu-ASCII"),
-	JEF("x-Fujitsu-JEF"),
-	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC"),
-	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK"),
-	JEF_ASCII("x-Fujitsu-JEF-ASCII");
+	EBCDIC("x-Fujitsu-EBCDIC", false, false),
+	EBCDIK("x-Fujitsu-EBCDIK", false, false),
+	ASCII("x-Fujitsu-ASCII", false, false),
+	JEF("x-Fujitsu-JEF", true, false),
+	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true, false),
+	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true, false),
+	JEF_ASCII("x-Fujitsu-JEF-ASCII", true, false),
+	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", true, true),
+	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", true, true),
+	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", true, true),
+	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true);;
 	
 	private final String charsetName;
+	private final boolean containsJEF;
+	private final boolean useHanyoDenshi;
 	
-	FujitsuCharsetType(String charsetName) {
+	FujitsuCharsetType(String charsetName, 
+			boolean containsJEF, boolean useHanyoDenshi) {
 		this.charsetName = charsetName;
+		this.containsJEF = containsJEF;
+		this.useHanyoDenshi = useHanyoDenshi;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
+	}
+	
+	boolean containsJEF() {
+		return containsJEF;
+	}
+	
+	boolean useHanyoDenshi() {
+		return useHanyoDenshi;
 	}
 }

@@ -11,7 +11,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -163,7 +162,7 @@ public class FujitsuCharsetDecoderTest {
 				if (line.isEmpty()) continue;
 				
 				String[] parts = line.split(" ");
-				String unicode = toChars(parts[0]);
+				String unicode = toChars(parts[0], false);
 				if (!unicode.equals("FFFD")) {
 					expected.put(parts[1], unicode);
 				}
@@ -211,8 +210,11 @@ public class FujitsuCharsetDecoderTest {
 		}
 	}
 	
-	private String toChars(String unicode) {
-		unicode = unicode.replaceAll("_E.*$", "");
+	private static String toChars(String unicode, boolean useHanyoDenshi) {
+		if (!useHanyoDenshi) {
+			unicode = unicode.replaceAll("_E.*$", "");
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		for (String c : unicode.split("_")) {
 			int cp = Integer.parseUnsignedInt(c, 16);

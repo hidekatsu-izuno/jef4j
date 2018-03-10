@@ -108,7 +108,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					}
 					out.put((byte)record.get(pos));
 					mark++;
-				} else if (containsJef(type)) { // Double Bytes
+				} else if (type.containsJEF()) { // Double Bytes
 					Record record;
 					int pos;
 					
@@ -138,7 +138,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(1);
 					}
 					
-					if (type != FujitsuCharsetType.JEF && !shiftin) {
+					if (map != null && !shiftin) {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
@@ -166,7 +166,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	
 	@Override
 	protected CoderResult implFlush(ByteBuffer out) {
-		if (type != FujitsuCharsetType.JEF && shiftin) {
+		if (map != null && shiftin) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
@@ -213,18 +213,6 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			return new byte[] { 0x40 };
 		default:
 			return new byte[] { 0x40, 0x40 };
-		}
-	}
-	
-	private static boolean containsJef(FujitsuCharsetType type) {
-		switch (type) {
-		case JEF:
-		case JEF_EBCDIC:
-		case JEF_EBCDIK:
-		case JEF_ASCII:
-			return true;
-		default:
-			return false;
 		}
 	}
 }

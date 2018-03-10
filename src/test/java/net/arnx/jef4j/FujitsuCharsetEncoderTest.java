@@ -22,6 +22,8 @@ import java.util.TreeSet;
 
 import org.junit.Test;
 
+import net.arnx.jef4j.util.ByteUtils;
+
 public class FujitsuCharsetEncoderTest {
 
 	
@@ -154,7 +156,10 @@ public class FujitsuCharsetEncoderTest {
 				if (line.isEmpty()) continue;
 
 				String[] parts = line.split(" ");
-				expected.put(parts[0], parts[1]);
+				String unicode = toChars(parts[0], false);
+				if (!unicode.equals("FFFD")) {
+					expected.put(unicode, parts[1]);
+				}
 			}
 		}
 		
@@ -190,4 +195,23 @@ public class FujitsuCharsetEncoderTest {
 			assertEquals(key, expected.get(key), actual.get(key));
 		}
 	}
+	
+	private static String toChars(String unicode, boolean useHanyoDenshi) {
+		if (!useHanyoDenshi) {
+			unicode = unicode.replaceAll("_E.*$", "");
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		for (String c : unicode.split("_")) {
+			int cp = Integer.parseUnsignedInt(c, 16);
+			if (Character.isSupplementaryCodePoint(cp)) {
+				sb.append(ByteUtils.hex(Character.highSurrogate(cp), 4));
+				sb.append(ByteUtils.hex(Character.lowSurrogate(cp), 4));
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
+
 }

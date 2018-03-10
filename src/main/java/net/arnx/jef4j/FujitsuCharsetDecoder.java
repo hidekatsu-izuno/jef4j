@@ -56,14 +56,17 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 		switch (type) {
 		case ASCII:
 		case JEF_ASCII:
+		case JEF_HD_ASCII:
 			map = ASCII_MAP;
 			break;
 		case EBCDIC:
 		case JEF_EBCDIC:
+		case JEF_HD_EBCDIC:
 			map = EBCDIC_MAP;
 			break;
 		case EBCDIK:
 		case JEF_EBCDIK:
+		case JEF_HD_EBCDIK:
 			map = EBCDIK_MAP;
 			break;
 		default:
@@ -100,7 +103,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					}
 					out.put((char)record.get(pos));
 					mark++;
-				} else if (containsJef(type) && b >= 0x40 && b <= 0xFE) {
+				} else if (type.containsJEF() && b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
@@ -118,22 +121,46 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						int base = (int)(mc & 0xFFFFF);
 						int combi = (int)((mc >> 20) & 0xFFFFF);
 						
-						int baseLen = Character.isSupplementaryCodePoint(base) ? 2 : 1;
-						int combiLen = combi == 0 ? 0 : Character.isSupplementaryCodePoint(combi) ? 2 : 1;
+						int baseLen;
+						if (Character.isSupplementaryCodePoint(base)) {
+							baseLen = 2;
+						} else {
+							baseLen = 1;
+						}
+						
+						int combiLen;
+						if (combi == 0) {
+							combiLen = 0;
+						} else if (Character.isSupplementaryCodePoint(combi)) {
+							if (type.useHanyoDenshi()) {
+								combiLen = 2;
+							} else {
+								combiLen = 0;
+							}
+						} else {
+							combiLen = 1;
+						}
 						
 						if (out.remaining() < (baseLen + combiLen)) {
 							return CoderResult.OVERFLOW;
 						}
 						
-						if (baseLen > 1) {
+						if (baseLen == 2) {
 							out.put(Character.highSurrogate(base));
 							out.put(Character.lowSurrogate(base));
-						} else {
+						} else if (baseLen == 1) {
 							out.put((char)base);
+						} else {
+							return CoderResult.unmappableForLength(2);
 						}
-						if (combiLen == 1) {
+						
+						if (combiLen == 2) {
+							out.put(Character.highSurrogate(combi));
+							out.put(Character.lowSurrogate(combi));
+						} else if (combiLen == 1) {
 							out.put((char)combi);
 						}
+						
 						mark += 2;
 					} else {
 						return CoderResult.unmappableForLength(2);
@@ -151,17 +178,5 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	@Override
 	protected void implReset() {
 		shiftin = false;
-	}
-	
-	private static boolean containsJef(FujitsuCharsetType type) {
-		switch (type) {
-		case JEF:
-		case JEF_EBCDIC:
-		case JEF_EBCDIK:
-		case JEF_ASCII:
-			return true;
-		default:
-			return false;
-		}
 	}
 }

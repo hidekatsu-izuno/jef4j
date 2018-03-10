@@ -41,8 +41,9 @@ public class Jef4jCharsetProviderTest {
 	@Test
 	public void testDecoder() {
 		assertEquals(
-				"辻辻岧",
+				"　辻辻岧",
 				new String(new byte[] {
+						(byte)0x40, (byte)0x40,
 						(byte)0x67, (byte)0xA5,
 						(byte)0xC4, (byte)0xD4,
 						(byte)0x4A, (byte)0xF2
