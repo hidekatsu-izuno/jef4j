@@ -167,20 +167,74 @@ public class FujitsuCharsetDecoderTest {
 					expected.put(parts[1], unicode);
 				}
 			}
-			expected.put("2828", "");
-			expected.put("2829", "");
-			expected.put("2838", "");
-			expected.put("2928", "");
-			expected.put("2929", "");
-			expected.put("2938", "");
-			expected.put("3828", "");
-			expected.put("3829", "");
-			expected.put("3838", "");
+			
+			for (String high : new String[] { "28", "29", "38" }) {
+				for (String low : new String[] { "28", "29", "38" }) {
+					expected.put(high + low, "");					
+				}
+			}
 		}
 		
 		Map<String, String> actual = new TreeMap<>();
 		
 		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+	
+		for (int i = 0; i < 0xFFFF; i++) {
+			bb.clear();
+			bb.put((byte)((i >> 8) & 0xFF));
+			bb.put((byte)(i & 0xFF));
+			bb.flip();
+			try {
+				CharBuffer cb = cd.decode(bb);
+				bb.flip();
+				
+				actual.put(hex(bb), hex(cb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			cd.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(key, expected.get(key), actual.get(key));
+		}
+	}
+	
+	@Test
+	public void testFujitsuJefHanyoDenshiDecoder() throws IOException {
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				getClass().getResourceAsStream("/jef_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) continue;
+				
+				String[] parts = line.split(" ");
+				String unicode = toChars(parts[0], true);
+				if (!unicode.equals("FFFD")) {
+					expected.put(parts[1], unicode);
+				}
+			}
+			
+			for (String high : new String[] { "28", "29", "38" }) {
+				for (String low : new String[] { "28", "29", "38" }) {
+					expected.put(high + low, "");					
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF-HanyoDenshi")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);

@@ -10,11 +10,9 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -179,9 +177,57 @@ public class FujitsuCharsetEncoderTest {
 				ByteBuffer bb = ce.encode(cb);
 				cb.flip();
 				
-				String key = hex(cp, Character.isSupplementaryCodePoint(cp) ? 5 : 4);
+				actual.put(hex(cb), hex(bb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			ce.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(key, expected.get(key), actual.get(key));
+		}
+	}
+	
+	@Test
+	public void testFujitsuJefHanyoDenshiEncoder() throws IOException {
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				getClass().getResourceAsStream("/jef_mapping.txt"), 
+				StandardCharsets.UTF_8))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.isEmpty()) continue;
+
+				String[] parts = line.split(" ");
+				String unicode = toChars(parts[0], true);
+				if (!unicode.equals("FFFD")) {
+					expected.put(unicode, parts[1]);
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetEncoder ce = Charset.forName("x-Fujitsu-JEF-HanyoDenshi")
+				.newEncoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		CharBuffer cb = CharBuffer.allocate(2);
+	
+		for (int cp = 0; cp <= 0x2FFFF; cp++) {
+			cb.clear();
+			cb.put(Character.toChars(cp));
+			cb.flip();
+			try {
+				ByteBuffer bb = ce.encode(cb);
+				cb.flip();
 				
-				actual.put(key, hex(bb));
+				actual.put(hex(cb), hex(bb));
 			} catch (CharacterCodingException e) {
 			}
 			
