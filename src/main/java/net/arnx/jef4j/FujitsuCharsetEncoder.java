@@ -56,14 +56,17 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		switch (type) {
 		case ASCII:
 		case JEF_ASCII:
+		case JEF_HD_ASCII:
 			map = ASCII_MAP;
 			break;
 		case EBCDIC:
 		case JEF_EBCDIC:
+		case JEF_HD_EBCDIC:
 			map = EBCDIC_MAP;
 			break;
 		case EBCDIK:
 		case JEF_EBCDIK:
+		case JEF_HD_EBCDIK:
 			map = EBCDIK_MAP;
 			break;
 		default:
@@ -80,10 +83,8 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 				if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
 				} else if (c <= '\u007F'
-						|| ((type == FujitsuCharsetType.EBCDIC || type == FujitsuCharsetType.JEF_EBCDIC)
-								&& (c == '\u00A3' || c == '\u00A6' || c == '\u00AC'))
-						|| ((type == FujitsuCharsetType.EBCDIK || type == FujitsuCharsetType.JEF_EBCDIK) 
-								&& (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {
+						|| (map == EBCDIC_MAP && (c == '\u00A3' || c == '\u00A6' || c == '\u00AC'))
+						|| (map == EBCDIK_MAP && (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {
 					
 					if (map == null) {
 						return CoderResult.unmappableForLength(1);
@@ -138,6 +139,10 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(1);
 					}
 					
+					if (in.hasRemaining()) {
+						in.mark();
+					}
+					
 					if (map != null && !shiftin) {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
@@ -149,6 +154,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					if (out.remaining() < 2) {
 						return CoderResult.OVERFLOW;
 					}
+					
 					char mc = (char)record.get(pos);
 					out.put((byte)((mc >> 8) & 0xFF));
 					out.put((byte)(mc & 0xFF));

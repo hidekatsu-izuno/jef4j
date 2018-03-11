@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -127,20 +125,21 @@ public class FujitsuCharsetMapGenerator {
 				}
 				
 				String[] parts = line.split(" ");
-				String unicode = toUnicodeKey(parts[0]);
+				String sunicode = toSimpleKey(parts[0]);
+				String cunicode = toComplexKey(parts[0]);
 				String jef = parts[1];
 				
-				if (unicode.equals("FFFD")) {
+				if (sunicode.equals("FFFD")) {
 					continue;
 				}
 				
-				String prefix = unicode.substring(0, unicode.length()-1) + "0";
+				String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
 				String[] values = unicode2jefMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
 					unicode2jefMap.put(prefix, values);
 				}
-				values[Integer.parseUnsignedInt(unicode.substring(unicode.length()-1), 16)] = jef;
+				values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
 				
 				prefix = jef.substring(0, jef.length()-1) + "0";
 				values = jef2unicodeMap.get(prefix);
@@ -148,7 +147,7 @@ public class FujitsuCharsetMapGenerator {
 					values = new String[16];
 					jef2unicodeMap.put(prefix, values);
 				}
-				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = unicode;
+				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = cunicode;
 			}
 		}
 		
@@ -233,7 +232,6 @@ public class FujitsuCharsetMapGenerator {
 		LongObjMap<Record> jefEncoder = new LongObjMap<>();
 		for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
 			long key = Long.parseUnsignedLong(entry.getKey(), 16);
-			long skey = key & 0xFFFFF;
 			
 			int len = 0;
 			int pattern = 0;
@@ -252,10 +250,6 @@ public class FujitsuCharsetMapGenerator {
 				if (value != null) {
 					values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 				}
-			}
-			
-			if (skey != key) {
-				jefEncoder.put(skey, new CharRecord((char)pattern, values));
 			}
 			jefEncoder.put(key, new CharRecord((char)pattern, values));
 		}
@@ -401,8 +395,25 @@ public class FujitsuCharsetMapGenerator {
 			out.writeObject(jefDecoder);
 		}
 	}
-
-	private static String toUnicodeKey(String unicode) {
+	
+	private static String toSimpleKey(String unicode) {
+		String[] parts = unicode.split("_");
+		if (parts.length == 2 && !Character.isSupplementaryCodePoint(Integer.parseUnsignedInt(parts[1], 16))) {
+			StringBuilder sb = new StringBuilder(6);
+			for (int i = 0; i < (5 - parts[1].length()); i++) {
+				sb.append("0");
+			}
+			sb.append(parts[1]);
+			for (int i = 0; i < (5 - parts[0].length()); i++) {
+				sb.append("0");
+			}
+			sb.append(parts[0]);
+			return sb.toString();
+		}
+		return parts[0];
+	}
+	
+	private static String toComplexKey(String unicode) {
 		String[] parts = unicode.split("_");
 		if (parts.length > 1) {
 			StringBuilder sb = new StringBuilder(6);

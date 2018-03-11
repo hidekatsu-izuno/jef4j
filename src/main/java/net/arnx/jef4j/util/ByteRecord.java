@@ -48,4 +48,20 @@ public class ByteRecord implements Record, Serializable {
 		}
 		return array[Integer.bitCount(pattern >> (16 - pos))];
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 16; i++) {
+			if (i > 0) {
+				sb.append(",");
+			}
+			if (exists(i)) {
+				sb.append(ByteUtils.hex(get(i), 1));
+			} else {
+				sb.append(" ");
+			}
+		}
+		return sb.toString();
+	}
 }

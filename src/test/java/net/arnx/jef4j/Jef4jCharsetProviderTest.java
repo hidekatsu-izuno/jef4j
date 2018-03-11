@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import net.arnx.jef4j.util.ByteUtils;
+
 public class Jef4jCharsetProviderTest {
 	@Test
 	public void testEncoder() {
@@ -33,10 +35,14 @@ public class Jef4jCharsetProviderTest {
 		assertArrayEquals(
 				new byte[] {
 						(byte)0x77, (byte)0xA9,
-						(byte)0x41, (byte)0xE0,
-						(byte)0x42, (byte)0xE5
+						(byte)0x41, (byte)0xE0
 				}, 
-				"🄀𠆤㑨".getBytes(Charset.forName("x-Fujitsu-JEF")));
+				"🄀𠆤".getBytes(Charset.forName("x-Fujitsu-JEF")));
+		
+		
+		assertEquals(
+				"71ABA1AB",
+				ByteUtils.hex("\uD82C\uDC19\u3099".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 	}
 
 	@Test
@@ -48,6 +54,14 @@ public class Jef4jCharsetProviderTest {
 						(byte)0x67, (byte)0xA5,
 						(byte)0xC4, (byte)0xD4,
 						(byte)0x4A, (byte)0xF2
-				}, Charset.forName("x-Fujitsu-JEF")));		
+				}, Charset.forName("x-Fujitsu-JEF")));
+		
+		assertEquals(
+				"はばぱ",
+				new String(new byte[] {
+						(byte)0xA4, (byte)0xCF,
+						(byte)0xA4, (byte)0xD0,
+						(byte)0xA4, (byte)0xD1
+				}, Charset.forName("x-Fujitsu-JEF")));
 	}
 }
