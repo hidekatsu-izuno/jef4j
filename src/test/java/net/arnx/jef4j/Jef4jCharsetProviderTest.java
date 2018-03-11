@@ -11,34 +11,17 @@ import net.arnx.jef4j.util.ByteUtils;
 public class Jef4jCharsetProviderTest {
 	@Test
 	public void testEncoder() {
-		assertArrayEquals(
-				new byte[] {
-						(byte)0xA4, (byte)0xA2, 
-						(byte)0xA4, (byte)0xA4, 
-						(byte)0xA4, (byte)0xA6, 
-						(byte)0xA4, (byte)0xA8,
-						(byte)0xA4, (byte)0xAA,
-						(byte)0xC4, (byte)0xD4
-				}, 
-				"あいうえお辻".getBytes(Charset.forName("x-Fujitsu-JEF")));
+		assertEquals(
+				"A4A2A4A4A4A6A4A8A4AAC4D4",
+				ByteUtils.hex("あいうえお辻".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 	
-		assertArrayEquals(
-				new byte[] {
-						(byte)0xC1,
-						(byte)0x28,
-						(byte)0xA4, (byte)0xA2,
-						(byte)0x29,
-						(byte)0xC3
-				}, 
-				"AあC".getBytes(Charset.forName("x-Fujitsu-JEF-ASCII")));
+		assertEquals(
+				"C128A4A229C3",
+				ByteUtils.hex("AあC".getBytes(Charset.forName("x-Fujitsu-JEF-ASCII"))));
 		
-		assertArrayEquals(
-				new byte[] {
-						(byte)0x77, (byte)0xA9,
-						(byte)0x41, (byte)0xE0
-				}, 
-				"🄀𠆤".getBytes(Charset.forName("x-Fujitsu-JEF")));
-		
+		assertEquals(
+				"77A941E0",
+				ByteUtils.hex("🄀𠆤".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 		
 		assertEquals(
 				"71ABA1AB",
@@ -48,12 +31,14 @@ public class Jef4jCharsetProviderTest {
 	@Test
 	public void testDecoder() {
 		assertEquals(
-				"　辻辻岧",
+				"　辻辻岧𭏾𨦸",
 				new String(new byte[] {
 						(byte)0x40, (byte)0x40,
 						(byte)0x67, (byte)0xA5,
 						(byte)0xC4, (byte)0xD4,
-						(byte)0x4A, (byte)0xF2
+						(byte)0x4A, (byte)0xF2,
+						(byte)0x48, (byte)0xC2,
+						(byte)0x6A, (byte)0xC6
 				}, Charset.forName("x-Fujitsu-JEF")));
 		
 		assertEquals(
