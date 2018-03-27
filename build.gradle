@@ -4,7 +4,7 @@ apply plugin: 'signing'
 
 group = 'net.arnx'
 archivesBaseName = 'jef4j'
-version = '0.7.1'
+version = '0.7.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
