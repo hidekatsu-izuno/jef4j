@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.arnx.dartsclone.DoubleArrayTrie;
 import net.arnx.jef4j.util.CharRecord;
 import net.arnx.jef4j.util.IntRecord;
 import net.arnx.jef4j.util.LongObjMap;
@@ -253,37 +252,6 @@ public class FujitsuCharsetIndexGenerator {
 			decoders.add(jefDecoder);
 		}
 	}
-	
-	private static void generateJefIndex2(List<Object> encoders, List<Object> decoders) throws IOException {
-		DoubleArrayTrie.Builder encoderMap = new DoubleArrayTrie.Builder();
-		DoubleArrayTrie.Builder decoderMap = new DoubleArrayTrie.Builder();
-		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
-				}
-				
-				String[] parts = line.split(" ");
-				String sunicode = toSimpleKey(parts[0]);
-				String cunicode = toComplexKey(parts[0]);
-				String jef = parts[1];
-				if (sunicode.equals("FFFD")) {
-					continue;
-				}
-				
-				
-				
-			}
-		}
-		
-		encoders.add(encoderMap.toArray());
-		decoders.add(decoderMap);
-	}
-	
 	
 	private static String toSimpleKey(String unicode) {
 		String[] parts = unicode.split("_");
