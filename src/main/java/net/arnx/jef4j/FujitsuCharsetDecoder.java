@@ -27,17 +27,17 @@ import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetDecoder extends CharsetDecoder {
-	private static final LongObjMap<Record> ASCII_MAP;
-	private static final LongObjMap<Record> EBCDIC_MAP;
-	private static final LongObjMap<Record> EBCDIK_MAP;
+	private static final byte[] ASCII_MAP;
+	private static final byte[] EBCDIC_MAP;
+	private static final byte[] EBCDIK_MAP;
 	private static final LongObjMap<Record> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
-			ASCII_MAP = (LongObjMap<Record>)in.readObject();
-			EBCDIC_MAP = (LongObjMap<Record>)in.readObject();
-			EBCDIK_MAP = (LongObjMap<Record>)in.readObject();
+			ASCII_MAP = (byte[])in.readObject();
+			EBCDIC_MAP = (byte[])in.readObject();
+			EBCDIK_MAP = (byte[])in.readObject();
 			JEF_MAP = (LongObjMap<Record>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
@@ -45,7 +45,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	}
 	
 	private final FujitsuCharsetType type;
-	private final LongObjMap<Record> map;
+	private final byte[] map;
 	
 	private boolean shiftin = false;
 	
@@ -92,16 +92,19 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 				}
 				
 				if (!shiftin && map != null) {
-					Record record = map.get(b & 0xFFF0);
-					int pos = b & 0xF;
-					if (record == null || !record.exists(pos)) {
+					char c = (char)(map[b] & 0xFF);
+					if (map == EBCDIK_MAP && c >= '\u00C0' && c <= '\u00FE') {
+						c = (char)(c - '\u00C0' + '\uuFF61');
+					}
+					
+					if (c == '\u00FF') {
 						return CoderResult.unmappableForLength(1);
 					}
 					
 					if (!out.hasRemaining()) {
 						return CoderResult.OVERFLOW;
 					}
-					out.put((char)record.get(pos));
+					out.put(c);
 					mark++;
 				} else if (type.containsJEF() && b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {

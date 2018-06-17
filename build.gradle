@@ -4,7 +4,7 @@ apply plugin: 'signing'
 
 group = 'net.arnx'
 archivesBaseName = 'jef4j'
-version = '0.7.2'
+version = '0.8.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -14,7 +14,8 @@ repositories {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+	testCompile 'org.junit.jupiter:junit-jupiter-api:5.+'
+	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.+'
 }
 
 compileJava {

@@ -27,17 +27,17 @@ import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetEncoder extends CharsetEncoder {
-	private static final LongObjMap<Record> ASCII_MAP;
-	private static final LongObjMap<Record> EBCDIC_MAP;
-	private static final LongObjMap<Record> EBCDIK_MAP;
+	private static final byte[] ASCII_MAP;
+	private static final byte[] EBCDIC_MAP;
+	private static final byte[] EBCDIK_MAP;
 	private static final LongObjMap<Record> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
-			ASCII_MAP = (LongObjMap<Record>)in.readObject();
-			EBCDIC_MAP = (LongObjMap<Record>)in.readObject();
-			EBCDIK_MAP = (LongObjMap<Record>)in.readObject();
+			ASCII_MAP = (byte[])in.readObject();
+			EBCDIC_MAP = (byte[])in.readObject();
+			EBCDIK_MAP = (byte[])in.readObject();
 			JEF_MAP = (LongObjMap<Record>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
@@ -45,7 +45,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	}
 	
 	private final FujitsuCharsetType type;
-	private final LongObjMap<Record> map;
+	private final byte[] map;
 	
 	private boolean shiftin = false;
 
@@ -88,11 +88,12 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					
 					if (map == null) {
 						return CoderResult.unmappableForLength(1);
+					} else if (map == EBCDIK_MAP && c >= '\uFF61' && c <= '\uFF9F') {
+						c = (char)(c - '\uFF61' + '\u00C0');
 					}
 					
-					Record record = map.get(c & 0xFFF0);
-					int pos = c & 0xF;
-					if (record == null || !record.exists(pos)) {
+					byte value = map[c];
+					if (value == -1) {
 						return CoderResult.unmappableForLength(1);
 					}
 					
@@ -107,7 +108,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					if (!out.hasRemaining()) {
 						return CoderResult.OVERFLOW;
 					}
-					out.put((byte)record.get(pos));
+					out.put(value);
 					mark++;
 				} else if (type.containsJEF()) { // Double Bytes
 					Record record;

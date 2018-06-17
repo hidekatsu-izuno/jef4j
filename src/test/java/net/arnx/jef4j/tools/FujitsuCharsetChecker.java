@@ -13,7 +13,7 @@ public class FujitsuCharsetChecker {
 	public static void main(String[] args) throws IOException {
 		// For Checking
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
+				FujitsuCharsetChecker.class.getResourceAsStream("/jef_mapping.txt"), 
 				StandardCharsets.UTF_8))) {
 			
 			Map<String, String> unicodeMap = new TreeMap<>();

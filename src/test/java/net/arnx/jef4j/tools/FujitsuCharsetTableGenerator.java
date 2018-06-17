@@ -42,7 +42,7 @@ public class FujitsuCharsetTableGenerator {
 				Map<Integer, String> map = new HashMap<>();
 				
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-						FujitsuCharsetMapGenerator.class.getResourceAsStream(pair[0]), 
+						FujitsuCharsetTableGenerator.class.getResourceAsStream(pair[0]), 
 						StandardCharsets.UTF_8))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
@@ -83,7 +83,7 @@ public class FujitsuCharsetTableGenerator {
 				Map<Integer, String> map = new HashMap<>();
 				
 				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-						FujitsuCharsetMapGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
+						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
 						StandardCharsets.UTF_8))) {
 					String line;
 					while ((line = reader.readLine()) != null) {
