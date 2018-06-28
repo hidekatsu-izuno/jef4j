@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.arnx/jef4j/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.arnx/jef4j)
+
 # jef4j
 
 ## はじめに
