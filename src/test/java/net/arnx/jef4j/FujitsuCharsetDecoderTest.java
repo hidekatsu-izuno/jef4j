@@ -267,6 +267,8 @@ public class FujitsuCharsetDecoderTest {
 	private static String toChars(String unicode, boolean useHanyoDenshi) {
 		if (!useHanyoDenshi) {
 			unicode = unicode.replaceAll("_E.*$", "");
+		} else {
+			unicode = unicode.replaceAll("/.*$", "");
 		}
 		
 		StringBuilder sb = new StringBuilder();

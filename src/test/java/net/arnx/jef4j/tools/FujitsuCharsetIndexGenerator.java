@@ -39,6 +39,8 @@ public class FujitsuCharsetIndexGenerator {
 				out.writeObject(decoder);
 			}
 		}
+
+		System.out.println("Finish!");
 	}
 	
 	private static void generateAsciiIndex(List<Object> encoders, List<Object> decoders) throws IOException {
@@ -137,7 +139,7 @@ public class FujitsuCharsetIndexGenerator {
 	
 	private static void generateJefIndex(List<Object> encoders, List<Object> decoders) throws IOException {
 		Map<String, String[]> unicode2jefMap = new TreeMap<>();
-		Map<String, String[]> jef2unicodeMap = new TreeMap<>();
+		Map<String, String[]> jef2hdunicodeMap = new TreeMap<>();
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
@@ -150,7 +152,7 @@ public class FujitsuCharsetIndexGenerator {
 				
 				String[] parts = line.split(" ");
 				String sunicode = toSimpleKey(parts[0]);
-				String cunicode = toComplexKey(parts[0]);
+				String hdunicode = toHanyoDenshiKey(parts[0]);
 				String jef = parts[1];
 				
 				if (sunicode.equals("FFFD")) {
@@ -166,12 +168,12 @@ public class FujitsuCharsetIndexGenerator {
 				values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
 				
 				prefix = jef.substring(0, jef.length()-1) + "0";
-				values = jef2unicodeMap.get(prefix);
+				values = jef2hdunicodeMap.get(prefix);
 				if (values == null) {
 					values = new String[16];
-					jef2unicodeMap.put(prefix, values);
+					jef2hdunicodeMap.put(prefix, values);
 				}
-				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = cunicode;
+				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = hdunicode;
 			}
 			
 			LongObjMap<Record> jefEncoder = new LongObjMap<>();
@@ -200,7 +202,7 @@ public class FujitsuCharsetIndexGenerator {
 			}
 
 			LongObjMap<Record> jefDecoder = new LongObjMap<>();
-			for (Map.Entry<String, String[]> entry : jef2unicodeMap.entrySet()) {
+			for (Map.Entry<String, String[]> entry : jef2hdunicodeMap.entrySet()) {
 				long key = Long.parseUnsignedLong(entry.getKey(), 16);
 				
 				int len = 0;
@@ -254,8 +256,8 @@ public class FujitsuCharsetIndexGenerator {
 	}
 	
 	private static String toSimpleKey(String unicode) {
-		String[] parts = unicode.split("_");
-		if (parts.length == 2 && !Character.isSupplementaryCodePoint(Integer.parseUnsignedInt(parts[1], 16))) {
+		String[] parts = unicode.split("[_/]");
+		if (parts.length > 1 && !Character.isSupplementaryCodePoint(Integer.parseUnsignedInt(parts[1], 16))) {
 			StringBuilder sb = new StringBuilder(6);
 			for (int i = 0; i < (5 - parts[1].length()); i++) {
 				sb.append("0");
@@ -270,8 +272,8 @@ public class FujitsuCharsetIndexGenerator {
 		return parts[0];
 	}
 	
-	private static String toComplexKey(String unicode) {
-		String[] parts = unicode.split("_");
+	private static String toHanyoDenshiKey(String unicode) {
+		String[] parts = unicode.split("[_/]");
 		if (parts.length > 1) {
 			StringBuilder sb = new StringBuilder(6);
 			for (int i = 0; i < (5 - parts[1].length()); i++) {
