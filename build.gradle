@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-	testCompile 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.12'
 }
 
 compileJava {
@@ -57,7 +57,9 @@ signing {
 uploadArchives {
 	repositories {
 		mavenDeployer {
-			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+			beforeDeployment {
+				MavenDeployment deployment -> signing.signPom(deployment)
+			}
 
 			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
 				authentication(userName: "${sonatypeUsername}", password: "${sonatypePassword}")
