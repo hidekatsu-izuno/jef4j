@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.arnx'
-version = '1.0.0'
+version = '0.9.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -80,8 +80,9 @@ publishing {
 				}
 
 				scm {
-					connection = 'scm:git:git://github.com/hidekatsu-izuno/jef4j.git'
 					url = 'https://github.com/hidekatsu-izuno/jef4j'
+					connection = 'scm:git:git://github.com/hidekatsu-izuno/jef4j.git'
+					developerConnection = 'scm:git:ssh:git@github.com:hidekatsu-izuno/jef4j.git'
 				}
             }
 		}
