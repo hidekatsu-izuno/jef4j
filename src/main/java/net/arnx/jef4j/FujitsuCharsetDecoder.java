@@ -116,8 +116,12 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						out.put('\u3000');
 						mark += 2;
 					} else if (b >= 0x80 && b <= 0xA0) {
-						out.put((char)(0xE000 + (b - 0x80) * 94 + (b2 - 0xA1)));
-						mark += 2;
+						if (b2 >= 0xA1 && b2 <= 0xFE) {
+							out.put((char)(0xE000 + (b - 0x80) * 94 + (b2 - 0xA1)));
+							mark += 2;
+						} else {
+							return CoderResult.unmappableForLength(2);
+						}
 					} else {
 						Record record = JEF_MAP.get((b << 8) | (b2 & 0xF0));
 						int pos = b2 & 0xF;

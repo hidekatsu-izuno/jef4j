@@ -111,10 +111,10 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					out.put(value);
 					mark++;
 				} else if (type.containsJEF()) { // Double Bytes
-					if (c >= '\uE000' && c <= '\uF8FF') {
+					if (c >= '\uE000' && c <= '\uEC1D') {
 						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
-						mark += 2;
+						mark++;
 					} else {
 						Record record;
 						int pos;

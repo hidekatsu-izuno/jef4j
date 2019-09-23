@@ -184,6 +184,10 @@ public class FujitsuCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+			
 			bb.clear();
 			bb.put((byte)((i >> 8) & 0xFF));
 			bb.put((byte)(i & 0xFF));
@@ -241,6 +245,10 @@ public class FujitsuCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+
 			bb.clear();
 			bb.put((byte)((i >> 8) & 0xFF));
 			bb.put((byte)(i & 0xFF));
@@ -262,6 +270,40 @@ public class FujitsuCharsetDecoderTest {
 		for (String key : keys) {
 			assertEquals(key, expected.get(key), actual.get(key));
 		}
+	}
+
+	@Test
+	public void testFujitsuJefUserDefinedSpaceDecoder() throws IOException {
+		Map<String, String> actual = new TreeMap<>();
+
+		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+
+		for (int b1 = 0x80; b1 <= 0xA0; b1++) {
+			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
+				bb.clear();
+				bb.put((byte)(b1 & 0xFF));
+				bb.put((byte)(b2 & 0xFF));
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					
+					actual.put(hex(bb), hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+			}
+		}
+
+		assertEquals("E000", actual.get("80A1"));
+		assertEquals("E05D", actual.get("80FE"));
+		assertEquals("E814", actual.get("96A1"));
+		assertEquals("E871", actual.get("96FE"));
+		assertEquals("EBC0", actual.get("A0A1"));
+		assertEquals("EC1D", actual.get("A0FE"));
 	}
 	
 	private static String toChars(String unicode, boolean useHanyoDenshi) {

@@ -170,6 +170,10 @@ public class FujitsuCharsetEncoderTest {
 		CharBuffer cb = CharBuffer.allocate(2);
 	
 		for (int cp = 0; cp <= 0x2FFFF; cp++) {
+			if (cp >= 0xE000 && cp <= 0xF8FF) {
+				continue;
+			}
+
 			cb.clear();
 			cb.put(Character.toChars(cp));
 			cb.flip();
@@ -190,6 +194,41 @@ public class FujitsuCharsetEncoderTest {
 		for (String key : keys) {
 			assertEquals(key, expected.get(key), actual.get(key));
 		}
+	}
+
+	@Test
+	public void testFujitsuJefUserDefinedSpaceEncoder() throws IOException {
+		Map<String, String> actual = new TreeMap<>();
+
+		CharsetEncoder ce = Charset.forName("x-Fujitsu-JEF")
+				.newEncoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		CharBuffer cb = CharBuffer.allocate(2);
+
+		for (char c = '\uE000'; c <= '\uF8FF'; c++) {
+			cb.clear();
+			cb.put(c);
+			cb.flip();
+			try {
+				ByteBuffer bb = ce.encode(cb);
+				cb.flip();
+				
+				actual.put(hex(cb), hex(bb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			ce.reset();
+		}
+
+		assertEquals("80A1", actual.get("E000"));
+		assertEquals("80FE", actual.get("E05D"));
+		assertEquals("96A1", actual.get("E814"));
+		assertEquals("96FE", actual.get("E871"));
+		assertEquals("A0A1", actual.get("EBC0"));
+		assertEquals("A0FE", actual.get("EC1D"));
+		assertNull(actual.get("EC1E"));
+		assertNull(actual.get("F8FF"));
 	}
 	
 	private static String toChars(String unicode, boolean useHanyoDenshi) {
