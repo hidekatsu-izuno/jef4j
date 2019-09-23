@@ -111,56 +111,62 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					out.put(value);
 					mark++;
 				} else if (type.containsJEF()) { // Double Bytes
-					Record record;
-					int pos;
-					
-					int progress = 1;
-					if (Character.isSurrogate(c)) {
-						if (!Character.isHighSurrogate(c)) {
-							return CoderResult.malformedForLength(1);
-						}
-						
-						if (!in.hasRemaining()) {
-							return CoderResult.UNDERFLOW;
-						}
-						char c2 = in.get();
-						if (!Character.isLowSurrogate(c2)) {
-							return CoderResult.malformedForLength(2);
-						}
-						
-						record = JEF_MAP.get(Character.toCodePoint(c, c2) & 0xFFFF0);
-						pos = c2 & 0xF;
-						progress++;
+					if (c >= '\uE000' && c <= '\uF8FF') {
+						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
+						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
+						mark += 2;
 					} else {
-						record = JEF_MAP.get(c & 0xFFF0);
-						pos = c & 0xF;
-					}
-					
-					if (record == null || !record.exists(pos)) {
-						return CoderResult.unmappableForLength(1);
-					}
-					
-					if (in.hasRemaining()) {
-						in.mark();
-					}
-					
-					if (map != null && !shiftin) {
-						if (!out.hasRemaining()) {
+						Record record;
+						int pos;
+						
+						int progress = 1;
+						if (Character.isSurrogate(c)) {
+							if (!Character.isHighSurrogate(c)) {
+								return CoderResult.malformedForLength(1);
+							}
+							
+							if (!in.hasRemaining()) {
+								return CoderResult.UNDERFLOW;
+							}
+							char c2 = in.get();
+							if (!Character.isLowSurrogate(c2)) {
+								return CoderResult.malformedForLength(2);
+							}
+							
+							record = JEF_MAP.get(Character.toCodePoint(c, c2) & 0xFFFF0);
+							pos = c2 & 0xF;
+							progress++;
+						} else {
+							record = JEF_MAP.get(c & 0xFFF0);
+							pos = c & 0xF;
+						}
+						
+						if (record == null || !record.exists(pos)) {
+							return CoderResult.unmappableForLength(1);
+						}
+						
+						if (in.hasRemaining()) {
+							in.mark();
+						}
+						
+						if (map != null && !shiftin) {
+							if (!out.hasRemaining()) {
+								return CoderResult.OVERFLOW;
+							}
+							out.put((byte)0x28);
+							shiftin = true;
+						}
+						
+						if (out.remaining() < 2) {
 							return CoderResult.OVERFLOW;
 						}
-						out.put((byte)0x28);
-						shiftin = true;
+						
+						char mc = (char)record.get(pos);
+						out.put((byte)((mc >> 8) & 0xFF));
+						out.put((byte)(mc & 0xFF));
+						
+						mark += progress;
 					}
-					
-					if (out.remaining() < 2) {
-						return CoderResult.OVERFLOW;
-					}
-					
-					char mc = (char)record.get(pos);
-					out.put((byte)((mc >> 8) & 0xFF));
-					out.put((byte)(mc & 0xFF));
-					
-					mark += progress;
 				} else {
 					return CoderResult.unmappableForLength(1);
 				}
