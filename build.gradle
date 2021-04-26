@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.arnx'
-version = '0.9.1'
+version = '0.9.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -49,6 +49,16 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier 'javadoc'
     from javadoc.destinationDir
+}
+
+task generateTable(type: JavaExec) {
+	main = 'net.arnx.jef4j.tools.FujitsuCharsetTableGenerator'
+    classpath = sourceSets.test.runtimeClasspath
+}
+
+task generateIndex(type: JavaExec) {
+	main = 'net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator'
+    classpath = sourceSets.test.runtimeClasspath
 }
 
 publishing {
