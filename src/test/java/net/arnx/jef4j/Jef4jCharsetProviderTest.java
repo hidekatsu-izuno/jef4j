@@ -26,6 +26,10 @@ public class Jef4jCharsetProviderTest {
 		assertEquals(
 				"71ABA1AB",
 				ByteUtils.hex("\uD82C\uDC19\u3099".getBytes(Charset.forName("x-Fujitsu-JEF"))));
+		
+		assertEquals(
+			"F2CDB0B3E4C6CFB6",
+			ByteUtils.hex("鯵鰺篭籠".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 	}
 
 	@Test
@@ -48,5 +52,14 @@ public class Jef4jCharsetProviderTest {
 						(byte)0xA4, (byte)0xD0,
 						(byte)0xA4, (byte)0xD1
 				}, Charset.forName("x-Fujitsu-JEF")));
+
+		assertEquals(
+			"鯵鰺篭籠",
+			new String(new byte[] {
+					(byte)0xF2, (byte)0xCD,
+					(byte)0xB0, (byte)0xB3,
+					(byte)0xE4, (byte)0xC6,
+					(byte)0xCF, (byte)0xB6
+			}, Charset.forName("x-Fujitsu-JEF-HanyoDenshi")));
 	}
 }
