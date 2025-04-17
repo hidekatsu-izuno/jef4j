@@ -7,15 +7,17 @@ plugins {
 group = 'net.arnx'
 version = '0.9.3'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
 	testImplementation 'junit:junit:4.12'
+}
+
+java {
+	sourceCompatibility = "1.8"
+	targetCompatibility = "1.8"
 }
 
 compileJava {
@@ -42,22 +44,22 @@ javadoc {
 }
 
 task sourcesJar(type: Jar) {
-    classifier 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task generateTable(type: JavaExec) {
-	main = 'net.arnx.jef4j.tools.FujitsuCharsetTableGenerator'
+	mainClass = 'net.arnx.jef4j.tools.FujitsuCharsetTableGenerator'
     classpath = sourceSets.test.runtimeClasspath
 }
 
 task generateIndex(type: JavaExec) {
-	main = 'net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator'
+	mainClass = 'net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator'
     classpath = sourceSets.test.runtimeClasspath
 }
 
@@ -102,8 +104,8 @@ publishing {
 		maven {
 			url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 			credentials {
-				username = sonatypeUsername
-				password = sonatypePassword
+				username = project.property("sonatypeUsername")
+				password = project.property("sonatypePassword")
 			}
 		}
 	}
