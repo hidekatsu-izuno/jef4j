@@ -12,24 +12,31 @@ repositories {
 }
 
 dependencies {
-	testImplementation 'junit:junit:4.12'
+    testImplementation "org.junit.jupiter:junit-jupiter:5.7.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 java {
-	sourceCompatibility = "1.8"
-	targetCompatibility = "1.8"
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 compileJava {
 	options.encoding = 'UTF-8'
+	options.compilerArgs += "-Xlint:-options"
 }
 
 compileTestJava {
 	options.encoding = 'UTF-8'
+	options.compilerArgs += "-Xlint:-options"
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 javadoc {
-	options {
+	options.with {
 		links(JavaVersion.current().isJava11Compatible() ? 
 			'https://docs.oracle.com/en/java/javase/11/docs/api' : 
 			'https://docs.oracle.com/javase/8/docs/api/')

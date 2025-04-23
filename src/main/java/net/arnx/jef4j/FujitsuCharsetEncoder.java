@@ -48,6 +48,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	private final byte[] map;
 	
 	private boolean shiftin = false;
+	private CharBuffer inBuff = CharBuffer.allocate(2);
 
 	public FujitsuCharsetEncoder(Charset cs, FujitsuCharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
@@ -111,12 +112,12 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					out.put(value);
 					mark++;
 				} else if (type.containsJEF()) { // Double Bytes
-					if (c >= '\uE000' && c <= '\uEC1D') {
+					if (c >= '\uE000' && c <= '\uEC1D') { // Private Use Area
 						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
 						mark++;
 					} else {
-						Record record;
+						int key;
 						int pos;
 						
 						int progress = 1;
@@ -129,24 +130,22 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 								return CoderResult.UNDERFLOW;
 							}
 							char c2 = in.get();
-							if (!Character.isLowSurrogate(c2)) {
+							if (Character.isLowSurrogate(c2)) {
+								progress++;
+							} else {
 								return CoderResult.malformedForLength(2);
 							}
 							
-							record = JEF_MAP.get(Character.toCodePoint(c, c2) & 0xFFFF0);
+							key = Character.toCodePoint(c, c2) & 0xFFFF0;
 							pos = c2 & 0xF;
-							progress++;
 						} else {
-							record = JEF_MAP.get(c & 0xFFF0);
+							key = c & 0xFFF0;
 							pos = c & 0xF;
 						}
 						
+						Record record = JEF_MAP.get(key);
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.unmappableForLength(1);
-						}
-						
-						if (in.hasRemaining()) {
-							in.mark();
 						}
 						
 						if (map != null && !shiftin) {
@@ -192,6 +191,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	@Override
 	protected void implReset() {
 		shiftin = false;
+		inBuff.clear();
 	}
 	
 	private static float getAverageBytesPerChar(FujitsuCharsetType type) {

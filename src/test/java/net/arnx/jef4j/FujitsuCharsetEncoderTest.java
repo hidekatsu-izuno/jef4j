@@ -1,6 +1,5 @@
 package net.arnx.jef4j;
 
-import static org.junit.Assert.*;
 import static net.arnx.jef4j.util.ByteUtils.*;
 
 import java.io.BufferedReader;
@@ -18,7 +17,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import net.arnx.jef4j.util.ByteUtils;
 
@@ -192,7 +192,7 @@ public class FujitsuCharsetEncoderTest {
 		keys.addAll(expected.keySet());
 		keys.addAll(actual.keySet());
 		for (String key : keys) {
-			assertEquals(key, expected.get(key), actual.get(key));
+			assertEquals(expected.get(key), actual.get(key), key);
 		}
 	}
 

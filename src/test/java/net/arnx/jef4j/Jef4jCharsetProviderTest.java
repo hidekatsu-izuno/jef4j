@@ -1,10 +1,9 @@
 package net.arnx.jef4j;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
-
-import org.junit.Test;
 
 import net.arnx.jef4j.util.ByteUtils;
 
