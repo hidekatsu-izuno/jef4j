@@ -386,6 +386,96 @@ public class FujitsuCharsetEncoderTest {
 			writer.close();
 			assertEquals("41AE4040", hex(buf.toByteArray()));	
 		}
+
+				{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\u3404\uDB40\uDD01");
+			writer.close();
+			assertEquals("41AE", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840");
+			writer.close();
+			assertEquals("4040", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840\uDC0B");
+			writer.close();
+			assertEquals("41A6", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840");
+			writer.flush();
+			writer.write("\uDC0B");
+			writer.close();
+			assertEquals("41A6", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840");
+			writer.flush();
+			writer.write("\uDC0B");
+			writer.flush();
+			writer.write("\uDB40");
+			writer.close();
+			assertEquals("41A64040", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840\uDC0B\uDB40\uDD01");
+			writer.close();
+			assertEquals("41A6", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840");
+			writer.flush();
+			writer.write("\uDC0B");
+			writer.flush();
+			writer.write("\uDB40");
+			writer.flush();
+			writer.write("\uDD01");
+			writer.close();
+			assertEquals("41A6", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840\uDC0B\uDB40\uDDFF");
+			writer.close();
+			assertEquals("41A64040", hex(buf.toByteArray()));	
+		}
+
+		{
+			ByteArrayOutputStream buf = new ByteArrayOutputStream();
+			OutputStreamWriter writer = new OutputStreamWriter(buf, JEF_HD);
+			writer.write("\uD840");
+			writer.flush();
+			writer.write("\uDC0B");
+			writer.flush();
+			writer.write("\uDB40");
+			writer.flush();
+			writer.write("\uDDFF");
+			writer.close();
+			assertEquals("41A64040", hex(buf.toByteArray()));	
+		}
 	}
 
 
