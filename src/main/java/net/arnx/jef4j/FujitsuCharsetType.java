@@ -26,28 +26,28 @@ enum FujitsuCharsetType {
 	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", true, true),
 	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", true, true),
 	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", true, true),
-	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true);;
+	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true);
 	
 	private final String charsetName;
-	private final boolean containsJEF;
-	private final boolean useHanyoDenshi;
+	private final boolean handleJEF;
+	private final boolean handleHanyoDenshi;
 	
 	FujitsuCharsetType(String charsetName, 
-			boolean containsJEF, boolean useHanyoDenshi) {
+			boolean handleJEF, boolean handleHanyoDenshi) {
 		this.charsetName = charsetName;
-		this.containsJEF = containsJEF;
-		this.useHanyoDenshi = useHanyoDenshi;
+		this.handleJEF = handleJEF;
+		this.handleHanyoDenshi = handleHanyoDenshi;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
 	}
 	
-	boolean containsJEF() {
-		return containsJEF;
+	boolean handleJEF() {
+		return handleJEF;
 	}
 	
-	boolean useHanyoDenshi() {
-		return useHanyoDenshi;
+	boolean handleHanyoDenshi() {
+		return handleHanyoDenshi;
 	}
 }

@@ -166,6 +166,16 @@ public class FujitsuCharsetIndexGenerator {
 					unicode2jefMap.put(prefix, values);
 				}
 				values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+
+				if (!sunicode.equals(hdunicode)) {
+					prefix = hdunicode.substring(0, hdunicode.length()-1) + "0";
+					values = unicode2jefMap.get(prefix);
+					if (values == null) {
+						values = new String[16];
+						unicode2jefMap.put(prefix, values);
+					}
+					values[Integer.parseUnsignedInt(hdunicode.substring(hdunicode.length()-1), 16)] = jef;
+				}
 				
 				prefix = jef.substring(0, jef.length()-1) + "0";
 				values = jef2hdunicodeMap.get(prefix);

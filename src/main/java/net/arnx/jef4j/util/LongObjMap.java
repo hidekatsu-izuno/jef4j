@@ -85,7 +85,7 @@ public class LongObjMap<T> implements Serializable {
 		} while (true);
 	}
 
-	public T get(int key) {
+	public T get(long key) {
 		if (key == 0) {
 			return zeroValue;
 		}

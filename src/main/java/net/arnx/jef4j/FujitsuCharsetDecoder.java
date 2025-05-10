@@ -106,7 +106,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					}
 					out.put(c);
 					mark++;
-				} else if (type.containsJEF() && b >= 0x40 && b <= 0xFE) {
+				} else if (type.handleJEF() && b >= 0x40 && b <= 0xFE) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
@@ -144,7 +144,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						if (combi == 0) {
 							combiLen = 0;
 						} else if (Character.isSupplementaryCodePoint(combi)) {
-							if (type.useHanyoDenshi()) {
+							if (type.handleHanyoDenshi()) {
 								combiLen = 2;
 							} else {
 								combiLen = 0;
