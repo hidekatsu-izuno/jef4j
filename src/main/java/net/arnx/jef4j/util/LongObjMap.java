@@ -20,6 +20,8 @@ import java.io.Serializable;
 /**
  * Based on https://github.com/mikvor/hashmapTest
  * This code is licensed by The Unlicense (http://unlicense.org)
+ * 
+ * @param <T> Value type
  */
 public class LongObjMap<T> implements Serializable {
 	private static final long serialVersionUID = 1L;

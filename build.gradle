@@ -1,7 +1,8 @@
 plugins {
 	id 'java-library'
-	id 'maven-publish'
+    id 'maven-publish'
 	id 'signing'
+    id 'org.jreleaser' version '1.18.0'
 }
 
 group = 'net.arnx'
@@ -19,6 +20,8 @@ dependencies {
 java {
 	sourceCompatibility = JavaVersion.VERSION_1_8
 	targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
 }
 
 compileJava {
@@ -50,16 +53,6 @@ javadoc {
 		JavaVersion.current().isJava9Compatible())
 }
 
-task sourcesJar(type: Jar) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 task generateTable(type: JavaExec) {
 	mainClass = 'net.arnx.jef4j.tools.FujitsuCharsetTableGenerator'
     classpath = sourceSets.test.runtimeClasspath
@@ -73,15 +66,16 @@ task generateIndex(type: JavaExec) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+			groupId = 'net.arnx'
+            artifactId = 'jef4j'
 
-            artifact sourcesJar
-            artifact javadocJar
+            from components.java
 
 			pom {
 				name = 'jef4j'
 				description = 'JEF charset support for Java'
 				url = 'https://github.com/hidekatsu-izuno/jef4j'
+				inceptionYear = "2025"
 
 				licenses {
 					license {
@@ -109,19 +103,43 @@ publishing {
 	
 	repositories {
 		maven {
-			url = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-			credentials {
-				username = project.property("sonatypeUsername")
-				password = project.property("sonatypePassword")
-			}
+			url = layout.buildDirectory.dir('staging-deploy')
 		}
 	}
 }
 
-signing {
-	sign publishing.publications.mavenJava
+def pgpPublicKey = project.property("pgpPublicKey")
+def pgpSecretKey = project.property("pgpSecretKey")
+
+jreleaser {
+	signing {
+		active = 'ALWAYS'
+		armored = true
+		mode = 'FILE'
+        publicKey = pgpPublicKey
+        secretKey = pgpSecretKey
+	}
+	deploy {
+		maven {
+			mavenCentral {
+				sonatype {
+					active = 'ALWAYS'
+					url = 'https://central.sonatype.com/api/v1/publisher'
+					stagingRepository('build/staging-deploy')
+				}
+			}
+		}
+	}
+	release {
+        github {
+            skipRelease = true
+			skipTag = true
+        }
+    }
 }
 
 // ./gradlew build
 // git tag vX.X.X && git push origin --tags
+// ./gradlew clean
 // ./gradlew publish
+// ./gradlew jreleaserFullRelease --stacktrace
