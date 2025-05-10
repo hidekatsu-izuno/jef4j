@@ -123,4 +123,5 @@ signing {
 }
 
 // ./gradlew build
+// git tag vX.X.X && git push origin --tags
 // ./gradlew publish
