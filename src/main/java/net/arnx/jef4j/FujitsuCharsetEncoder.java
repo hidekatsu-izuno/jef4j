@@ -204,7 +204,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							return CoderResult.unmappableForLength(1);
 						}
 						
-						if (map != null && !shiftin) {
+						if (type.handleShift() && !shiftin) {
 							if (!out.hasRemaining()) {
 								return CoderResult.OVERFLOW;
 							}
@@ -306,7 +306,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (map != null && shiftin) {
+		if (type.handleShift() && shiftin) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}

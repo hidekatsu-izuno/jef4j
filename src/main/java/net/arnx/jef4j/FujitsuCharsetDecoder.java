@@ -81,14 +81,16 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 			while (in.hasRemaining()) {
 				int b = in.get() & 0xFF;
 				
-				if (b == 0x28 || b == 0x38) {
-					shiftin = true;
-					mark++;
-					continue;
-				} else if (b == 0x29) {
-					shiftin = false;
-					mark++;
-					continue;
+				if (type.handleShift()) {
+					if (b == 0x28 || b == 0x38) {
+						shiftin = true;
+						mark++;
+						continue;
+					} else if (b == 0x29) {
+						shiftin = false;
+						mark++;
+						continue;
+					}
 				}
 				
 				if (!shiftin && map != null) {

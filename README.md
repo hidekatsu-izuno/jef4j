@@ -85,7 +85,7 @@ Maven Central Repository から取得できます。
 <dependency>
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.10.0</version>
+  <version>0.10.1</version>
 </dependency>
 ```
 
@@ -127,6 +127,7 @@ Apache License 2.0 で配布します。
 
 ## 変更履歴
 
+- 2025/5/19 version 0.10.1: x-Fujitsu-(EBCDIC|EBCDIK|ASCII|JEF) 指定時にシフトコードがエラーとならず無視される問題を修正しました。
 - 2025/5/10 version 0.10.0: 汎用電子指定時のデコードにて異体字セレクタを出力できるよう改善しました。従来と同じ動作にしたい場合は、デコード時に「-HanyoDenshi」が含まれていない文字セットを指定してください。また、「哨󠄁」の異体字セレクタが誤っていたため修正しました。
 - 2021/10/20 version 0.9.3: 「鯵鰺篭籠」のマッピングが間違っていることが判明したため修正しました。
 - 2021/4/27 version 0.9.2: 「棒」のマッピングが漏れていることが判明したため追加しました。

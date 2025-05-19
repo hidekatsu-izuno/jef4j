@@ -16,31 +16,41 @@
 package net.arnx.jef4j;
 
 enum FujitsuCharsetType {
-	EBCDIC("x-Fujitsu-EBCDIC", false, false),
-	EBCDIK("x-Fujitsu-EBCDIK", false, false),
-	ASCII("x-Fujitsu-ASCII", false, false),
-	JEF("x-Fujitsu-JEF", true, false),
-	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true, false),
-	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true, false),
-	JEF_ASCII("x-Fujitsu-JEF-ASCII", true, false),
-	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", true, true),
-	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", true, true),
-	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", true, true),
-	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true);
+	EBCDIC("x-Fujitsu-EBCDIC", false, false, false),
+	EBCDIK("x-Fujitsu-EBCDIK", false, false, false),
+	ASCII("x-Fujitsu-ASCII", false, false, false),
+	JEF("x-Fujitsu-JEF", false, true, false),
+	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true, true, false),
+	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true, true, false),
+	JEF_ASCII("x-Fujitsu-JEF-ASCII", true, true, false),
+	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", false, true, true),
+	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", true, true, true),
+	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", true, true, true),
+	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true, true);
 	
 	private final String charsetName;
+	private final boolean handleShift;
 	private final boolean handleJEF;
 	private final boolean handleHanyoDenshi;
 	
-	FujitsuCharsetType(String charsetName, 
-			boolean handleJEF, boolean handleHanyoDenshi) {
+	FujitsuCharsetType(
+		String charsetName, 
+		boolean handleShift,
+		boolean handleJEF,
+		boolean handleHanyoDenshi
+	) {
 		this.charsetName = charsetName;
+		this.handleShift = handleShift;
 		this.handleJEF = handleJEF;
 		this.handleHanyoDenshi = handleHanyoDenshi;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
+	}
+
+	boolean handleShift() {
+		return handleShift;
 	}
 	
 	boolean handleJEF() {
