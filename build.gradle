@@ -113,9 +113,9 @@ def pgpSecretKey = project.property("pgpSecretKey")
 
 jreleaser {
 	signing {
-		active = 'ALWAYS'
+		active = "ALWAYS"
 		armored = true
-		mode = 'FILE'
+		mode = "FILE"
         publicKey = pgpPublicKey
         secretKey = pgpSecretKey
 	}
@@ -123,9 +123,9 @@ jreleaser {
 		maven {
 			mavenCentral {
 				sonatype {
-					active = 'ALWAYS'
-					url = 'https://central.sonatype.com/api/v1/publisher'
-					stagingRepository('build/staging-deploy')
+					active = "ALWAYS"
+					url = "https://central.sonatype.com/api/v1/publisher"
+					stagingRepository("build/staging-deploy")
 				}
 			}
 		}
