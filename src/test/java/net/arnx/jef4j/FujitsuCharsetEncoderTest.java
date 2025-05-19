@@ -30,9 +30,7 @@ public class FujitsuCharsetEncoderTest {
 	@Test
 	public void testFujitsuEbcdicEncoder() throws IOException {
 		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
-		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, EBCDIC));
+		assertEquals("8140824083", hex("aあb海c".getBytes(EBCDIC)));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -74,9 +72,7 @@ public class FujitsuCharsetEncoderTest {
 	@Test
 	public void testFujitsuEbcdikEncoder() throws IOException {
 		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
-		assertEquals("ｱ\uFFFDﾏﾍ\uFFFDｲ\uFFFD\uFFFDﾏ\uFFFDｳ", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, EBCDIK));
+		assertEquals("8140824083", hex("ｱあｲ海ｳ".getBytes(EBCDIK)));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -118,9 +114,7 @@ public class FujitsuCharsetEncoderTest {
 	@Test
 	public void testFujitsuAsciiEncoder() throws IOException {
 		Charset ASCII = Charset.forName("x-Fujitsu-ASCII");
-		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, ASCII));
+		assertEquals("8140824083", hex("aあb海c".getBytes(ASCII)));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -161,6 +155,9 @@ public class FujitsuCharsetEncoderTest {
 	
 	@Test
 	public void testFujitsuJefEncoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF");
+		assertEquals("4040A4A240404040B3A44040", hex("aあbc海d".getBytes(JEF)));
+
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -180,7 +177,7 @@ public class FujitsuCharsetEncoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetEncoder ce = Charset.forName("x-Fujitsu-JEF")
+		CharsetEncoder ce = JEF
 				.newEncoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -548,26 +545,22 @@ public class FujitsuCharsetEncoderTest {
 		}
 		return sb.toString();
 	}
-	
+
 	@Test
-	public void testFujitsuJefEbcdicEncoder() throws IOException {
+	public void testFujitsuJefEbcdicDecoder() throws IOException {
 		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
-		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIC));
+		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_EBCDIC)));
 	}
 
 	@Test
-	public void testFujitsuJefEbcdikEncoder() throws IOException {
+	public void testFujitsuJefEbcdikDecoder() throws IOException {
 		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
-		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIK));	}
+		assertEquals("8128A4A2298228B3A42983", hex("ｱあｲ海ｳ".getBytes(JEF_EBCDIK)));
+	}
 
 	@Test
-	public void testFujitsuJefAsciiEncoder() throws IOException {
+	public void testFujitsuJefAsciiDecoder() throws IOException {
 		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
-		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_ASCII));	}
+		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_ASCII)));
+	}
 }

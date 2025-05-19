@@ -91,6 +91,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						mark++;
 						continue;
 					}
+				} else if (b == 0x28 || b == 0x38 || b == 0x29) {
+					return CoderResult.unmappableForLength(1);
 				}
 				
 				if (!shiftin && map != null) {
@@ -117,6 +119,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					if (b == 0x40 && b2 == 0x40) {
 						out.put('\u3000');
 						mark += 2;
+					} else if (b2 == 0x28 || b2 == 0x38 || b2 == 0x29) {
+						return CoderResult.unmappableForLength(1);
 					} else if (b >= 0x80 && b <= 0xA0) {
 						if (b2 >= 0xA1 && b2 <= 0xFE) {
 							out.put((char)(0xE000 + (b - 0x80) * 94 + (b2 - 0xA1)));

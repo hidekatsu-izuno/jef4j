@@ -27,7 +27,9 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuEbcdicDecoder() throws IOException {
 		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
-		assertEquals("8140824083", hex("aあb海c".getBytes(EBCDIC)));
+		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, EBCDIC));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -69,7 +71,9 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuEbcdikDecoder() throws IOException {
 		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
-		assertEquals("8140824083", hex("ｱあｲ海ｳ".getBytes(EBCDIK)));
+		assertEquals("ｱ\uFFFDﾏﾍ\uFFFDｲ\uFFFD\uFFFDﾏ\uFFFDｳ", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, EBCDIK));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -111,7 +115,9 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuAsciiDecoder() throws IOException {
 		Charset ASCII = Charset.forName("x-Fujitsu-ASCII");
-		assertEquals("8140824083", hex("aあb海c".getBytes(ASCII)));
+		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, ASCII));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -152,6 +158,11 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuJefDecoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF");
+		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF));
+
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -171,7 +182,7 @@ public class FujitsuCharsetDecoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF")
+		CharsetDecoder cd = JEF
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -293,23 +304,29 @@ public class FujitsuCharsetDecoderTest {
 		assertEquals("EBC0", actual.get("A0A1"));
 		assertEquals("EC1D", actual.get("A0FE"));
 	}
-
+	
 	@Test
-	public void testFujitsuJefEbcdicDecoder() throws IOException {
+	public void testFujitsuJefEbcdicEncoder() throws IOException {
 		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
-		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_EBCDIC)));
+		assertEquals("aあb海c", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF_EBCDIC));
 	}
 
 	@Test
-	public void testFujitsuJefEbcdikDecoder() throws IOException {
+	public void testFujitsuJefEbcdikEncoder() throws IOException {
 		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
-		assertEquals("8128A4A2298228B3A42983", hex("ｱあｲ海ｳ".getBytes(JEF_EBCDIK)));
+		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF_EBCDIK));
 	}
 
 	@Test
-	public void testFujitsuJefAsciiDecoder() throws IOException {
+	public void testFujitsuJefAsciiEncoder() throws IOException {
 		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
-		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_ASCII)));
+		assertEquals("aあb海c", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF_ASCII));
 	}
 	
 	private static String toChars(String unicode, boolean useHanyoDenshi) {
