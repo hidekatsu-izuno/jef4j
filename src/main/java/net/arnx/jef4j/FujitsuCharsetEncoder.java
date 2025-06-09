@@ -48,7 +48,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	private final FujitsuCharsetType type;
 	private final byte[] map;
 	
-	private boolean shiftin = false;
+	private boolean kshifted = false;
 	private StringBuilder backup;
 
 	public FujitsuCharsetEncoder(Charset cs, FujitsuCharsetType type) {
@@ -157,12 +157,12 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						return CoderResult.unmappableForLength(1);
 					}
 					
-					if (shiftin) {
+					if (kshifted) {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
 						out.put((byte)0x29);
-						shiftin = false;
+						kshifted = false;
 					}
 
 					if (!out.hasRemaining()) {
@@ -204,12 +204,12 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							return CoderResult.unmappableForLength(1);
 						}
 						
-						if (type.handleShift() && !shiftin) {
+						if (type.handleShift() && !kshifted) {
 							if (!out.hasRemaining()) {
 								return CoderResult.OVERFLOW;
 							}
 							out.put((byte)0x28);
-							shiftin = true;
+							kshifted = true;
 						}
 						
 						if (out.remaining() < 2) {
@@ -306,19 +306,19 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.handleShift() && shiftin) {
+		if (type.handleShift() && kshifted) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
 			out.put((byte)0x28);
-			shiftin = false;
+			kshifted = false;
 		}
 		return CoderResult.UNDERFLOW;
 	}
 	
 	@Override
 	protected void implReset() {
-		shiftin = false;
+		kshifted = false;
 		backup = null;
 	}
 

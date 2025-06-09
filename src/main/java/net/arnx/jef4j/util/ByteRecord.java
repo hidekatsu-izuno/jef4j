@@ -17,6 +17,10 @@ package net.arnx.jef4j.util;
 
 import java.io.Serializable;
 
+/**
+ * ByteRecord is a data structure like maps that associates a 16-bit 
+ * pattern with a byte array.
+ */
 public class ByteRecord implements Record, Serializable {
 	private static final long serialVersionUID = 1L;
 

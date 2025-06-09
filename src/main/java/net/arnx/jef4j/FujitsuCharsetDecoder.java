@@ -47,7 +47,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private final FujitsuCharsetType type;
 	private final byte[] map;
 	
-	private boolean shiftin = false;
+	private boolean kshifted = false;
 	
 	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
 		super(cs, 1, 1);
@@ -83,11 +83,11 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 				
 				if (type.handleShift()) {
 					if (b == 0x28 || b == 0x38) {
-						shiftin = true;
+						kshifted = true;
 						mark++;
 						continue;
 					} else if (b == 0x29) {
-						shiftin = false;
+						kshifted = false;
 						mark++;
 						continue;
 					}
@@ -95,7 +95,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					return CoderResult.unmappableForLength(1);
 				}
 				
-				if (!shiftin && map != null) {
+				if (!kshifted && map != null) {
 					char c = (char)(map[b] & 0xFF);
 					if (map == EBCDIK_MAP && c >= '\u00C0' && c <= '\u00FE') {
 						c = (char)(c - '\u00C0' + '\uuFF61');
@@ -193,6 +193,6 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	
 	@Override
 	protected void implReset() {
-		shiftin = false;
+		kshifted = false;
 	}
 }

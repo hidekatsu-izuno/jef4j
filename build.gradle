@@ -51,6 +51,7 @@ javadoc {
 	}
 	options.addBooleanOption('html5', 
 		JavaVersion.current().isJava9Compatible())
+	options.addBooleanOption('Xdoclint:none', true)
 }
 
 task generateTable(type: JavaExec) {
