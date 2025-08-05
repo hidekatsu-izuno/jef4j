@@ -173,8 +173,15 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						}
 						
 						if (combiLen == 2) {
-							out.put(Character.highSurrogate(combi));
-							out.put(Character.lowSurrogate(combi));
+							char hs = Character.highSurrogate(combi);
+							if (type == FujitsuCharsetType.JEF_DX && hs == '\uDB80') {
+								int cp = 0xF0000 | b << 8 | b2;
+								out.put(Character.highSurrogate(cp));
+								out.put(Character.lowSurrogate(cp));
+							} else {
+								out.put(hs != '\uDB80' ? '\uDB40' : hs);
+								out.put(Character.lowSurrogate(combi));
+							}
 						} else if (combiLen == 1) {
 							out.put((char)combi);
 						}
