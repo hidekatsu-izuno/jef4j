@@ -50,7 +50,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private boolean kshifted = false;
 	
 	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
-		super(cs, 1, 1);
+		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		
 		switch (type) {
@@ -173,15 +173,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						}
 						
 						if (combiLen == 2) {
-							char hs = Character.highSurrogate(combi);
-							if (type == FujitsuCharsetType.JEF_DX && hs == '\uDB80') {
-								int cp = 0xF0000 | b << 8 | b2;
-								out.put(Character.highSurrogate(cp));
-								out.put(Character.lowSurrogate(cp));
-							} else {
-								out.put(hs != '\uDB80' ? '\uDB40' : hs);
-								out.put(Character.lowSurrogate(combi));
-							}
+							out.put(Character.highSurrogate(combi));
+							out.put(Character.lowSurrogate(combi));
 						} else if (combiLen == 1) {
 							out.put((char)combi);
 						}
@@ -201,5 +194,21 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	@Override
 	protected void implReset() {
 		kshifted = false;
+	}
+	
+	private static float getMaxCharsPerByte(FujitsuCharsetType type) {
+		switch (type) {
+		case JEF:
+		case JEF_ASCII:
+		case JEF_EBCDIC:
+		case JEF_EBCDIK:
+		case JEF_HD:
+		case JEF_HD_ASCII:
+		case JEF_HD_EBCDIC:
+		case JEF_HD_EBCDIK:
+			return 2.0F;
+		default:
+			return 1.0F;
+		}
 	}
 }

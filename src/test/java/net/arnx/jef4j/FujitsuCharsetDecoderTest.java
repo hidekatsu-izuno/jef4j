@@ -348,4 +348,14 @@ public class FujitsuCharsetDecoderTest {
 		}
 		return sb.toString();
 	}
+	
+	@Test
+	public void testDecodeStep() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF");
+		{
+			new String(new byte[] {
+				(byte)0x72, (byte)0xAE
+			}, JEF);
+		}
+	}
 }

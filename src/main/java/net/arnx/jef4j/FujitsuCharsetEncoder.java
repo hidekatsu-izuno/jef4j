@@ -142,8 +142,6 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 				char c = in.get();
 				if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
-				} else if (type == FujitsuCharsetType.JEF_DX && c == '\uDB80') {
-					
 				} else if (c <= '\u007F'
 						|| (map == EBCDIC_MAP && (c == '\u00A3' || c == '\u00A6' || c == '\u00AC'))
 						|| (map == EBCDIK_MAP && (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {

@@ -20,7 +20,7 @@ enum FujitsuCharsetType {
 	EBCDIK("x-Fujitsu-EBCDIK", false, false, false),
 	ASCII("x-Fujitsu-ASCII", false, false, false),
 	JEF("x-Fujitsu-JEF", false, true, false),
-	JEF_DX("x-Fujitsu-JEF-DX", false, true, false),
+	JEF_R("x-Fujitsu-JEF-Reversible", false, true, false),
 	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true, true, false),
 	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true, true, false),
 	JEF_ASCII("x-Fujitsu-JEF-ASCII", true, true, false),
