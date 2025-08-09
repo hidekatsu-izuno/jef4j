@@ -97,8 +97,8 @@ public class FujitsuCharsetIndexGenerator {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 
-					String sunicode = toSimpleKey(node);
-					String hdunicode = toHanyoDenshiKey(node);
+					String sunicode = toKey(node, null);
+					String hdunicode = toKey(node, "hd");
 					String jef = node.get("jef").asText();
 
 					if (sunicode.equals("FFFD")) {
@@ -212,10 +212,17 @@ public class FujitsuCharsetIndexGenerator {
 		}
 	}
 	
-	private static String toSimpleKey(JsonNode node) {
+	private static String toKey(JsonNode node, String ivs) {
 		String unicode = node.get("unicode").asText();
 		JsonNode spNode = node.get("sp");
-		String sp = spNode != null ? spNode.asText() : null;
+		String sp = null;
+		
+		if (spNode != null) {
+			sp = spNode.asText();
+		} else if (ivs != null) {
+			JsonNode ivsNode = node.get(ivs);
+			sp = ivsNode != null ? ivsNode.asText() : null;
+		}
 
 		if (sp != null) {
 			StringBuilder sb = new StringBuilder(6);
@@ -223,28 +230,6 @@ public class FujitsuCharsetIndexGenerator {
 				sb.append("0");
 			}
 			sb.append(sp);
-			for (int i = 0; i < (5 - unicode.length()); i++) {
-				sb.append("0");
-			}
-			sb.append(unicode);
-			return sb.toString();
-		}
-		return unicode;
-	}
-	
-	private static String toHanyoDenshiKey(JsonNode node) {
-		String unicode = node.get("unicode").asText();
-		JsonNode spNode = node.get("sp");
-		String sp = spNode != null ? spNode.asText() : null;
-		JsonNode hdNode = node.get("hd");
-		String hd = hdNode != null ? hdNode.asText() : null;
-
-		if (sp != null || hd != null) {
-			StringBuilder sb = new StringBuilder(6);
-			for (int i = 0; i < (5 - (sp != null ? sp.length() : hd.length())); i++) {
-				sb.append("0");
-			}
-			sb.append(sp != null ? sp : hd);
 			for (int i = 0; i < (5 - unicode.length()); i++) {
 				sb.append("0");
 			}
