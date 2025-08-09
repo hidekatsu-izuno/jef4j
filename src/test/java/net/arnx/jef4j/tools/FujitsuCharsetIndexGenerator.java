@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.arnx.jef4j.util.CharRecord;
 import net.arnx.jef4j.util.IntRecord;
 import net.arnx.jef4j.util.LongObjMap;
@@ -23,10 +29,11 @@ public class FujitsuCharsetIndexGenerator {
 		List<Object> encoders = new ArrayList<>();
 		List<Object> decoders = new ArrayList<>();
 		
-		generateAsciiIndex(encoders, decoders);
-		generateEbcdicIndex(encoders, decoders);
-		generateEbcdikIndex(encoders, decoders);
-		generateJefIndex(encoders, decoders);
+		FujitsuCharsetIndexGenerator generator = new FujitsuCharsetIndexGenerator();
+		generator.generateAsciiIndex(encoders, decoders);
+		generator.generateEbcdicIndex(encoders, decoders);
+		generator.generateEbcdikIndex(encoders, decoders);
+		generator.generateJefIndex(encoders, decoders);
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
 			for (Object encoder : encoders) {
@@ -42,29 +49,30 @@ public class FujitsuCharsetIndexGenerator {
 
 		System.out.println("Finish!");
 	}
+
+	private JsonFactory factory = new JsonFactory();
+	private ObjectMapper mapper = new ObjectMapper();
 	
-	private static void generateAsciiIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateAsciiIndex(List<Object> encoders, List<Object> decoders) throws IOException {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
 		Arrays.fill(encoderMap, (byte)0xFF);
 		Arrays.fill(decoderMap, (byte)0xFF);
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ascii_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ascii_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+				
+					String unicode = node.get("unicode").asText();
+					String ascii = node.get("ebcdic").asText();
+					
+					encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ascii, 16);
+					decoderMap[Integer.parseUnsignedInt(ascii, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
 				}
-				
-				String[] parts = line.split(" ");
-				String unicode = parts[0];
-				String ascii = parts[1];
-				
-				encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ascii, 16);
-				decoderMap[Integer.parseUnsignedInt(ascii, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
 			}
 		}
 		
@@ -72,28 +80,26 @@ public class FujitsuCharsetIndexGenerator {
 		decoders.add(decoderMap);
 	}
 	
-	private static void generateEbcdicIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateEbcdicIndex(List<Object> encoders, List<Object> decoders) throws IOException {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
 		Arrays.fill(encoderMap, (byte)0xFF);
 		Arrays.fill(decoderMap, (byte)0xFF);
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdic_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdic_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+					
+					String unicode = node.get("unicode").asText();
+					String ebcdic = node.get("ebcdic").asText();
+					
+					encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ebcdic, 16);
+					decoderMap[Integer.parseUnsignedInt(ebcdic, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
 				}
-				
-				String[] parts = line.split(" ");
-				String unicode = parts[0];
-				String ebcdic = parts[1];
-				
-				encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ebcdic, 16);
-				decoderMap[Integer.parseUnsignedInt(ebcdic, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
 			}
 		}
 		
@@ -101,35 +107,33 @@ public class FujitsuCharsetIndexGenerator {
 		decoders.add(decoderMap);
 	}
 	
-	private static void generateEbcdikIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateEbcdikIndex(List<Object> encoders, List<Object> decoders) throws IOException {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
 		Arrays.fill(encoderMap, (byte)0xFF);
 		Arrays.fill(decoderMap, (byte)0xFF);
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdik_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdik_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+				
+					String unicode = node.get("unicode").asText();
+					String ebcdik = node.get("ebcdic").asText();
+					
+					int iUnicode = Integer.parseUnsignedInt(unicode, 16);
+					int iEbcdik = Integer.parseUnsignedInt(ebcdik, 16);
+					
+					if (iUnicode >= '\uFF61') {
+						iUnicode = iUnicode -'\uFF61' + '\u00C0';
+					}
+					
+					encoderMap[iUnicode] = (byte)iEbcdik;
+					decoderMap[iEbcdik] = (byte)iUnicode;
 				}
-				
-				String[] parts = line.split(" ");
-				String unicode = parts[0];
-				String ebcdik = parts[1];
-				
-				int iUnicode = Integer.parseUnsignedInt(unicode, 16);
-				int iEbcdik = Integer.parseUnsignedInt(ebcdik, 16);
-				
-				if (iUnicode >= '\uFF61') {
-					iUnicode = iUnicode -'\uFF61' + '\u00C0';
-				}
-				
-				encoderMap[iUnicode] = (byte)iEbcdik;
-				decoderMap[iEbcdik] = (byte)iUnicode;
 			}
 		}
 		
@@ -137,55 +141,53 @@ public class FujitsuCharsetIndexGenerator {
 		decoders.add(decoderMap);
 	}
 	
-	private static void generateJefIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateJefIndex(List<Object> encoders, List<Object> decoders) throws IOException {
 		Map<String, String[]> unicode2jefMap = new TreeMap<>();
 		Map<String, String[]> jef2hdunicodeMap = new TreeMap<>();
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) {
-					continue;
-				}
-				
-				String[] parts = line.split(" ");
-				String sunicode = toSimpleKey(parts[0]);
-				String hdunicode = toHanyoDenshiKey(parts[0]);
-				String jef = parts[1];
-				
-				if (sunicode.equals("FFFD")) {
-					continue;
-				}
-				
-				String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
-				String[] values = unicode2jefMap.get(prefix);
-				if (values == null) {
-					values = new String[16];
-					unicode2jefMap.put(prefix, values);
-				}
-				values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
 
-				if (!sunicode.equals(hdunicode)) {
-					prefix = hdunicode.substring(0, hdunicode.length()-1) + "0";
-					values = unicode2jefMap.get(prefix);
+					String sunicode = toSimpleKey(node);
+					String hdunicode = toHanyoDenshiKey(node);
+					String jef = node.get("jef").asText();
+
+					if (sunicode.equals("FFFD")) {
+						continue;
+					}
+
+					String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
+					String[] values = unicode2jefMap.get(prefix);
 					if (values == null) {
 						values = new String[16];
 						unicode2jefMap.put(prefix, values);
 					}
-					values[Integer.parseUnsignedInt(hdunicode.substring(hdunicode.length()-1), 16)] = jef;
+					values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+
+					if (!sunicode.equals(hdunicode)) {
+						prefix = hdunicode.substring(0, hdunicode.length()-1) + "0";
+						values = unicode2jefMap.get(prefix);
+						if (values == null) {
+							values = new String[16];
+							unicode2jefMap.put(prefix, values);
+						}
+						values[Integer.parseUnsignedInt(hdunicode.substring(hdunicode.length()-1), 16)] = jef;
+					}
+					
+					prefix = jef.substring(0, jef.length()-1) + "0";
+					values = jef2hdunicodeMap.get(prefix);
+					if (values == null) {
+						values = new String[16];
+						jef2hdunicodeMap.put(prefix, values);
+					}
+					values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = hdunicode;
 				}
-				
-				prefix = jef.substring(0, jef.length()-1) + "0";
-				values = jef2hdunicodeMap.get(prefix);
-				if (values == null) {
-					values = new String[16];
-					jef2hdunicodeMap.put(prefix, values);
-				}
-				values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = hdunicode;
 			}
-			
+						
 			LongObjMap<Record> jefEncoder = new LongObjMap<>();
 			for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
 				long key = Long.parseUnsignedLong(entry.getKey(), 16);
@@ -265,37 +267,45 @@ public class FujitsuCharsetIndexGenerator {
 		}
 	}
 	
-	private static String toSimpleKey(String unicode) {
-		String[] parts = unicode.split("[_/]");
-		if (parts.length > 1 && !Character.isSupplementaryCodePoint(Integer.parseUnsignedInt(parts[1], 16))) {
+	private static String toSimpleKey(JsonNode node) {
+		String unicode = node.get("unicode").asText();
+		JsonNode spNode = node.get("sp");
+		String sp = spNode != null ? spNode.asText() : null;
+
+		if (sp != null) {
 			StringBuilder sb = new StringBuilder(6);
-			for (int i = 0; i < (5 - parts[1].length()); i++) {
+			for (int i = 0; i < (5 - sp.length()); i++) {
 				sb.append("0");
 			}
-			sb.append(parts[1]);
-			for (int i = 0; i < (5 - parts[0].length()); i++) {
+			sb.append(sp);
+			for (int i = 0; i < (5 - unicode.length()); i++) {
 				sb.append("0");
 			}
-			sb.append(parts[0]);
+			sb.append(unicode);
 			return sb.toString();
 		}
-		return parts[0];
+		return unicode;
 	}
 	
-	private static String toHanyoDenshiKey(String unicode) {
-		String[] parts = unicode.split("[_/]");
-		if (parts.length > 1) {
+	private static String toHanyoDenshiKey(JsonNode node) {
+		String unicode = node.get("unicode").asText();
+		JsonNode spNode = node.get("sp");
+		String sp = spNode != null ? spNode.asText() : null;
+		JsonNode hdNode = node.get("hd");
+		String hd = hdNode != null ? hdNode.asText() : null;
+
+		if (sp != null || hd != null) {
 			StringBuilder sb = new StringBuilder(6);
-			for (int i = 0; i < (5 - parts[1].length()); i++) {
+			for (int i = 0; i < (5 - (sp != null ? sp.length() : hd.length())); i++) {
 				sb.append("0");
 			}
-			sb.append(parts[1]);
-			for (int i = 0; i < (5 - parts[0].length()); i++) {
+			sb.append(sp != null ? sp : hd);
+			for (int i = 0; i < (5 - unicode.length()); i++) {
 				sb.append("0");
 			}
-			sb.append(parts[0]);
+			sb.append(unicode);
 			return sb.toString();
 		}
-		return parts[0];
+		return unicode;
 	}
 }

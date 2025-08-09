@@ -20,6 +20,7 @@ import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetTableGenerator {
 	public static void main(String[] args) throws IOException {
+		JsonFactory factory = new JsonFactory();
 		ObjectMapper mapper = new ObjectMapper();
 
 		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("docs/mappings.html"), StandardCharsets.UTF_8)) {
@@ -51,7 +52,6 @@ public class FujitsuCharsetTableGenerator {
 			}) {
 				Map<Integer, String> map = new HashMap<>();
 				
-				JsonFactory factory = new JsonFactory();
 				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 						FujitsuCharsetTableGenerator.class.getResourceAsStream(pair[0]), 
 						StandardCharsets.UTF_8)))) {
@@ -95,7 +95,6 @@ public class FujitsuCharsetTableGenerator {
 			{
 				Map<Integer, String> map = new HashMap<>();
 				
-				JsonFactory factory = new JsonFactory();
 				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.json"), 
 						StandardCharsets.UTF_8)))) {
