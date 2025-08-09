@@ -31,7 +31,7 @@
 { "unicode":  "001D", "ebcdic": "1D", "text": "GS", "options": [] },
 { "unicode":  "001E", "ebcdic": "1E", "text": "RS", "options": [] },
 { "unicode":  "001F", "ebcdic": "1F", "text": "US", "options": [] },
-{ "unicode":  "0020", "ebcdic": "40", "text": " ", "options": [] },
+{ "unicode":  "0020", "ebcdic": "40", "text": "SP", "options": [] },
 { "unicode":  "0021", "ebcdic": "4F", "text": "!", "options": [] },
 { "unicode":  "0022", "ebcdic": "7F", "text": "\"", "options": [] },
 { "unicode":  "0023", "ebcdic": "7B", "text": "#", "options": [] },

@@ -13,7 +13,8 @@ repositories {
 }
 
 dependencies {
-	testImplementation "org.json:json:20250517"
+	testImplementation "com.fasterxml.jackson.core:jackson-core:2.19.2"
+	testImplementation "com.fasterxml.jackson.core:jackson-databind:2.19.2"
     testImplementation "org.junit.jupiter:junit-jupiter:5.12.2"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }

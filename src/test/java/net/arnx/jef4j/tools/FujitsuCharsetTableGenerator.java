@@ -10,10 +10,18 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetTableGenerator {
 	public static void main(String[] args) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+
 		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("docs/mappings.html"), StandardCharsets.UTF_8)) {
 			out.append("<!doctype html>\n");
 			out.append("<html lang=\"ja\">\n");
@@ -35,21 +43,24 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<body>\n");
 			
 			for (String[] pair : new String[][] {
-				{ "/ebcdic_mapping.txt", "x-Fujitsu-EBCDIC" },
-				{ "/ebcdik_mapping.txt", "x-Fujitsu-EBCDIK" },
-				{ "/ascii_mapping.txt", "x-Fujitsu-ASCII" }
+				{ "/ebcdic_mapping.json", "x-Fujitsu-EBCDIC" },
+				{ "/ebcdik_mapping.json", "x-Fujitsu-EBCDIK" },
+				{ "/ascii_mapping.json", "x-Fujitsu-ASCII" }
 			}) {
 				Map<Integer, String> map = new HashMap<>();
 				
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				JsonFactory factory = new JsonFactory();
+				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 						FujitsuCharsetTableGenerator.class.getResourceAsStream(pair[0]), 
-						StandardCharsets.UTF_8))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						if (line.isEmpty()) continue;
-						
-						String[] parts = line.split(" ");
-						map.put(Integer.parseUnsignedInt(parts[1], 16), parts[2]);
+						StandardCharsets.UTF_8)))) {
+					while (parser.nextToken() != JsonToken.END_ARRAY) {
+						if (parser.currentToken() == JsonToken.START_OBJECT) {
+		                    JsonNode node = mapper.readTree(parser);
+							map.put(
+								Integer.parseUnsignedInt(node.get("ebcdic").asText(), 16), 
+								node.get("text").asText()
+							);
+						}
 					}
 				}
 				
@@ -82,15 +93,18 @@ public class FujitsuCharsetTableGenerator {
 			{
 				Map<Integer, String> map = new HashMap<>();
 				
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
-						StandardCharsets.UTF_8))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						if (line.isEmpty()) continue;
-						
-						String[] parts = line.split(" ");
-						map.put(Integer.parseUnsignedInt(parts[1], 16), parts[2]);
+				JsonFactory factory = new JsonFactory();
+				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+						StandardCharsets.UTF_8)))) {
+					while (parser.nextToken() != JsonToken.END_ARRAY) {
+						if (parser.currentToken() == JsonToken.START_OBJECT) {
+		                    JsonNode node = mapper.readTree(parser);
+							map.put(
+								Integer.parseUnsignedInt(node.get("jef").asText(), 16), 
+								node.get("text").asText()
+							);
+						}
 					}
 				}
 				

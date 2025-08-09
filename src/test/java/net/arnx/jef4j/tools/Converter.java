@@ -44,11 +44,7 @@ public class Converter {
 					ci.ebcdic = parts[1];
 				}
 				if (parts.length > 2) {
-					if ("SP".equals(parts[2])) {
-						ci.text = " ";
-					} else {
-						ci.text = parts[2];
-					}
+					ci.text = parts[2];
 				}
 
 				lines.add(ci);
