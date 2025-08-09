@@ -27,9 +27,11 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<html lang=\"ja\">\n");
 			out.append("<head>\n");
 			out.append("<meta charset=\"UTF-8\">\n");
-			out.append("<link href=\"https://fonts.googleapis.com/earlyaccess/notosansjapanese.css\" rel=\"stylesheet\" />\n");
+			out.append("<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n");
+			out.append("<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n");
+			out.append("<link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+Hentaigana:wght@200..900&display=swap\" rel=\"stylesheet\">\n");
 			out.append("<style>\n");
-			out.append("body { font-family: \"Noto Sans Japanese\"; }\n");
+			out.append("body { font-family: \"Noto Sans JP\", \"Noto Serif Hentaigana\"; }\n");
 			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 16px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
