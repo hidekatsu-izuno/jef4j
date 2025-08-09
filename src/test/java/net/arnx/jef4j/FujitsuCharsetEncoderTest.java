@@ -332,7 +332,7 @@ public class FujitsuCharsetEncoderTest {
 	}
 
 	@Test
-	public void testEncodeStep() throws IOException {
+	public void testEncodeStepHanyoDenshi() throws IOException {
 		Charset JEF_HD = Charset.forName("x-Fujitsu-JEF-HanyoDenshi");
 
 		{

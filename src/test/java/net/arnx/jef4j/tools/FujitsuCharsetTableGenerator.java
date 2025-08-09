@@ -10,18 +10,28 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetTableGenerator {
 	public static void main(String[] args) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+
 		try (BufferedWriter out = Files.newBufferedWriter(Paths.get("docs/mappings.html"), StandardCharsets.UTF_8)) {
 			out.append("<!doctype html>\n");
 			out.append("<html lang=\"ja\">\n");
 			out.append("<head>\n");
 			out.append("<meta charset=\"UTF-8\">\n");
-			out.append("<link href=\"https://fonts.googleapis.com/earlyaccess/notosansjapanese.css\" rel=\"stylesheet\" />\n");
+			out.append("<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n");
+			out.append("<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n");
+			out.append("<link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Serif+Hentaigana:wght@200..900&display=swap\" rel=\"stylesheet\">\n");
 			out.append("<style>\n");
-			out.append("body { font-family: \"Noto Sans Japanese\"; }\n");
+			out.append("body { font-family: \"Noto Sans JP\", \"Noto Serif Hentaigana\"; }\n");
 			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 16px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
@@ -35,21 +45,24 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<body>\n");
 			
 			for (String[] pair : new String[][] {
-				{ "/ebcdic_mapping.txt", "x-Fujitsu-EBCDIC" },
-				{ "/ebcdik_mapping.txt", "x-Fujitsu-EBCDIK" },
-				{ "/ascii_mapping.txt", "x-Fujitsu-ASCII" }
+				{ "/ebcdic_mapping.json", "x-Fujitsu-EBCDIC" },
+				{ "/ebcdik_mapping.json", "x-Fujitsu-EBCDIK" },
+				{ "/ascii_mapping.json", "x-Fujitsu-ASCII" }
 			}) {
 				Map<Integer, String> map = new HashMap<>();
 				
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+				JsonFactory factory = new JsonFactory();
+				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 						FujitsuCharsetTableGenerator.class.getResourceAsStream(pair[0]), 
-						StandardCharsets.UTF_8))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						if (line.isEmpty()) continue;
-						
-						String[] parts = line.split(" ");
-						map.put(Integer.parseUnsignedInt(parts[1], 16), parts[2]);
+						StandardCharsets.UTF_8)))) {
+					while (parser.nextToken() != JsonToken.END_ARRAY) {
+						if (parser.currentToken() == JsonToken.START_OBJECT) {
+		                    JsonNode node = mapper.readTree(parser);
+							map.put(
+								Integer.parseUnsignedInt(node.get("ebcdic").asText(), 16), 
+								node.get("text").asText()
+							);
+						}
 					}
 				}
 				
@@ -82,15 +95,18 @@ public class FujitsuCharsetTableGenerator {
 			{
 				Map<Integer, String> map = new HashMap<>();
 				
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.txt"), 
-						StandardCharsets.UTF_8))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						if (line.isEmpty()) continue;
-						
-						String[] parts = line.split(" ");
-						map.put(Integer.parseUnsignedInt(parts[1], 16), parts[2]);
+				JsonFactory factory = new JsonFactory();
+				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+						StandardCharsets.UTF_8)))) {
+					while (parser.nextToken() != JsonToken.END_ARRAY) {
+						if (parser.currentToken() == JsonToken.START_OBJECT) {
+		                    JsonNode node = mapper.readTree(parser);
+							map.put(
+								Integer.parseUnsignedInt(node.get("jef").asText(), 16), 
+								node.get("text").asText()
+							);
+						}
 					}
 				}
 				

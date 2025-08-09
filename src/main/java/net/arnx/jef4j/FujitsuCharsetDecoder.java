@@ -50,7 +50,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private boolean kshifted = false;
 	
 	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
-		super(cs, 1, 1);
+		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		
 		switch (type) {
@@ -194,5 +194,21 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	@Override
 	protected void implReset() {
 		kshifted = false;
+	}
+	
+	private static float getMaxCharsPerByte(FujitsuCharsetType type) {
+		switch (type) {
+		case JEF:
+		case JEF_ASCII:
+		case JEF_EBCDIC:
+		case JEF_EBCDIK:
+		case JEF_HD:
+		case JEF_HD_ASCII:
+		case JEF_HD_EBCDIC:
+		case JEF_HD_EBCDIK:
+			return 2.0F;
+		default:
+			return 1.0F;
+		}
 	}
 }
