@@ -30,10 +30,10 @@ public class FujitsuCharsetIndexGenerator {
 		List<Object> decoders = new ArrayList<>();
 		
 		FujitsuCharsetIndexGenerator generator = new FujitsuCharsetIndexGenerator();
-		generator.generateAsciiIndex(encoders, decoders);
-		generator.generateEbcdicIndex(encoders, decoders);
-		generator.generateEbcdikIndex(encoders, decoders);
-		generator.generateJefIndex(encoders, decoders);
+		generator.generateEbcdicIndex("ascii_mapping.json", encoders, decoders);
+		generator.generateEbcdicIndex("ebcdic_mapping.json", encoders, decoders);
+		generator.generateEbcdicIndex("ebcdik_mapping.json", encoders, decoders);
+		generator.generateJefIndex("jef_mapping.json", encoders, decoders);
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
 			for (Object encoder : encoders) {
@@ -53,7 +53,7 @@ public class FujitsuCharsetIndexGenerator {
 	private JsonFactory factory = new JsonFactory();
 	private ObjectMapper mapper = new ObjectMapper();
 	
-	private void generateAsciiIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateEbcdicIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
@@ -61,78 +61,23 @@ public class FujitsuCharsetIndexGenerator {
 		Arrays.fill(decoderMap, (byte)0xFF);
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ascii_mapping.json"), 
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 				
-					String unicode = node.get("unicode").asText();
-					String ascii = node.get("ebcdic").asText();
-					
-					encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ascii, 16);
-					decoderMap[Integer.parseUnsignedInt(ascii, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
-				}
-			}
-		}
-		
-		encoders.add(encoderMap);
-		decoders.add(decoderMap);
-	}
-	
-	private void generateEbcdicIndex(List<Object> encoders, List<Object> decoders) throws IOException {
-		byte[] encoderMap = new byte[256];
-		byte[] decoderMap = new byte[256];
-		
-		Arrays.fill(encoderMap, (byte)0xFF);
-		Arrays.fill(decoderMap, (byte)0xFF);
-		
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdic_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					JsonNode node = mapper.readTree(parser);
-					
 					String unicode = node.get("unicode").asText();
 					String ebcdic = node.get("ebcdic").asText();
-					
-					encoderMap[Integer.parseUnsignedInt(unicode, 16)] = (byte)Integer.parseUnsignedInt(ebcdic, 16);
-					decoderMap[Integer.parseUnsignedInt(ebcdic, 16)] = (byte)Integer.parseUnsignedInt(unicode, 16);
-				}
-			}
-		}
-		
-		encoders.add(encoderMap);
-		decoders.add(decoderMap);
-	}
-	
-	private void generateEbcdikIndex(List<Object> encoders, List<Object> decoders) throws IOException {
-		byte[] encoderMap = new byte[256];
-		byte[] decoderMap = new byte[256];
-		
-		Arrays.fill(encoderMap, (byte)0xFF);
-		Arrays.fill(decoderMap, (byte)0xFF);
-		
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdik_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					JsonNode node = mapper.readTree(parser);
-				
-					String unicode = node.get("unicode").asText();
-					String ebcdik = node.get("ebcdic").asText();
-					
+
 					int iUnicode = Integer.parseUnsignedInt(unicode, 16);
-					int iEbcdik = Integer.parseUnsignedInt(ebcdik, 16);
-					
+					int iEbcdic = Integer.parseUnsignedInt(ebcdic, 16);
 					if (iUnicode >= '\uFF61') {
 						iUnicode = iUnicode -'\uFF61' + '\u00C0';
 					}
 					
-					encoderMap[iUnicode] = (byte)iEbcdik;
-					decoderMap[iEbcdik] = (byte)iUnicode;
+					encoderMap[iUnicode] = (byte)iEbcdic;
+					decoderMap[iEbcdic] = (byte)iUnicode;
 				}
 			}
 		}
@@ -141,12 +86,12 @@ public class FujitsuCharsetIndexGenerator {
 		decoders.add(decoderMap);
 	}
 	
-	private void generateJefIndex(List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateJefIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
 		Map<String, String[]> unicode2jefMap = new TreeMap<>();
 		Map<String, String[]> jef2hdunicodeMap = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
