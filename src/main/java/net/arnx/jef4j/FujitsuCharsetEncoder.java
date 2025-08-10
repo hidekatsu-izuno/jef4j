@@ -30,7 +30,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	private static final byte[] ASCII_MAP;
 	private static final byte[] EBCDIC_MAP;
 	private static final byte[] EBCDIK_MAP;
-	private static final LongObjMap<Record> JEF_MAP;
+	private static final LongObjMap<Record[]> JEF_MAP;
 	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
 	
 	static {
@@ -39,7 +39,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			ASCII_MAP = (byte[])in.readObject();
 			EBCDIC_MAP = (byte[])in.readObject();
 			EBCDIK_MAP = (byte[])in.readObject();
-			JEF_MAP = (LongObjMap<Record>)in.readObject();
+			JEF_MAP = (LongObjMap<Record[]>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -199,7 +199,8 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							key = c;
 						}
 						
-						Record record = JEF_MAP.get(key & 0xFFFFFFF0);
+						Record[] records = JEF_MAP.get(key & 0xFFFFFFF0);
+						Record record = records != null ? records[type.getJEFTableNo()] : null;
 						if (record == null || !record.exists((int)(key & 0xF))) {
 							return CoderResult.unmappableForLength(1);
 						}
@@ -218,7 +219,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 
 						int mc = -1;
 						CoderResult cr = null;
-						if (type.handleHanyoDenshi()) {
+						if (type.handleIVS()) {
 							if (!in.hasRemaining()) {
 								if (!restored) {
 									backup = new StringBuilder().appendCodePoint((int)key);
@@ -230,7 +231,8 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 								char c3 = in.get();
 								if (c3 == '\u3099') {
 									long key2 = ((long)c3) << 20 | key;
-									Record record2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+									Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+									Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
 									if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 										mc = (char)record2.get((int)(key2 & 0xF));
 										progress++;
@@ -252,7 +254,8 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 										char c4 = in.get();
 										if (Character.isLowSurrogate(c4)) {
 											long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
-											Record record2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+											Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+											Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
 											if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 												mc = (char)record2.get((int)(key2 & 0xF));
 												progress += 2;

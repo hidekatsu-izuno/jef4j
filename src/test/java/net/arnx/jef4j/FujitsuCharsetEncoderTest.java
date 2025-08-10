@@ -14,6 +14,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -22,10 +24,18 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetEncoderTest {
-
+	private JsonFactory factory = new JsonFactory();
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	@Test
 	public void testFujitsuEbcdicEncoder() throws IOException {
@@ -34,13 +44,18 @@ public class FujitsuCharsetEncoderTest {
 
 		Map<String, String> expected = new TreeMap<>();
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("/ebcdic_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(" ");
-				expected.put(parts[0], parts[1]);
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdic_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					expected.put(
+						node.get("unicode").asText(),
+						node.get("ebcdic").asText()
+					);
+				}
 			}
 		}
 		
@@ -76,13 +91,18 @@ public class FujitsuCharsetEncoderTest {
 
 		Map<String, String> expected = new TreeMap<>();
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("/ebcdik_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(" ");
-				expected.put(parts[0], parts[1]);
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ebcdik_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					expected.put(
+						node.get("unicode").asText(),
+						node.get("ebcdic").asText()
+					);
+				}
 			}
 		}
 		
@@ -118,16 +138,21 @@ public class FujitsuCharsetEncoderTest {
 
 		Map<String, String> expected = new TreeMap<>();
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("/ascii_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				String[] parts = line.split(" ");
-				expected.put(parts[0], parts[1]);
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/ascii_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					expected.put(
+						node.get("unicode").asText(),
+						node.get("ebcdic").asText()
+					);
+				}
 			}
 		}
-		
+
 		Map<String, String> actual = new TreeMap<>();
 		
 		CharsetEncoder ce = Charset.forName("x-Fujitsu-ASCII")
@@ -160,17 +185,17 @@ public class FujitsuCharsetEncoderTest {
 
 		Map<String, String> expected = new TreeMap<>();
 		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("/jef_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) continue;
-
-				String[] parts = line.split(" ");
-				String unicode = toChars(parts[0].replaceAll("_.*$", ""), false);
-				if (!unicode.equals("FFFD")) {
-					expected.put(unicode, parts[1]);
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+					
+					String unicode = toChars(node, false, false);
+					if (!unicode.equals("FFFD")) {
+						expected.put(unicode, node.get("jef").asText());
+					}
 				}
 			}
 		}
@@ -213,23 +238,23 @@ public class FujitsuCharsetEncoderTest {
 	@Test
 	public void testFujitsuJefHanyoDenshiEncoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
-		
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				getClass().getResourceAsStream("/jef_mapping.txt"), 
-				StandardCharsets.UTF_8))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty()) continue;
 
-				String[] parts = line.split(" ");
-				String unicode = toChars(parts[0], false);
-				if (!unicode.equals("FFFD")) {
-					expected.put(unicode, parts[1]);
-				}
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
 
-				unicode = toChars(parts[0], true);
-				if (!unicode.equals("FFFD")) {
-					expected.put(unicode, parts[1]);
+					String unicode = toChars(node, true, false);
+					if (!unicode.equals("FFFD")) {
+						expected.put(unicode, node.get("jef").asText());
+					}
+
+					unicode = toChars(node, true, true);
+					if (!unicode.equals("FFFD")) {
+						expected.put(unicode, node.get("jef").asText());
+					}
 				}
 			}
 		}
@@ -526,15 +551,24 @@ public class FujitsuCharsetEncoderTest {
 		assertNull(actual.get("F8FF"));
 	}
 	
-	private static String toChars(String unicode, boolean useHanyoDenshi) {
-		if (!useHanyoDenshi) {
-			unicode = unicode.replaceAll("_E.*$", "");
-		} else {
-			unicode = unicode.replaceAll("/E.*$", "");
+	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi) {
+		List<String> parts = new ArrayList<>(); 
+		parts.add(node.get("unicode").asText());
+		if (useSP) {
+			JsonNode spNode = node.get("sp");
+			if (spNode != null) {
+				parts.add(spNode.asText());
+			}
+		}
+		if (useHanyoDenshi) {
+			JsonNode hdNode = node.get("hd");
+			if (hdNode != null) {
+				parts.add(hdNode.asText());
+			}
 		}
 		
 		StringBuilder sb = new StringBuilder();
-		for (String c : unicode.split("_")) {
+		for (String c : parts) {
 			int cp = Integer.parseUnsignedInt(c, 16);
 			if (Character.isSupplementaryCodePoint(cp)) {
 				sb.append(ByteUtils.hex(Character.highSurrogate(cp), 4));

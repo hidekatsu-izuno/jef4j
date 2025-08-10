@@ -30,7 +30,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private static final byte[] ASCII_MAP;
 	private static final byte[] EBCDIC_MAP;
 	private static final byte[] EBCDIK_MAP;
-	private static final LongObjMap<Record> JEF_MAP;
+	private static final LongObjMap<Record[]> JEF_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
@@ -38,7 +38,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 			ASCII_MAP = (byte[])in.readObject();
 			EBCDIC_MAP = (byte[])in.readObject();
 			EBCDIK_MAP = (byte[])in.readObject();
-			JEF_MAP = (LongObjMap<Record>)in.readObject();
+			JEF_MAP = (LongObjMap<Record[]>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -129,7 +129,8 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 							return CoderResult.unmappableForLength(2);
 						}
 					} else {
-						Record record = JEF_MAP.get((b << 8) | (b2 & 0xF0));
+						Record[] records = JEF_MAP.get((b << 8) | (b2 & 0xF0));
+						Record record = records != null ? records[type.getJEFTableNo()] : null;
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.unmappableForLength(2);
@@ -150,7 +151,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						if (combi == 0) {
 							combiLen = 0;
 						} else if (Character.isSupplementaryCodePoint(combi)) {
-							if (type.handleHanyoDenshi()) {
+							if (type.handleIVS()) {
 								combiLen = 2;
 							} else {
 								combiLen = 0;

@@ -87,8 +87,8 @@ public class FujitsuCharsetIndexGenerator {
 	}
 	
 	private void generateJefIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
-		Map<String, String[]> unicode2jefMap = new TreeMap<>();
-		Map<String, String[]> jef2hdunicodeMap = new TreeMap<>();
+		Map<String, String[][]> unicode2jefMap = new TreeMap<>();
+		Map<String, String[][]> jef2hdunicodeMap = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
@@ -98,113 +98,172 @@ public class FujitsuCharsetIndexGenerator {
 					JsonNode node = mapper.readTree(parser);
 
 					String sunicode = toKey(node, null);
-					String hdunicode = toKey(node, "hd");
-					String jef = node.get("jef").asText();
-
 					if (sunicode.equals("FFFD")) {
 						continue;
 					}
 
-					String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
-					String[] values = unicode2jefMap.get(prefix);
-					if (values == null) {
-						values = new String[16];
-						unicode2jefMap.put(prefix, values);
-					}
-					values[Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+					String hdunicode = toKey(node, "hd");
+					String aj1unicode = toKey(node, "aj1");
+					String jef = node.get("jef").asText();
+					boolean irreversible = true;
 
-					if (!sunicode.equals(hdunicode)) {
-						prefix = hdunicode.substring(0, hdunicode.length()-1) + "0";
-						values = unicode2jefMap.get(prefix);
-						if (values == null) {
-							values = new String[16];
-							unicode2jefMap.put(prefix, values);
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("irreversible".equals(child.asText())) {
+								irreversible = false;
+							}
 						}
-						values[Integer.parseUnsignedInt(hdunicode.substring(hdunicode.length()-1), 16)] = jef;
+					}
+
+					String[] ivsUnicode = new String[] {
+						hdunicode,
+						aj1unicode,
+						!irreversible ? sunicode : null
+					};
+
+					for (int i = 0; i < ivsUnicode.length; i++) {
+						if (ivsUnicode[i] == null) {
+							continue;
+						}
+						String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
+						String[][] array = unicode2jefMap.computeIfAbsent(prefix, key -> new String[3][]);
+						if (array[i] == null) {
+							array[i] = new String[16];
+						}
+						array[i][Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+					}
+
+					for (int i = 0; i < ivsUnicode.length; i++) {
+						if (ivsUnicode[i] == null) {
+							continue;
+						}
+						if (!sunicode.equals(ivsUnicode[i])) {
+							String prefix = ivsUnicode[i].substring(0, ivsUnicode[i].length()-1) + "0";
+							String[][] array = unicode2jefMap.computeIfAbsent(prefix, key -> new String[3][]);
+							if (array[i] == null) {
+								array[i] = new String[16];
+							}
+							array[i][Integer.parseUnsignedInt(ivsUnicode[i].substring(ivsUnicode[i].length()-1), 16)] = jef;
+						}
 					}
 					
-					prefix = jef.substring(0, jef.length()-1) + "0";
-					values = jef2hdunicodeMap.get(prefix);
-					if (values == null) {
-						values = new String[16];
-						jef2hdunicodeMap.put(prefix, values);
+					for (int i = 0; i < ivsUnicode.length; i++) {
+						if (ivsUnicode[i] == null) {
+							continue;
+						}
+						String prefix = jef.substring(0, jef.length()-1) + "0";
+						String[][] array = jef2hdunicodeMap.computeIfAbsent(prefix, key -> new String[3][]);
+						if (array[i] == null) {
+							array[i] = new String[16];
+						}
+						array[i][Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = ivsUnicode[i];
 					}
-					values[Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = hdunicode;
 				}
 			}
-						
-			LongObjMap<Record> jefEncoder = new LongObjMap<>();
-			for (Map.Entry<String, String[]> entry : unicode2jefMap.entrySet()) {
+			
+			LongObjMap<Record[]> jefEncoder = new LongObjMap<>();
+			for (Map.Entry<String, String[][]> entry : unicode2jefMap.entrySet()) {
 				long key = Long.parseUnsignedLong(entry.getKey(), 16);
-				
-				int len = 0;
-				int pattern = 0;
-				for (String value : entry.getValue()) {
-					if (value != null) {
-						pattern = (pattern << 1) | 1;
-						len++;
-					} else {
-						pattern = pattern << 1;
+				String[][] array = entry.getValue();
+				Record[] records = new Record[array.length];
+				for (int i = 0; i < array.length; i++) {
+					if (array[i] == null) {
+						continue;
 					}
-				}
-				
-				char[] values = new char[len];
-				int index = 0;
-				for (String value : entry.getValue()) {
-					if (value != null) {
-						values[index++] = (char)Integer.parseUnsignedInt(value, 16);
-					}
-				}
-				jefEncoder.put(key, new CharRecord((char)pattern, values));
-			}
-
-			LongObjMap<Record> jefDecoder = new LongObjMap<>();
-			for (Map.Entry<String, String[]> entry : jef2hdunicodeMap.entrySet()) {
-				long key = Long.parseUnsignedLong(entry.getKey(), 16);
-				
-				int len = 0;
-				int pattern = 0;
-				int size = 0;
-				for (String value : entry.getValue()) {
-					if (value != null) {
-						len++;
-						pattern = (pattern << 1) | 1;
-						size = Math.max(size, value.length());
-					} else {
-						pattern = pattern << 1;
-					}
-				}
-				
-				if (size == 10) {
-					long[] values = new long[len];
-					int index = 0;
-					for (String value : entry.getValue()) {
+					int len = 0;
+					int pattern = 0;
+					for (String value : array[i]) {
 						if (value != null) {
-							values[index++] = Long.parseUnsignedLong(value, 16);
+							pattern = (pattern << 1) | 1;
+							len++;
+						} else {
+							pattern = pattern << 1;
 						}
 					}
-					jefDecoder.put(key, new LongRecord((char)pattern, values));
-				} else if (size == 5) {
-					int[] values = new int[len];
-					int index = 0;
-					for (String value : entry.getValue()) {
-						if (value != null) {
-							values[index++] = Integer.parseUnsignedInt(value, 16);
-						}
-					}
-					jefDecoder.put(key, new IntRecord((char)pattern, values));
-				} else if (size == 4) {
+					
 					char[] values = new char[len];
 					int index = 0;
-					for (String value : entry.getValue()) {
+					for (String value : array[i]) {
 						if (value != null) {
 							values[index++] = (char)Integer.parseUnsignedInt(value, 16);
 						}
-					}				
-					jefDecoder.put(key, new CharRecord((char)pattern, values));
-				} else {
-					throw new IllegalStateException("size is invalid: " + size);
+					}
+
+					records[i] = new CharRecord((char)pattern, values);
 				}
+				for (int i = 0; i < records.length - 1; i++) {
+					for (int j = i + 1; j < records.length; j++) {
+						if (records[j] != null && records[j].equals(records[i])) {
+							records[j] = records[i];
+						}
+					}
+				}
+				jefEncoder.put(key, records);
+			}
+
+			LongObjMap<Record[]> jefDecoder = new LongObjMap<>();
+			for (Map.Entry<String, String[][]> entry : jef2hdunicodeMap.entrySet()) {
+				long key = Long.parseUnsignedLong(entry.getKey(), 16);
+				String[][] array = entry.getValue();
+				Record[] records = new Record[array.length];
+				for (int i = 0; i < array.length; i++) {
+					if (array[i] == null) {
+						continue;
+					}
+
+					int len = 0;
+					int pattern = 0;
+					int size = 0;
+					for (String value : array[i]) {
+						if (value != null) {
+							len++;
+							pattern = (pattern << 1) | 1;
+							size = Math.max(size, value.length());
+						} else {
+							pattern = pattern << 1;
+						}
+					}
+					
+					if (size == 10) {
+						long[] values = new long[len];
+						int index = 0;
+						for (String value : array[i]) {
+							if (value != null) {
+								values[index++] = Long.parseUnsignedLong(value, 16);
+							}
+						}
+						records[i] = new LongRecord((char)pattern, values);
+					} else if (size == 5) {
+						int[] values = new int[len];
+						int index = 0;
+						for (String value : array[i]) {
+							if (value != null) {
+								values[index++] = Integer.parseUnsignedInt(value, 16);
+							}
+						}
+						records[i] = new IntRecord((char)pattern, values);
+					} else if (size == 4) {
+						char[] values = new char[len];
+						int index = 0;
+						for (String value : array[i]) {
+							if (value != null) {
+								values[index++] = (char)Integer.parseUnsignedInt(value, 16);
+							}
+						}				
+						records[i] = new CharRecord((char)pattern, values);
+					} else {
+						throw new IllegalStateException("size is invalid: " + size);
+					}
+				}
+				for (int i = 0; i < records.length - 1; i++) {
+					for (int j = i + 1; j < records.length; j++) {
+						if (records[j] != null && records[j].equals(records[i])) {
+							records[j] = records[i];
+						}
+					}
+				}
+				jefDecoder.put(key, records);
 			}
 			
 			encoders.add(jefEncoder);
