@@ -198,7 +198,7 @@ public class FujitsuCharsetDecoderTest {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					
-					String unicode = toChars(node, false);
+					String unicode = toChars(node, true, false, false);
 					if (!unicode.equals("FFFD")) {
 						expected.put(node.get("jef").asText(), unicode);
 					}
@@ -253,7 +253,7 @@ public class FujitsuCharsetDecoderTest {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 
-					String unicode = toChars(node, true);
+					String unicode = toChars(node, true, true, false);
 					if (!unicode.equals("FFFD")) {
 						expected.put(node.get("jef").asText(), unicode);
 					}
@@ -264,6 +264,61 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> actual = new TreeMap<>();
 		
 		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF-HanyoDenshi")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+	
+		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+
+			bb.clear();
+			bb.put((byte)((i >> 8) & 0xFF));
+			bb.put((byte)(i & 0xFF));
+			bb.flip();
+			try {
+				CharBuffer cb = cd.decode(bb);
+				bb.flip();
+				
+				actual.put(hex(bb), hex(cb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			cd.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(expected.get(key), actual.get(key), key);
+		}
+	}
+		
+	@Test
+	public void testFujitsuJefAdobeJapan1Decoder() throws IOException {
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					String unicode = toChars(node, true, false, true);
+					if (!unicode.equals("FFFD")) {
+						expected.put(node.get("jef").asText(), unicode);
+					}
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF-AdobeJapan1")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -355,17 +410,24 @@ public class FujitsuCharsetDecoderTest {
 		}, JEF_ASCII));
 	}
 	
-	private static String toChars(JsonNode node, boolean useHanyoDenshi) {
+	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi, boolean useAdobeJapan1) {
 		List<String> parts = new ArrayList<>(); 
 		parts.add(node.get("unicode").asText());
-		JsonNode spNode = node.get("sp");
-		if (spNode != null) {
-			parts.add(spNode.asText());
+		if (useSP) {
+			JsonNode spNode = node.get("sp");
+			if (spNode != null) {
+				parts.add(spNode.asText());
+			}
 		}
 		if (useHanyoDenshi) {
 			JsonNode hdNode = node.get("hd");
 			if (hdNode != null) {
 				parts.add(hdNode.asText());
+			}
+		} else if (useAdobeJapan1) {
+			JsonNode aj1Node = node.get("aj1");
+			if (aj1Node != null) {
+				parts.add(aj1Node.asText());
 			}
 		}
 		
