@@ -2,11 +2,11 @@ plugins {
 	id 'java-library'
     id 'maven-publish'
 	id 'signing'
-    id 'org.jreleaser' version '1.18.0'
+    id 'org.jreleaser' version '1.19.0'
 }
 
 group = 'net.arnx'
-version = '0.10.2'
+version = '0.11.0'
 
 repositories {
     mavenCentral()
