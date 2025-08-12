@@ -90,7 +90,7 @@ Maven Central Repository から取得できます。
 <dependency>
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.10.1</version>
+  <version>0.11.0</version>
 </dependency>
 ```
 
