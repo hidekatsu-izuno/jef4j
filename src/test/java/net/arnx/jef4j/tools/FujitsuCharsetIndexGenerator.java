@@ -105,13 +105,13 @@ public class FujitsuCharsetIndexGenerator {
 					String hdunicode = toKey(node, "hd");
 					String aj1unicode = toKey(node, "aj1");
 					String jef = node.get("jef").asText();
-					boolean irreversible = true;
+					boolean reversible = true;
 
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
 							if ("irreversible".equals(child.asText())) {
-								irreversible = false;
+								reversible = false;
 							}
 						}
 					}
@@ -119,7 +119,7 @@ public class FujitsuCharsetIndexGenerator {
 					String[] ivsUnicode = new String[] {
 						hdunicode,
 						aj1unicode,
-						!irreversible ? sunicode : null
+						reversible ? sunicode : null
 					};
 
 					for (int i = 0; i < ivsUnicode.length; i++) {

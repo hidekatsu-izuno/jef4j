@@ -241,7 +241,79 @@ public class FujitsuCharsetDecoderTest {
 			assertEquals(expected.get(key), actual.get(key), key);
 		}
 	}
+
+	@Test
+	public void testFujitsuJefReversibleDecoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-Reversible");
+		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF));
+		assertEquals("\u4E08", new String(new byte[] { (byte)0xBE, (byte)0xE6 }, JEF));
+		assertEquals("\uFFFD", new String(new byte[] { (byte)0x41, (byte)0xA5 }, JEF));
+
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+					
+					String unicode = toChars(node, true, false, false);
+					JsonNode optionsNode = node.get("options");
+					boolean reversible = true;
+					if (optionsNode != null && optionsNode.isArray()) {
+						Set<String> options = mapper.convertValue(
+							optionsNode,
+							mapper.getTypeFactory().constructCollectionType(Set.class, String.class)
+						);
+						reversible = !options.contains("irreversible");
+					}
+
+					if (!unicode.equals("FFFD") && reversible) {
+						expected.put(node.get("jef").asText(), unicode);
+					}
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetDecoder cd = JEF
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
 	
+		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+			
+			bb.clear();
+			bb.put((byte)((i >> 8) & 0xFF));
+			bb.put((byte)(i & 0xFF));
+			bb.flip();
+			try {
+				CharBuffer cb = cd.decode(bb);
+				bb.flip();
+				
+				actual.put(hex(bb), hex(cb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			cd.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(expected.get(key), actual.get(key), key);
+		}
+	}
+
 	@Test
 	public void testFujitsuJefHanyoDenshiDecoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();

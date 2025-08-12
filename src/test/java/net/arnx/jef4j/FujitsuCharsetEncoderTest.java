@@ -236,6 +236,136 @@ public class FujitsuCharsetEncoderTest {
 	}
 
 	@Test
+	public void testFujitsuJefReversibleEncoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-Reversible");
+		assertEquals("4040A4A240404040B3A44040", hex("aあbc海d".getBytes(JEF)));
+		assertEquals("79DF", hex("\u00A1".getBytes(JEF)));
+
+		Map<String, String> expected = new TreeMap<>();
+
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					String unicode = toChars(node, true, false, false);
+					JsonNode optionsNode = node.get("options");
+					boolean reversible = true;
+					if (optionsNode != null && optionsNode.isArray()) {
+						Set<String> options = mapper.convertValue(
+							optionsNode,
+							mapper.getTypeFactory().constructCollectionType(Set.class, String.class)
+						);
+						reversible = !options.contains("irreversible");
+					}
+
+					if (!unicode.equals("FFFD") && reversible) {
+						expected.put(unicode, node.get("jef").asText());
+					}
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetEncoder ce = JEF
+				.newEncoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		CharBuffer cb = CharBuffer.allocate(4);
+	
+		for (int cp = 0; cp <= 0x2FFFF; cp++) {
+			if (cp >= 0xE000 && cp <= 0xF8FF) {
+				continue;
+			}
+
+			boolean success = false;
+			cb.clear();
+			cb.put(Character.toChars(cp));
+			cb.flip();
+			try {
+				ByteBuffer bb = ce.encode(cb);
+				cb.flip();
+				
+				actual.put(hex(cb), hex(bb));
+				success = true;
+			} catch (CharacterCodingException e) {
+			}
+			
+			ce.reset();
+
+			if (success) {
+				if (cp == 0x1B025
+					|| cp == 0x1B02A
+					|| cp == 0x1B02C
+					|| cp == 0x1B048
+					|| cp == 0x1B05F
+					|| cp == 0x1B0BA
+					|| cp == 0x1B019
+					|| cp == 0x1B034
+					|| cp == 0x1B038
+					|| cp == 0x1B03D
+					|| cp == 0x1B03F
+					|| cp == 0x1B041
+					|| cp == 0x1B048
+					|| cp == 0x1B04E
+					|| cp == 0x1B04F
+					|| cp == 0x1B055
+					|| cp == 0x1B05B
+					|| cp == 0x1B05F
+					|| cp == 0x1B066
+					|| cp == 0x1B06A
+					|| cp == 0x1B06B
+					|| cp == 0x1B06D
+					|| cp == 0x1B072
+					|| cp == 0x1B0A3
+					|| cp == 0x1B0A9
+					|| cp == 0x1B0AF
+					|| cp == 0x1B0B1
+					|| cp == 0x1B0B6
+				) {
+					cb.clear();
+					cb.put(Character.toChars(cp));
+					cb.put('\u3099');
+					cb.flip();
+					try {
+						ByteBuffer bb = ce.encode(cb);
+						cb.flip();
+						actual.put(hex(cb), hex(bb));
+					} catch (CharacterCodingException e) {
+					}
+					ce.reset();
+				} else {
+					for (int ivs = 0x0; ivs <= 0xF; ivs++) {
+						StringBuilder sb = new StringBuilder();
+						sb.appendCodePoint(cp);
+						sb.appendCodePoint(0xE0100 + ivs);
+						cb.clear();
+						cb.append(sb);
+						cb.flip();
+						try {
+							ByteBuffer bb = ce.encode(cb);
+							cb.flip();
+							actual.put(hex(cb), hex(bb));
+						} catch (CharacterCodingException e) {
+						}
+						ce.reset();
+					}	
+				}
+			}
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(expected.get(key), actual.get(key), "key = " + key);
+		}
+	}
+
+	@Test
 	public void testFujitsuJefHanyoDenshiEncoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 
@@ -355,7 +485,6 @@ public class FujitsuCharsetEncoderTest {
 			assertEquals(expected.get(key), actual.get(key), "key = " + key);
 		}
 	}
-
 	
 	@Test
 	public void testFujitsuJefAdobeJapan1Encoder() throws IOException {
