@@ -46,9 +46,9 @@ public class FujitsuCharsetTableGenerator {
 			out.append("<body>\n");
 			
 			for (String[] pair : new String[][] {
-				{ "/ebcdic_mapping.json", "x-Fujitsu-EBCDIC" },
-				{ "/ebcdik_mapping.json", "x-Fujitsu-EBCDIK" },
-				{ "/ascii_mapping.json", "x-Fujitsu-ASCII" }
+				{ "/fujitsu_ebcdic_mapping.json", "x-Fujitsu-EBCDIC" },
+				{ "/fujitsu_ebcdik_mapping.json", "x-Fujitsu-EBCDIK" },
+				{ "/fujitsu_ascii_mapping.json", "x-Fujitsu-ASCII" }
 			}) {
 				Map<Integer, String> map = new HashMap<>();
 				
@@ -96,7 +96,7 @@ public class FujitsuCharsetTableGenerator {
 				Map<Integer, String> map = new HashMap<>();
 				
 				try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-						FujitsuCharsetTableGenerator.class.getResourceAsStream("/jef_mapping.json"), 
+						FujitsuCharsetTableGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 						StandardCharsets.UTF_8)))) {
 					while (parser.nextToken() != JsonToken.END_ARRAY) {
 						if (parser.currentToken() == JsonToken.START_OBJECT) {

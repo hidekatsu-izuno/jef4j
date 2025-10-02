@@ -135,6 +135,13 @@ byte[] bytes = text.getBytes(charset);
 
 Apache License 2.0 で配布します。
 
+以下のコードマッピングファイルについては CC-O (Public Domain 相当) を適用いたします。
+
+- src/test/resources/fujitsu_ascii_mapping.json
+- src/test/resources/fujitsu_ebcdic_mapping.json
+- src/test/resources/fujitsu_ebcdik_mapping.json
+- src/test/resources/fujitsu_jef_mapping.json
+
 ## 変更履歴
 
 - 2025/8/13 version 0.11.0: 

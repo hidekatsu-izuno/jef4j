@@ -30,10 +30,10 @@ public class FujitsuCharsetIndexGenerator {
 		List<Object> decoders = new ArrayList<>();
 		
 		FujitsuCharsetIndexGenerator generator = new FujitsuCharsetIndexGenerator();
-		generator.generateEbcdicIndex("ascii_mapping.json", encoders, decoders);
-		generator.generateEbcdicIndex("ebcdic_mapping.json", encoders, decoders);
-		generator.generateEbcdicIndex("ebcdik_mapping.json", encoders, decoders);
-		generator.generateJefIndex("jef_mapping.json", encoders, decoders);
+		generator.generateEbcdicIndex("fujitsu_ascii_mapping.json", encoders, decoders);
+		generator.generateEbcdicIndex("fujitsu_ebcdic_mapping.json", encoders, decoders);
+		generator.generateEbcdicIndex("fujitsu_ebcdik_mapping.json", encoders, decoders);
+		generator.generateJefIndex("fujitsu_jef_mapping.json", encoders, decoders);
 		
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
 			for (Object encoder : encoders) {
