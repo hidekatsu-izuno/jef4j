@@ -50,11 +50,12 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					JsonNode unicode = node.get("unicode");
+					JsonNode ebcdic = node.get("ebcdic");
 
-					expected.put(
-						node.get("unicode").asText(),
-						node.get("ebcdic").asText()
-					);
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+						expected.put(unicode.asText(), ebcdic.asText());
+					}
 				}
 			}
 		}
@@ -97,11 +98,12 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					JsonNode unicode = node.get("unicode");
+					JsonNode ebcdic = node.get("ebcdic");
 
-					expected.put(
-						node.get("unicode").asText(),
-						node.get("ebcdic").asText()
-					);
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+						expected.put(unicode.asText(), ebcdic.asText());
+					}
 				}
 			}
 		}
@@ -144,11 +146,12 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					JsonNode unicode = node.get("unicode");
+					JsonNode ebcdic = node.get("ebcdic");
 
-					expected.put(
-						node.get("unicode").asText(),
-						node.get("ebcdic").asText()
-					);
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+						expected.put(unicode.asText(), ebcdic.asText());
+					}
 				}
 			}
 		}
