@@ -196,10 +196,12 @@
 { "unicode":  "FF9D", "ebcdic": "BD", "text": "ﾝ", "options": [] },
 { "unicode":  "FF9E", "ebcdic": "BE", "text": "ﾞ", "options": [] },
 { "unicode":  "FF9F", "ebcdic": "BF", "text": "ﾟ", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "04", "text": "VCS", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "1B", "text": "SFE/F", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "1C", "text": "DUP", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "2B", "text": "FMT", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "39", "text": "LDEL", "options": [] },
-{ "unicode":  "FFFD", "ebcdic": "3A", "text": "LINS", "options": [] }
+{ "unicode":  "009C", "ebcdic": "04", "text": "VCS", "options": ["compatible"] },
+{ "unicode":  "008F", "ebcdic": "1B", "text": "SFE/F", "options": ["compatible"] },
+{ "unicode":  "001C", "ebcdic": "1C", "text": "DUP", "options": ["compatible"] },
+{ "unicode":  "008B", "ebcdic": "2B", "text": "FMT", "options": ["compatible"] },
+{ "unicode":  "0099", "ebcdic": "39", "text": "LDEL", "options": ["compatible"] },
+{ "unicode":  "009A", "ebcdic": "3A", "text": "LINS", "options": ["compatible"] },
+{ "unicode":  "009F", "ebcdic": "FF", "text": "EO", "options": ["compatible"] },
+{ "unicode":  "009F", "ebcdic": "FF", "text": "EO", "options": ["compatible"] }
 ]

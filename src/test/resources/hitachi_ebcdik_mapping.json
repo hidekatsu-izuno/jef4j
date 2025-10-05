@@ -209,5 +209,6 @@
 { "unicode":  "FF9C", "ebcdic": "BC", "text": "ﾜ", "options": [] },
 { "unicode":  "FF9D", "ebcdic": "BD", "text": "ﾝ", "options": [] },
 { "unicode":  "FF9E", "ebcdic": "BE", "text": "ﾞ", "options": [] },
-{ "unicode":  "FF9F", "ebcdic": "BF", "text": "ﾟ", "options": [] }
+{ "unicode":  "FF9F", "ebcdic": "BF", "text": "ﾟ", "options": [] },
+{ "unicode":  "009F", "ebcdic": "FF", "text": "EO", "options": ["compatible"] }
 ]
