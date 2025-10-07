@@ -27,7 +27,7 @@ public class Jef4jCharsetProviderTest {
 				ByteUtils.hex("\u689B".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 
 		assertEquals(
-				"71ABA1AB",
+				"71AC",
 				ByteUtils.hex("\uD82C\uDC19\u3099".getBytes(Charset.forName("x-Fujitsu-JEF"))));
 		
 		assertEquals(
