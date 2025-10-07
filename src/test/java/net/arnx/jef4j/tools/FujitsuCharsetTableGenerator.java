@@ -36,7 +36,7 @@ public class FujitsuCharsetTableGenerator {
 			out.append(".charmap { table-layout: fixed; border-collapse: collapse; font-size: 16px; margin-bottom: 16px; }\n");
 			out.append(".charmap caption { line-height: 1.4; font-family: sans-serif; }\n");
 			out.append(".charmap th,\n");
-			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 32px; height: 22px; line-height: 1; }\n");
+			out.append(".charmap td { border: 1px solid black; text-align: center; vertical-align: middle; width: 48px; height: 22px; line-height: 1; }\n");
 			out.append(".charmap th { font-weight: bold; background: #C1FFFF; font-family: monospace; }\n");
 			out.append(".special { font-size: 12px; font-family: monospace; }\n");
 			out.append(".nogriph { font-size: 9px; font-family: monospace; }\n");
@@ -48,7 +48,10 @@ public class FujitsuCharsetTableGenerator {
 			for (String[] pair : new String[][] {
 				{ "/fujitsu_ebcdic_mapping.json", "x-Fujitsu-EBCDIC" },
 				{ "/fujitsu_ebcdik_mapping.json", "x-Fujitsu-EBCDIK" },
-				{ "/fujitsu_ascii_mapping.json", "x-Fujitsu-ASCII" }
+				{ "/fujitsu_ascii_mapping.json", "x-Fujitsu-ASCII" },
+				{ "/hitachi_ebcdic_mapping.json", "x-Hitachi-EBCDIC" },
+				{ "/hitachi_ebcdik_mapping.json", "x-Hitachi-EBCDIK" },
+				{ "/nec_ebcdik_mapping.json", "x-NEC-EBCDIK" }
 			}) {
 				Map<Integer, String> map = new HashMap<>();
 				
@@ -58,10 +61,23 @@ public class FujitsuCharsetTableGenerator {
 					while (parser.nextToken() != JsonToken.END_ARRAY) {
 						if (parser.currentToken() == JsonToken.START_OBJECT) {
 		                    JsonNode node = mapper.readTree(parser);
-							map.put(
-								Integer.parseUnsignedInt(node.get("ebcdic").asText(), 16), 
-								node.get("text").asText()
-							);
+							boolean decodeOnly = false;
+
+							JsonNode optionsNode = node.get("options");
+							if (optionsNode != null && optionsNode.isArray()) {
+								for (JsonNode child : optionsNode) {
+									if ("decode_only".equals(child.asText())) {
+										decodeOnly = false;
+									}
+								}
+							}
+
+							if (!decodeOnly) {
+								map.put(
+									Integer.parseUnsignedInt(node.get("ebcdic").asText(), 16), 
+									replaceText(node.get("text").asText(), node.get("unicode").asText())
+								);
+							}
 						}
 					}
 				}
@@ -81,6 +97,8 @@ public class FujitsuCharsetTableGenerator {
 						String value = map.get((i << 4) | j);
 						if (value == null) {
 							out.append("<td class=\"unmapped\">&nbsp;</td>");
+						} else if (value.startsWith("U+")) {
+							out.append("<td class=\"nogriph\">" + value + "</td>");
 						} else if (value.length() > 1 && !Character.isSurrogate(value.charAt(0))) {
 							out.append("<td class=\"special\">" + value + "</td>");
 						} else {
@@ -101,10 +119,23 @@ public class FujitsuCharsetTableGenerator {
 					while (parser.nextToken() != JsonToken.END_ARRAY) {
 						if (parser.currentToken() == JsonToken.START_OBJECT) {
 		                    JsonNode node = mapper.readTree(parser);
-							map.put(
-								Integer.parseUnsignedInt(node.get("jef").asText(), 16), 
-								node.get("text").asText()
-							);
+							boolean decodeOnly = false;
+
+							JsonNode optionsNode = node.get("options");
+							if (optionsNode != null && optionsNode.isArray()) {
+								for (JsonNode child : optionsNode) {
+									if ("decode_only".equals(child.asText())) {
+										decodeOnly = false;
+									}
+								}
+							}
+
+							if (!decodeOnly) {
+								map.put(
+									Integer.parseUnsignedInt(node.get("jef").asText(), 16), 
+									node.get("text").asText()
+								);
+							}
 						}
 					}
 				}
@@ -167,5 +198,12 @@ public class FujitsuCharsetTableGenerator {
 			out.append("</body>\n");
 			out.append("</html>\n");
 		}
+	}
+
+	private static String replaceText(String text, String code) {
+		if ("(Undefined)".equals(text) || "(Reserved)".equals(text)) {
+			return "U+" + code;
+		}
+		return text;
 	}
 }

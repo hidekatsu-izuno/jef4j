@@ -52,8 +52,18 @@ public class FujitsuCharsetEncoderTest {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
 					JsonNode ebcdic = node.get("ebcdic");
+					boolean decodeOnly = false;
+					
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
+					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
 						expected.put(unicode.asText(), ebcdic.asText());
 					}
 				}
@@ -100,8 +110,18 @@ public class FujitsuCharsetEncoderTest {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
 					JsonNode ebcdic = node.get("ebcdic");
+					boolean decodeOnly = false;
+					
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
+					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
 						expected.put(unicode.asText(), ebcdic.asText());
 					}
 				}
@@ -148,8 +168,18 @@ public class FujitsuCharsetEncoderTest {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
 					JsonNode ebcdic = node.get("ebcdic");
+					boolean decodeOnly = false;
+					
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
+					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText())) {
+					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
 						expected.put(unicode.asText(), ebcdic.asText());
 					}
 				}
@@ -194,9 +224,19 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					boolean decodeOnly = false;
+					
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
+					}
 					
 					String unicode = toChars(node, false, false, false);
-					if (!unicode.equals("FFFD")) {
+					if (!unicode.equals("FFFD") && !decodeOnly) {
 						expected.put(unicode, node.get("jef").asText());
 					}
 				}
@@ -252,19 +292,22 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
-
-					String unicode = toChars(node, true, false, false);
-					JsonNode optionsNode = node.get("options");
+					boolean decodeOnly = false;
 					boolean reversible = true;
+					
+					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
-						Set<String> options = mapper.convertValue(
-							optionsNode,
-							mapper.getTypeFactory().constructCollectionType(Set.class, String.class)
-						);
-						reversible = !options.contains("irreversible");
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							} else if ("irreversible".equals(child.asText())) {
+								reversible = false;
+							}
+						}
 					}
 
-					if (!unicode.equals("FFFD") && reversible) {
+					String unicode = toChars(node, true, false, false);
+					if (!unicode.equals("FFFD") && reversible && !decodeOnly) {
 						expected.put(unicode, node.get("jef").asText());
 					}
 				}

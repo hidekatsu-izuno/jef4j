@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -57,9 +56,6 @@ public class FujitsuCharsetIndexGenerator {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
-		Arrays.fill(encoderMap, (byte)0xFF);
-		Arrays.fill(decoderMap, (byte)0xFF);
-		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
 				StandardCharsets.UTF_8)))) {
@@ -69,15 +65,34 @@ public class FujitsuCharsetIndexGenerator {
 				
 					String unicode = node.get("unicode").asText();
 					String ebcdic = node.get("ebcdic").asText();
+					boolean decodeOnly = false;
+					boolean encodeOnly = false;
+
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							} else if ("encode_only".equals(child.asText())) {
+								encodeOnly = true;
+							}
+						}
+					}
 
 					int iUnicode = Integer.parseUnsignedInt(unicode, 16);
 					int iEbcdic = Integer.parseUnsignedInt(ebcdic, 16);
-					if (iUnicode >= '\uFF61') {
-						iUnicode = iUnicode -'\uFF61' + '\u00C0';
+					if (iUnicode == '\u203E') {
+						iUnicode = iUnicode - '\u203E' + '\u00B0';
+					} else if (iUnicode >= '\uFF61') {
+						iUnicode = iUnicode - '\uFF61' + '\u00C0';
 					}
 					
-					encoderMap[iUnicode] = (byte)iEbcdic;
-					decoderMap[iEbcdic] = (byte)iUnicode;
+					if (!decodeOnly) {
+						encoderMap[iUnicode] = (byte)iEbcdic;
+					}
+					if (!encodeOnly) {
+						decoderMap[iEbcdic] = (byte)iUnicode;
+					}
 				}
 			}
 		}
@@ -105,12 +120,18 @@ public class FujitsuCharsetIndexGenerator {
 					String hdunicode = toKey(node, "hd");
 					String aj1unicode = toKey(node, "aj1");
 					String jef = node.get("jef").asText();
+					boolean decodeOnly = false;
+					boolean encodeOnly = false;
 					boolean reversible = true;
 
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
-							if ("irreversible".equals(child.asText())) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							} else if ("encode_only".equals(child.asText())) {
+								encodeOnly = true;
+							} else if ("irreversible".equals(child.asText())) {
 								reversible = false;
 							}
 						}
@@ -131,7 +152,9 @@ public class FujitsuCharsetIndexGenerator {
 						if (array[i] == null) {
 							array[i] = new String[16];
 						}
-						array[i][Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+						if (!decodeOnly) {
+							array[i][Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+						}
 					}
 
 					for (int i = 0; i < ivsUnicode.length; i++) {
@@ -144,7 +167,9 @@ public class FujitsuCharsetIndexGenerator {
 							if (array[i] == null) {
 								array[i] = new String[16];
 							}
-							array[i][Integer.parseUnsignedInt(ivsUnicode[i].substring(ivsUnicode[i].length()-1), 16)] = jef;
+							if (!decodeOnly) {
+								array[i][Integer.parseUnsignedInt(ivsUnicode[i].substring(ivsUnicode[i].length()-1), 16)] = jef;
+							}
 						}
 					}
 					
@@ -157,7 +182,9 @@ public class FujitsuCharsetIndexGenerator {
 						if (array[i] == null) {
 							array[i] = new String[16];
 						}
-						array[i][Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = ivsUnicode[i];
+						if (!encodeOnly) {
+							array[i][Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = ivsUnicode[i];
+						}
 					}
 				}
 			}

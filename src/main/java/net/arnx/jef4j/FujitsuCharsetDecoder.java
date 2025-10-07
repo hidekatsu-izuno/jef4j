@@ -96,12 +96,16 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 				}
 				
 				if (!kshifted && map != null) {
-					char c = (char)(map[b] & 0xFF);
-					if (map == EBCDIK_MAP && c >= '\u00C0' && c <= '\u00FE') {
-						c = (char)(c - '\u00C0' + '\uuFF61');
+					char c = b != 0 ? (char)(map[b] & 0xFF) : '\0';
+					if (c >= '\u00B0' && c <= '\u00FE') {
+						if (c == '\u00B0') {
+							c = '\u203E';
+						} else if (c >= '\u00C0') {
+							c = (char)(c - '\u00C0' + '\uFF61');
+						}
 					}
 					
-					if (c == '\u00FF') {
+					if (b != 0 && c == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
 					

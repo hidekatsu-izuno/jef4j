@@ -142,18 +142,27 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 				char c = in.get();
 				if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
-				} else if (c <= '\u007F'
-						|| (map == EBCDIC_MAP && (c == '\u00A3' || c == '\u00A6' || c == '\u00AC'))
-						|| (map == EBCDIK_MAP && (c == '\u00A3' || c == '\u00AC' || (c >= '\uFF61' && c <= '\uFF9F')))) {
+				} else if (c <= '\u007F' || (
+					map != null && (
+						c <= '\u009F'
+						|| c == '\u00A3' || c == '\u00A6' || c == '\u00AC'
+						|| c == '\u203E' 
+						|| (c >= '\uFF61' && c <= '\uFF9F')
+					)
+				)) {
 					
 					if (map == null) {
 						return CoderResult.unmappableForLength(1);
-					} else if (map == EBCDIK_MAP && c >= '\uFF61' && c <= '\uFF9F') {
-						c = (char)(c - '\uFF61' + '\u00C0');
+					} else {
+						if (c == '\u203E') {
+							c = (char)(c - '\u203E' + '\u00B0');
+						} else if (c >= '\uFF61' && c <= '\uFF9F') {
+							c = (char)(c - '\uFF61' + '\u00C0');
+						}
 					}
 					
 					byte value = map[c];
-					if (value == -1) {
+					if (c != '\0' && value == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
 					
@@ -219,54 +228,54 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 
 						int mc = -1;
 						CoderResult cr = null;
-						if (type.handleIVS()) {
-							if (!in.hasRemaining()) {
-								if (!restored) {
-									backup = new StringBuilder().appendCodePoint((int)key);
-									mark += progress;
-									return CoderResult.UNDERFLOW;	
+						if (!in.hasRemaining()) {
+							if (!restored) {
+								backup = new StringBuilder().appendCodePoint((int)key);
+								mark += progress;
+								return CoderResult.UNDERFLOW;	
+							}
+						} else {
+							int mark2 = in.position();
+							char c3 = in.get();
+							if (c3 == '\u3099') {
+								long key2 = ((long)c3) << 20 | key;
+								Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+								Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
+								if (record2 != null && record2.exists((int)(key2 & 0xF))) {
+									mc = (char)record2.get((int)(key2 & 0xF));
+									progress++;
+								} else {
+									in.position(mark2);
 								}
-							} else {
-								int mark2 = in.position();
-								char c3 = in.get();
-								if (c3 == '\u3099') {
-									long key2 = ((long)c3) << 20 | key;
-									Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
-									Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
-									if (record2 != null && record2.exists((int)(key2 & 0xF))) {
-										mc = (char)record2.get((int)(key2 & 0xF));
-										progress++;
+							} else if (type.handleIVS() && c3 == '\uDB40') {
+								if (!in.hasRemaining()) {
+									if (isEndOfInput()) {
+										cr = CoderResult.malformedForLength(1);
+									} else if (!restored) {
+										backup = new StringBuilder().appendCodePoint((int)key);
+										mark += progress;
+										return CoderResult.UNDERFLOW;
 									} else {
 										in.position(mark2);
 									}
-								} else if (c3 == '\uDB40') {
-									if (!in.hasRemaining()) {
-										if (isEndOfInput()) {
-											cr = CoderResult.malformedForLength(1);
-										} else if (!restored) {
-											backup = new StringBuilder().appendCodePoint((int)key);
-											mark += progress;
-											return CoderResult.UNDERFLOW;
+								} else {
+									char c4 = in.get();
+									if (Character.isLowSurrogate(c4)) {
+										long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
+										Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
+										Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
+										if (record2 != null && record2.exists((int)(key2 & 0xF))) {
+											mc = (char)record2.get((int)(key2 & 0xF));
+											progress += 2;
 										} else {
-											in.position(mark2);
+											cr = CoderResult.unmappableForLength(2);
 										}
 									} else {
-										char c4 = in.get();
-										if (Character.isLowSurrogate(c4)) {
-											long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
-											Record[] records2 = JEF_MAP.get(key2 & 0xFFFFFFFFF0L);
-											Record record2 = records2 != null ? records2[type.getJEFTableNo()] : null;
-											if (record2 != null && record2.exists((int)(key2 & 0xF))) {
-												mc = (char)record2.get((int)(key2 & 0xF));
-												progress += 2;
-											} else {
-												cr = CoderResult.unmappableForLength(2);
-											}
-										} else {
-											cr = CoderResult.malformedForLength(2);
-										}
+										cr = CoderResult.malformedForLength(2);
 									}
 								}
+							} else {
+								in.position(mark2);
 							}
 						}
 						if (mc == -1) {
