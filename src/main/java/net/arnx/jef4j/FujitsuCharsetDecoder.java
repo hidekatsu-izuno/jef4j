@@ -30,15 +30,15 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	private static final byte[] ASCII_MAP;
 	private static final byte[] EBCDIC_MAP;
 	private static final byte[] EBCDIK_MAP;
-	private static final LongObjMap<Record[]> JEF_MAP;
+	private static final LongObjMap<Record[]> KANJI_MAP;
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
+				FujitsuCharsetDecoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
 			ASCII_MAP = (byte[])in.readObject();
 			EBCDIC_MAP = (byte[])in.readObject();
 			EBCDIK_MAP = (byte[])in.readObject();
-			JEF_MAP = (LongObjMap<Record[]>)in.readObject();
+			KANJI_MAP = (LongObjMap<Record[]>)in.readObject();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -133,7 +133,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 							return CoderResult.unmappableForLength(2);
 						}
 					} else {
-						Record[] records = JEF_MAP.get((b << 8) | (b2 & 0xF0));
+						Record[] records = KANJI_MAP.get((b << 8) | (b2 & 0xF0));
 						Record record = records != null ? records[type.getJEFTableNo()] : null;
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {

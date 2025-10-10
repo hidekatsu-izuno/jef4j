@@ -40,6 +40,16 @@ public class Jef4jCharsetProvider extends CharsetProvider {
 					return new FujitsuCharset(type);
 				}
 			}
+			for (HitachiCharsetType type : HitachiCharsetType.values()) {
+				if (type.getCharsetName().equalsIgnoreCase(cn)) {
+					return new HitachiCharset(type);
+				}
+			}
+			for (NecCharsetType type : NecCharsetType.values()) {
+				if (type.getCharsetName().equalsIgnoreCase(cn)) {
+					return new NecCharset(type);
+				}
+			}
 			return null;
 		});
 	}
