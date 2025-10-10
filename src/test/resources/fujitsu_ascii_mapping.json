@@ -151,7 +151,6 @@
 { "unicode":  "0095", "ebcdic": "35", "text": "TRN", "options": [] },
 { "unicode":  "0096", "ebcdic": "36", "text": "(Undefined)", "options": ["compatible"] },
 { "unicode":  "0097", "ebcdic": "08", "text": "(Undefined)", "options": ["compatible"] },
-{ "unicode":  "0098", "ebcdic": "38", "text": "(Undefined)", "options": ["compatible"] },
 { "unicode":  "0099", "ebcdic": "39", "text": "LDEL", "options": [] },
 { "unicode":  "009A", "ebcdic": "3A", "text": "LINS", "options": [] },
 { "unicode":  "009B", "ebcdic": "3B", "text": "(Undefined)", "options": ["compatible"] },
