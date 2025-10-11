@@ -4,7 +4,7 @@
 { "keis": "61FC", "unicode":  "69C7", "text": "槇", "options": [] },
 { "keis": "65A7", "unicode":  "7464", "text": "瑤", "options": [] },
 { "keis": "6BA2", "unicode":  "9059", "text": "遙", "options": [] },
-{ "keis": "A1A1", "unicode":  "3000", "text": "　", "options": ["decoding_only"] },
+{ "keis": "A1A1", "unicode":  "3000", "text": "　", "options": ["decode_only"] },
 { "keis": "A1A2", "unicode":  "3001", "text": "、", "options": [] },
 { "keis": "A1A3", "unicode":  "3002", "text": "。", "options": [] },
 { "keis": "A1A4", "unicode":  "FF0C", "text": "，", "options": [] },
