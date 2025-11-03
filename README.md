@@ -11,7 +11,7 @@ jef4j は、富士通株式会社のメインフレームで使われていた J
 
 ## JEF漢字コードとは
 
-JEF は、富士通株式会社のメインフレームで使われていた漢字コード体系です。Unicodeの整備も進んだ今となっては消え行く定めにあるものではありますが、企業の基幹系ではいまだ多数のメインフレームが稼働しているため、既存システムからのデータ移行は現在でも重要な技術です。
+JEF (JAPANESE PROCESSING EXTENDED FEATURE) は、富士通株式会社のメインフレームで使われていた漢字コード体系です。Unicodeの整備も進んだ今となっては消え行く定めにあるものではありますが、企業の基幹系ではいまだ多数のメインフレームが稼働しているため、既存システムからのデータ移行は現在でも重要な技術です。
 
 1979 年に策定された、と聞くと古臭いと思われるかもしれません。しかし、実際には最新の Unicode でも異体字セレクタを使わないとカバーできない様々な漢字が収録されており、漢字集合としては決して古びたものではありません。富士通社のメインフレームは多くの公共機関でも使われており、その意味で日本の基盤を支える文字コード体系のひとつと言うことができるかもしれません。
 
@@ -55,7 +55,7 @@ JEF 漢字コードの標準漢字/非漢字領域については、PC でも一
 
 ### 1 バイト文字との併用
 
-JEF漢字コード体系には半角英数や半角カナは含まれません。そのため、メインフレームではよく使われる EBCDIC という 1 バイト文字体系と併用して使われます。
+JEF漢字コード体系には半角英数や半角カナは含まれません。そのため、メインフレームではよく使われる EBCDIC という1バイト文字体系と併用して使われます。
 
 EBCDICのコード体系としては、IBM-EBCDIC 相当のもの、半角カナを追加した日立製作所 EBCDIK 相当のもの、US-ASCII との整合性を重視したマッピングの3種類が存在します。これらはいずれも 1 バイトのコード体系ですが、SHIFT_JIS や EUC-JP とは異なり JEF 漢字コードとコード域が重なるため両方を同時に使うことはできません。このため、シフトコードを使って1バイトコード体系と2バイトコード体系の切り替えを行います。
 
@@ -82,11 +82,11 @@ jef4jでは、デコード(JEF → Unicode)時については、この異体字�
 
 #### 利用者定義領域の取り扱い
 
-JEF の利用者定義文字（いわゆる外字）3102 文字は、Unicode 私的利用領域 E000～EC1D にマッピングされます。
+JEF の利用者定義文字 3102 文字は、Unicode 私的利用領域 E000～EC1D にマッピングされます。
 
 ## KEIS 漢字コードとは
 
-KEIS は株式会社日立製作所のメインフレームで使われていた漢字コード体系です。
+KEIS (KANJI EXTENDED INFORMATION PROCESSING SYSTEM) は株式会社日立製作所のメインフレームで使われていた漢字コード体系です。
 
 ### KEIS 漢字コード体系の構造
 
@@ -98,7 +98,7 @@ KEIS 漢字コード体系は、JIS78 (JIS C 6226:1978)に基づく KEIS-78 と 
 |-----|------|
 |全角空白|0x4040|
 |拡張文字セット2|0x59A1～0x80FE|
-|利用者定義|0x81A1～0x8FFE、0xA0A1～0xA0FE|
+|利用者定義|0x81A1～0x9EFE、0xA0A1～0xA0FE|
 |拡張文字セット3|0x9FA1～0x9FFE|
 |基本文字セット|0xA1A1～0xCEFE|
 |拡張文字セット1|0xD1A1～0xFEFE|
@@ -107,14 +107,78 @@ KEIS 漢字コード体系は、JIS78 (JIS C 6226:1978)に基づく KEIS-78 と 
 
 拡張文字セット2、拡張文字セット3 については、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
 
-### 1 バイト文字との併用
+### KEIS と EBCDIC/EBCDIK の併用
 
-KEIS 漢字コード体系には半角英数や半角カナは含まれませんので EBCDIC と併用して使われます。JEF 同様、シフトコードを使って1バイトコード体系と2バイトコード体系の切り替えを行います。
+KEIS 漢字コード体系には半角英数や半角カナは含まれませんので EBCDIC/EBCDIK と併用して使われます。EBCDICはASCIIとは異なり8bit体系でありコードが重なるため、シフトコードを使って1バイトコード体系と2バイトコード体系の切り替えを行う必要があります。
 
-|コード名|カテゴリ|コード値|備考|
-|--------|--------|-------|----|
-|全角シフト|シフトアウト|0x0A42||
-|半角シフト|シフトイン|0x0A41||
+|コード名|カテゴリ|コード値|
+|--------|--------|-------|
+|全角シフト|シフトアウト|0x0A42|
+|半角シフト|シフトイン|0x0A41|
+
+#### KEIS の利用者定義領域の取り扱い
+
+KEIS の利用者定義文字は2パートに分かれますが、Unicode 私的利用領域には以下のようにマッピングされます。
+
+- 0x81A1～0x8FFE (3677文字): E000～EE5D
+- 0xA0A1～0xA0FE (93文字): EE5E～EEBA
+
+#### KEIS に関する資料
+
+- [Interstage Charset Manager Standard Edition V9 使用手引書 C.8 KEISコード系の概要](https://software.fujitsu.com/jp/manual/manualfiles/m200002/b1wd0741/14z200/b0741-c-08-00.html)
+- [文字コード表 日本語EUC(euc-jp)](http://charset.7jp.net/euc.html)
+- [OpenTP1 Version 7 マニュアル](https://itpfdoc.hitachi.co.jp/manuals/3000/30003D5851/CLNT0276.HTM)
+- [PRINT DATA EXCHANGE - Form Designer マニュアル](https://itpfdoc.hitachi.co.jp/manuals/3020/30203P0360/PDEF0203.HTM)
+
+## JIPS 漢字コードとは
+
+JIPS (Japanese Information Processing System) とは日本電気株式会社のオフコンで使われていた漢字コード体系です。
+JIPS には、JISコード配列をそのまま採用した JIPS(J) と JISコードを EBCDIC 範囲にマッピングした JIPS(E) があります。
+
+### JIPS 漢字コード体系の構造
+
+JIPS 漢字コード体系は 2バイトの各バイトを2分割ずつにした4領域で定義され、それぞれ G0～G3集合と呼ばれます。
+そのうち G0集合については、JIS78 (JIS C 6226:1978) の JISコード配列がそのまま配置されます。
+
+|カテゴリ|コード域|
+|-----|------|
+|G0集合|0x2121～0x7E7E|
+|G1集合|0xA1A1～0xFEFE|
+|G2集合|0xA121～0xFE7E|
+|G3集合|0x21A1～0x7EFE|
+
+なおG0、G1集合のうち下記範囲は外字領域として定義されています。
+
+|カテゴリ|コード域|
+|-----|------|
+|G0外字領域|0x7421～0x7E7E|
+|G1外字領域|0xE021～0xFEFE|
+
+G1～G3集合 については、情報がなく部分的な対応に留まっています。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+
+### JIPS と EBCDICカナ文字 の併用
+
+JIPS 漢字コード体系には半角英数や半角カナは含まれませんので EBCDICカナ文字と併用して使われます。EBCDICはASCIIとは異なり8bit体系でありコードが重なるため、シフトコードを使って1バイトコード体系と2バイトコード体系の切り替えを行う必要があります。
+
+|コード名|カテゴリ|コード値|
+|--------|--------|-------|
+|全角シフト|シフトアウト|JIPS(J)：0x1A70、JIPS(E)：0x3F75|
+|半角シフト|シフトイン|0x3F76|
+
+#### JIPS の外字領域の取り扱い
+
+JIPSの利用者定義文字は各集合の後半部分に配置されます。複数のパートに分かれるため、Unicode 私的利用領域に以下のようにマッピングされます。
+
+- G0集合 0x7421～0x7D7E (1034文字): E000～E409
+- G1集合 0xE0A1～0xFEFE (2914文字): E40A～EF6B
+
+### JIPS に関する参考文献
+
+- [Interstage Charset Manager Standard Edition V9 使用手引書 C.7 JIPSコード系の概要](https://software.fujitsu.com/jp/manual/manualfiles/m200002/b1wd0741/14z200/b0741-c-07-00.html)
+- [オフコン練習帳 ２バイト文字系の文字コード体系](https://offcom.jp/modules/amanual/index.php/ouyou/mojicode/moji_code10.html)
+- [歴博 REKIHAKU 小形克宏「Windows外字と、その互換性をめぐる争い」](http://kanji.zinbun.kyoto-u.ac.jp/~yasuoka/publications/2013-09Rekihaku.pdf)
+- [PC-9801プログラマーズBible](https://dn790009.ca.archive.org/0/items/PC9801Bible/PC-9801Bible_%E6%9D%B1%E4%BA%AC%E7%90%86%E7%A7%91%E5%A4%A7%E5%AD%A6%20%281%29.pdf)
+- [NEC WebOTX Manual V10.1 (第7版)](https://docs.nec.co.jp/sites/default/files/webotx_manual_v101/WebOTX/101/html/serviceintegration/olfadapter/ref/library/convert.html?utm_source=chatgpt.com)
 
 ## インストール
 
@@ -167,7 +231,7 @@ byte[] bytes = text.getBytes(charset);
 
 変換に失敗した場合の置換文字としては、半角/全角空白が使用されます。Windows-31J など他の文字コードでは'?'が使用されますが、シフトイン/シフトアウトでの切り替えがあるため、どちらでも有効な文字として解釈できる半角空白（JEF/EBCDIC併用時は半角空白２文字）に置換しています。
 
-### 日立系文字セット（ベータ版）
+### 日立系文字セット（ベータ）
 
 |文字セット名|説明|
 |----------|----|
@@ -180,7 +244,13 @@ byte[] bytes = text.getBytes(charset);
 |x-Hitachi-EBCDIK-KEIS78|日立 EBCDIK + KEIS-78 のコード表です。|
 |x-Hitachi-EBCDIK-KEIS83|日立 EBCDIK + KEIS-83 のコード表です。|
 
-### NEC系文字セット（ベータ版）
+### NEC系文字セット（ベータ）
+
+|文字セット名|説明|
+|----------|----|
+|x-Nec-EBCDIK|NEC EBCDICカナ文字 のコード表です。|
+|x-Nec-JIPS_J|NEC JIPS(J) のコード表です。|
+|x-Nec-EBCDIC-JIPS_J|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
 
 ## ライセンス
 

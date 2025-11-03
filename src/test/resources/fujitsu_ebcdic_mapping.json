@@ -92,7 +92,7 @@
 { "unicode":  "005A", "ebcdic": "E9", "text": "Z", "options": [] },
 { "unicode":  "005B", "ebcdic": "4A", "text": "[", "options": ["encode_only"] },
 { "unicode":  "005C", "ebcdic": "5B", "text": "\\", "options": [] },
-{ "unicode":  "005E", "ebcdic": "5F", "text": "^", "options": ["encode_only"] },
+{ "unicode":  "005E", "ebcdic": "5F", "text": "^", "options": [] },
 { "unicode":  "005F", "ebcdic": "6D", "text": "_", "options": [] },
 { "unicode":  "0060", "ebcdic": "79", "text": "`", "options": [] },
 { "unicode":  "0061", "ebcdic": "81", "text": "a", "options": [] },
@@ -124,7 +124,7 @@
 { "unicode":  "007B", "ebcdic": "C0", "text": "{", "options": [] },
 { "unicode":  "007C", "ebcdic": "4F", "text": "|", "options": [] },
 { "unicode":  "007D", "ebcdic": "D0", "text": "}", "options": [] },
-{ "unicode":  "007E", "ebcdic": "A1", "text": "~", "options": ["encode_only"] },
+{ "unicode":  "007E", "ebcdic": "A1", "text": "~", "options": [] },
 { "unicode":  "007F", "ebcdic": "07", "text": "DEL", "options": [] },
 { "unicode":  "0080", "ebcdic": "20", "text": "(Undefined)", "options": ["compatible"] },
 { "unicode":  "0081", "ebcdic": "21", "text": "(Undefined)", "options": ["compatible"] },
@@ -159,6 +159,6 @@
 { "unicode":  "009F", "ebcdic": "FF", "text": "EO", "options": [] },
 { "unicode":  "00A3", "ebcdic": "4A", "text": "£", "options": [] },
 { "unicode":  "00A6", "ebcdic": "6A", "text": "¦", "options": [] },
-{ "unicode":  "00AC", "ebcdic": "5F", "text": "¬", "options": [] },
-{ "unicode":  "203E", "ebcdic": "A1", "text": "‾", "options": [] }
+{ "unicode":  "00AC", "ebcdic": "5F", "text": "¬", "options": ["encode_only"] },
+{ "unicode":  "203E", "ebcdic": "A1", "text": "‾", "options": ["encode_only"] }
 ]
