@@ -16,29 +16,61 @@
 package net.arnx.jef4j;
 
 enum NecCharsetType {
-	EBCDIK("x-NEC-EBCDIK", false),
-	JIPS_J("x-NEC-JIPS-J", false),
-	JIPS_E("x-NEC-JIPS-E", false),
-	JIPS_J_JIS8("x-NEC-JIPS(J)-JIS8", true),
-	JIPS_J_EBCDIK("x-NEC-JIPS(J)-EBCDIK", true),
-	JIPS_E_EBCDIK("x-NEC-JIPS(E)-EBCDIK", true);
+	EBCDIK("x-NEC-EBCDIK", 0, -1, false, false),
+	JIPSJ("x-NEC-JIPSJ", -1, 0, false, false),
+	JIPSE("x-NEC-JIPSE", -1, 0, true, false),
+	JIPSJ_EBCDIK("x-NEC-JIPSJ-EBCDIK", 0, 0, false, false),
+	JIPSE_EBCDIK("x-NEC-JIPSE-EBCDIK", 0, 0, true, false),
+	JIPSJ_HD_EBCDIK("x-NEC-JIPSJ-HanyoDenshi-EBCDIK", 0, 0, false, true),
+	JIPSE_HD_EBCDIK("x-NEC-JIPSE-HanyoDenshi-EBCDIK",  0, 0, true, true),
+	JIPSJ_AJ1_EBCDIK("x-NEC-JIPSJ-AdobeJapan1-EBCDIK",  0, 1, false, true),
+	JIPSE_AJ1_EBCDIK("x-NEC-JIPSE-AdobeJapan1-EBCDIK",  0, 1, true, true);
 	
 	private final String charsetName;
-	private final boolean handleShift;
+	private final int sbcsTableNo;
+	private final int mbcsTableNo;
+	private final boolean handleJIPSE;
+	private final boolean handleIVS;
 	
 	NecCharsetType(
 		String charsetName, 
-		boolean handleShift
+		int sbcsTableNo,
+		int mbcsTableNo,
+		boolean handleJIPSE,
+		boolean handleIVS
 	) {
 		this.charsetName = charsetName;
-		this.handleShift = handleShift;
+		this.sbcsTableNo = sbcsTableNo;
+		this.mbcsTableNo = mbcsTableNo;
+		this.handleJIPSE = handleJIPSE;
+		this.handleIVS = handleIVS;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
 	}
 
-	boolean handleShift() {
-		return handleShift;
+	boolean handleSBCS() {
+		return sbcsTableNo != -1;
+	}
+	
+	boolean handleMBCS() {
+		return mbcsTableNo != -1;
+	}
+
+	boolean handleJIPSE() {
+		return handleJIPSE;
+	}
+	
+	boolean handleIVS() {
+		return handleIVS;
+	}
+
+	int getSBCSTableNo() {
+		return sbcsTableNo;
+	}
+
+	int getMBCSTableNo() {
+		return mbcsTableNo;
 	}
 }

@@ -5,7 +5,7 @@
 
 ## はじめに
 
-jef4j は、富士通株式会社のメインフレームで使われていた JEF 漢字コード体系、株式会社日立製作所のメインフレームで使われていた KEIS、日本電気株式会社のメインフレームで使われていた JIPS、といったレガシーな文字コードを Unicode を相互変換するための Java 用 Charset ライブラリです。
+jef4j は、富士通株式会社のメインフレームで使われていた JEF 漢字コード体系、株式会社日立製作所のメインフレームで使われていた KEIS、日本電気株式会社のメインフレームで使われていた JIPS といったレガシーな文字コードを Unicode を相互変換するための Java 用 Charset ライブラリです。
 
 このプロダクトは富士通株式会社、株式会社日立製作所、日本電気株式会社とはまったく関係ありませんので各社への問い合わせはご遠慮ください。
 
@@ -71,7 +71,7 @@ EBCDICのコード体系としては、IBM-EBCDIC 相当のもの、半角カナ
 
 例えば、JEF では、二点しんにょうの「辻󠄃(C4D4)」と一点しんにょうの「辻󠄂(67A5)」が別のコードとして登録されていますが、Unicode ではいずれも「辻(U+8FBB)」にマッピングされます。異体字セレクタを用いると、「辻󠄃(U+8FBB\_E0102)」および「辻󠄂(U+8FBB\_E0103)」という形で意図した字形で表示することができるようになります。
 
-jef4jでは、デコード(JEF → Unicode)時については、この異体字セレクタも含めた形での変換も可能になっています。 （Java NIO Charset API の制約のため、エンコードに関しては対応できませんでした）
+jef4jでは、デコード(JEF → Unicode)時については、この異体字セレクタも含めた形での変換も可能になっています。
 
 現時点で、以下のコードを除き、すべてのコードが正しくマッピングされた状態となっています。
 
@@ -90,7 +90,9 @@ KEIS (KANJI EXTENDED INFORMATION PROCESSING SYSTEM) は株式会社日立製作�
 
 ### KEIS 漢字コード体系の構造
 
-KEIS 漢字コード体系は、JIS78 (JIS C 6226:1978)に基づく KEIS-78 と JIS83 (JIS X 0208:1983) に基づく KEIS-83 の２つから構成される２バイトコード体系です。JEF や JIPS が JIS83 での字体変更に対し既存コード体系の拡張（字体変更された文字を別コードで追加）する方式を選んだのに対し、KEIS は漢字コード体系自体が変更されています。
+KEIS 漢字コード体系は、JIS78 (JIS C 6226:1978)に基づく KEIS78 と JIS83 (JIS X 0208:1983) に基づく KEIS-83 の２つから構成される２バイトコード体系です。JEF や JIPS が JIS83 での字体変更に対し既存コード体系の拡張（字体変更された文字を別コードで追加）する方式を選んだのに対し、KEIS は漢字コード体系自体が変更されています。
+
+KEIS83、はその後、IBM拡張文字への対応などが行われた KEIS90、JIS2004に対応した KEIS2004 へと拡張されたようです。
 
 ### KEIS 漢字コード体系の構造
 
@@ -152,7 +154,7 @@ JIPS 漢字コード体系は 2バイトの各バイトを2分割ずつにした
 |カテゴリ|コード域|
 |-----|------|
 |G0外字領域|0x7421～0x7E7E|
-|G1外字領域|0xE021～0xFEFE|
+|G1外字領域|0xE0A1～0xFEFE|
 
 G1～G3集合 については、情報がなく部分的な対応に留まっています。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
 
@@ -163,7 +165,7 @@ JIPS 漢字コード体系には半角英数や半角カナは含まれません
 |コード名|カテゴリ|コード値|
 |--------|--------|-------|
 |全角シフト|シフトアウト|JIPS(J)：0x1A70、JIPS(E)：0x3F75|
-|半角シフト|シフトイン|0x3F76|
+|半角シフト|シフトイン|JIPS(J)：0x1A71、JIPS(E)：0x3F76|
 
 #### JIPS の外字領域の取り扱い
 
@@ -224,9 +226,9 @@ byte[] bytes = text.getBytes(charset);
 |x-Fujitsu-JEF-HanyoDenshi-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。IVD汎用電子の異体字セレクタを合わせて出力します。|
 |x-Fujitsu-JEF-HanyoDenshi-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。IVD汎用電子の異体字セレクタを合わせて出力します。|
 |x-Fujitsu-JEF-AdobeJapan1|JEF漢字のみのコード表です。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-HanyoDenshi-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-HanyoDenshi-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-HanyoDenshi-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
+|x-Fujitsu-JEF-AdobeJapan1-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
+|x-Fujitsu-JEF-AdobeJapan1-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
+|x-Fujitsu-JEF-AdobeJapan1-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
 |x-Fujitsu-JEF-Reversible|JEF漢字のうち、逆変換（JEF→Unicode→JEF）が可能なコードのみに限定したものです。主にデータ移行用途です。|
 
 変換に失敗した場合の置換文字としては、半角/全角空白が使用されます。Windows-31J など他の文字コードでは'?'が使用されますが、シフトイン/シフトアウトでの切り替えがあるため、どちらでも有効な文字として解釈できる半角空白（JEF/EBCDIC併用時は半角空白２文字）に置換しています。
@@ -237,26 +239,34 @@ byte[] bytes = text.getBytes(charset);
 |----------|----|
 |x-Hitachi-EBCDIC|日立 EBCDIC のコード表です。|
 |x-Hitachi-EBCDIK|日立 EBCDIK のコード表です。|
-|x-Hitachi-KEIS78|日立 KEIS-78 のコード表です。|
-|x-Hitachi-KEIS83|日立 KEIS-83 のコード表です。|
-|x-Hitachi-EBCDIC-KEIS78|日立 EBCDIC + KEIS-78 のコード表です。|
-|x-Hitachi-EBCDIC-KEIS83|日立 EBCDIC + KEIS-83 のコード表です。|
-|x-Hitachi-EBCDIK-KEIS78|日立 EBCDIK + KEIS-78 のコード表です。|
-|x-Hitachi-EBCDIK-KEIS83|日立 EBCDIK + KEIS-83 のコード表です。|
+|x-Hitachi-KEIS78|日立 KEIS78 のコード表です。|
+|x-Hitachi-KEIS90|日立 KEIS83/90 のコード表です。|
+|x-Hitachi-EBCDIC-KEIS78|日立 EBCDIC + KEIS78 のコード表です。|
+|x-Hitachi-EBCDIC-KEIS90|日立 EBCDIC + KEIS83/90 のコード表です。|
+|x-Hitachi-EBCDIK-KEIS78|日立 EBCDIK + KEIS78 のコード表です。|
+|x-Hitachi-EBCDIK-KEIS90|日立 EBCDIK + KEIS83/90 のコード表です。|
 
 ### NEC系文字セット（ベータ）
 
 |文字セット名|説明|
 |----------|----|
-|x-Nec-EBCDIK|NEC EBCDICカナ文字 のコード表です。|
-|x-Nec-JIPS_J|NEC JIPS(J) のコード表です。|
-|x-Nec-EBCDIC-JIPS_J|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
+|x-NEC-EBCDIK|NEC EBCDICカナ文字 のコード表です。|
+|x-NEC-JIPSJ|NEC JIPS(J) のコード表です。|
+|x-NEC-JIPSE|NEC JIPS(E) のコード表です。|
+|x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J) のコード表です。|
+|x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J) のコード表です。|
+|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
+|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
+|x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) のコード表です。|
+|x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) のコード表です。|
+|x-NEC-JIPSE-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(E) のコード表です。|
+|x-NEC-JIPSE-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(E) のコード表です。|
 
 ## ライセンス
 
 Apache License 2.0 で配布します。
 
-以下のマッピングファイルについては CC-O (Public Domain 相当) にて配布いたします。
+文字コードのマッピングファイルについては CC-O (Public Domain 相当) にて配布いたします。
 
 - src/test/resources/*.json
 

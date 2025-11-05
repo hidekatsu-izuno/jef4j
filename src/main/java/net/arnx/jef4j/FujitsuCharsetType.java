@@ -16,57 +16,61 @@
 package net.arnx.jef4j;
 
 enum FujitsuCharsetType {
-	EBCDIC("x-Fujitsu-EBCDIC", false, false, -1),
-	EBCDIK("x-Fujitsu-EBCDIK", false, false, -1),
-	ASCII("x-Fujitsu-ASCII", false, false, -1),
-	JEF("x-Fujitsu-JEF", false, false, 0),
-	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", true, false, 0),
-	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", true, false, 0),
-	JEF_ASCII("x-Fujitsu-JEF-ASCII", true, false, 0),
-	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", false, true, 0),
-	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", true, true, 0),
-	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", true, true, 0),
-	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", true, true, 0),
-	JEF_AJ1("x-Fujitsu-JEF-AdobeJapan1", false, true, 1),
-	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", true, true, 1),
-	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", true, true, 1),
-	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII", true, true, 1),
-	JEF_R("x-Fujitsu-JEF-Reversible", false, false, 2);
+	EBCDIC("x-Fujitsu-EBCDIC", 0, -1, false),
+	EBCDIK("x-Fujitsu-EBCDIK", 1, -1, false),
+	ASCII("x-Fujitsu-ASCII", 2, -1, false),
+	JEF("x-Fujitsu-JEF", -1, 0, false),
+	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", 0, 0, false),
+	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", 1, 0, false),
+	JEF_ASCII("x-Fujitsu-JEF-ASCII", 2, 0, false),
+	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", -1, 0, true),
+	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", 0, 0, true),
+	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", 1, 0, true),
+	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", 2, 0, true),
+	JEF_AJ1("x-Fujitsu-JEF-AdobeJapan1", -1, 1, true),
+	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", 0, 1, true),
+	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", 1, 1, true),
+	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII",  2, 1, true),
+	JEF_R("x-Fujitsu-JEF-Reversible", -1, 2, false);
 	
 	private final String charsetName;
-	private final boolean handleShift;
+	private final int sbcsTableNo;
+	private final int mbcsTableNo;
 	private final boolean handleIVS;
-	private final int jefTableNo;
 	
 	FujitsuCharsetType(
 		String charsetName, 
-		boolean handleShift,
-		boolean handleIVS,
-		int ivsTableNo
+		int sbcsTableNo,
+		int mbcsTableNo,
+		boolean handleIVS
 	) {
 		this.charsetName = charsetName;
-		this.handleShift = handleShift;
+		this.sbcsTableNo = sbcsTableNo;
 		this.handleIVS = handleIVS;
-		this.jefTableNo = ivsTableNo;
+		this.mbcsTableNo = mbcsTableNo;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
 	}
 
-	boolean handleShift() {
-		return handleShift;
+	boolean handleSBCS() {
+		return sbcsTableNo != -1;
 	}
 	
-	boolean handleJEF() {
-		return jefTableNo != -1;
+	boolean handleMBCS() {
+		return mbcsTableNo != -1;
 	}
 	
 	boolean handleIVS() {
 		return handleIVS;
 	}
 
-	int getJEFTableNo() {
-		return jefTableNo;
+	int getSBCSTableNo() {
+		return sbcsTableNo;
+	}
+
+	int getMBCSTableNo() {
+		return mbcsTableNo;
 	}
 }

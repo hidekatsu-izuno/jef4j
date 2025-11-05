@@ -16,31 +16,61 @@
 package net.arnx.jef4j;
 
 enum HitachiCharsetType {
-	EBCDIC("x-Hitachi-EBCDIC", false),
-	EBCDIK("x-Hitachi-EBCDIK", false),
-	KEIS78("x-Hitachi-KEIS78", false),
-	KEIS83("x-Hitachi-KEIS83", false),
-	KEIS78_EBCDIC("x-Hitachi-KEIS78-EBCDIC", true),
-	KEIS78_EBCDIK("x-Hitachi-KEIS78-EBCDIK", true),
-	KEIS83_EBCDIC("x-Hitachi-KEIS83-EBCDIC", true),
-	KEIS83_EBCDIK("x-Hitachi-KEIS83-EBCDIK", true);
-	
+	EBCDIC("x-Hitachi-EBCDIC", 0, -1, false),
+	EBCDIK("x-Hitachi-EBCDIK", 1, -1, false),
+	KEIS78("x-Hitachi-KEIS78", -1, 0, false),
+	KEIS90("x-Hitachi-KEIS90", -1, 1, false),
+	KEIS78_EBCDIC("x-Hitachi-KEIS78-EBCDIC", 0, 0, false),
+	KEIS78_EBCDIK("x-Hitachi-KEIS78-EBCDIK", 1, 0, false),
+	KEIS78_HD_EBCDIC("x-Hitachi-KEIS78-HanyoDenshi-EBCDIC", 0, 0, true),
+	KEIS78_HD_EBCDIK("x-Hitachi-KEIS78-HanyoDenshi-EBCDIK", 1, 0, true),
+	KEIS78_AJ1_EBCDIC("x-Hitachi-KEIS78-AdobeJapan1-EBCDIC", 0, 0, true),
+	KEIS78_AJ1_EBCDIK("x-Hitachi-KEIS78-AdobeJapan1-EBCDIK", 1, 0, true),
+	KEIS90_EBCDIC("x-Hitachi-KEIS90-EBCDIC", 0, 1, false),
+	KEIS90_EBCDIK("x-Hitachi-KEIS90-EBCDIK", 1, 1, false),
+	KEIS90_HD_EBCDIC("x-Hitachi-KEIS90-HanyoDenshi-EBCDIC", 0, 1, true),
+	KEIS90_HD_EBCDIK("x-Hitachi-KEIS90-HanyoDenshi-EBCDIK", 1, 1, true),
+	KEIS90_AJ1_EBCDIC("x-Hitachi-KEIS90-AdobeJapan1-EBCDIC", 0, 1, true),
+	KEIS90_AJ1_EBCDIK("x-Hitachi-KEIS90-AdobeJapan1-EBCDIK", 1, 1, true);
+
 	private final String charsetName;
-	private final boolean handleShift;
+	private final int sbcsTableNo;
+	private final int mbcsTableNo;
+	private final boolean handleIVS;
 	
 	HitachiCharsetType(
 		String charsetName, 
-		boolean handleShift
+		int sbcsTableNo,
+		int mbcsTableNo,
+		boolean handleIVS
 	) {
 		this.charsetName = charsetName;
-		this.handleShift = handleShift;
+		this.sbcsTableNo = sbcsTableNo;
+		this.handleIVS = handleIVS;
+		this.mbcsTableNo = mbcsTableNo;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
 	}
 
-	boolean handleShift() {
-		return handleShift;
+	boolean handleSBCS() {
+		return sbcsTableNo != -1;
+	}
+	
+	boolean handleMBCS() {
+		return mbcsTableNo != -1;
+	}
+	
+	boolean handleIVS() {
+		return handleIVS;
+	}
+
+	int getSBCSTableNo() {
+		return sbcsTableNo;
+	}
+
+	int getMBCSTableNo() {
+		return mbcsTableNo;
 	}
 }
