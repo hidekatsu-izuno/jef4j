@@ -217,22 +217,22 @@ byte[] bytes = text.getBytes(charset);
 
 |文字セット名|説明|
 |----------|----|
-|x-Fujitsu-EBCDIC|富士通 EBCDIC (英小文字)のコード表です。|
-|x-Fujitsu-EBCDIK|富士通 EBCDIC (カナ文字)のコード表です。|
-|x-Fujitsu-ASCII|富士通 EBCDIC (ASCII) のコード表です。|
-|x-Fujitsu-JEF|JEF漢字のみのコード表です。Unicodeにマッピングできない異体字は標準字体に縮退変換されます。|
-|x-Fujitsu-JEF-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Unicodeにマッピングできない異体字はCJK統合漢字に縮退変換されます。|
-|x-Fujitsu-JEF-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Unicodeにマッピングできない異体字はCJK統合漢字に縮退変換されます。|
-|x-Fujitsu-JEF-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Unicodeにマッピングできない異体字はCJK統合漢字に縮退変換されます。|
-|x-Fujitsu-JEF-HanyoDenshi|JEF漢字のみのコード表です。IVD汎用電子の異体字セレクタを合わせて出力します。|
-|x-Fujitsu-JEF-HanyoDenshi-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。IVD汎用電子の異体字セレクタを合わせて出力します。|
-|x-Fujitsu-JEF-HanyoDenshi-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。IVD汎用電子の異体字セレクタを合わせて出力します。|
-|x-Fujitsu-JEF-HanyoDenshi-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。IVD汎用電子の異体字セレクタを合わせて出力します。|
-|x-Fujitsu-JEF-AdobeJapan1|JEF漢字のみのコード表です。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-AdobeJapan1-EBCDIC|1バイト領域の英小文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-AdobeJapan1-EBCDIK|1バイト領域のカナ文字用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-AdobeJapan1-ASCII|1バイト領域のASCII互換用 EBCDIC と2バイト領域の JEF 漢字をシフトイン/シフトアウトで切り替えます。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-JEF-Reversible|JEF漢字のうち、逆変換（JEF→Unicode→JEF）が可能なコードのみに限定したものです。主にデータ移行用途です。|
+|x-Fujitsu-EBCDIC|富士通 EBCDIC (英小文字)|
+|x-Fujitsu-EBCDIK|富士通 EBCDIC (カナ文字)|
+|x-Fujitsu-ASCII|富士通 EBCDIC (ASCII)|
+|x-Fujitsu-JEF|富士通 JEF。異体字セレクタは出力されません。|
+|x-Fujitsu-JEF-Reversible|JEF のうち、相互変換（JEF⇔Unicode）が可能なコードのみに限定したものです。主にデータ移行用途です。|
+|x-Fujitsu-JEF-HanyoDenshi|富士通 JEF。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Fujitsu-JEF-AdobeJapan1|富士通 JEF。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
+|x-Fujitsu-JEF-EBCDIC|富士通 EBCDIC (英小文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Fujitsu-JEF-HanyoDenshi-EBCDIC|富士通 EBCDIC (英小文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Fujitsu-JEF-AdobeJapan1-EBCDIC|富士通 EBCDIC (英小文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Fujitsu-JEF-EBCDIK|富士通 EBCDIC (カナ文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Fujitsu-JEF-HanyoDenshi-EBCDIK|富士通 EBCDIC (カナ文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Fujitsu-JEF-AdobeJapan1-EBCDIK|富士通 EBCDIC (カナ文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Fujitsu-JEF-ASCII|富士通 EBCDIC (ASCII) と JEF をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Fujitsu-JEF-HanyoDenshi-ASCII|富士通 EBCDIC (ASCII) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Fujitsu-JEF-AdobeJapan1-ASCII|富士通 EBCDIC (ASCII) と JEF をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 
 変換に失敗した場合の置換文字としては、半角/全角空白が使用されます。Windows-31J など他の文字コードでは'?'が使用されますが、シフトイン/シフトアウトでの切り替えがあるため、どちらでも有効な文字として解釈できる半角空白（JEF/EBCDIC併用時は半角空白２文字）に置換しています。
 
@@ -240,30 +240,44 @@ byte[] bytes = text.getBytes(charset);
 
 |文字セット名|説明|
 |----------|----|
-|x-Hitachi-EBCDIC|日立 EBCDIC のコード表です。|
-|x-Hitachi-EBCDIK|日立 EBCDIK のコード表です。|
-|x-Hitachi-KEIS78|日立 KEIS78 のコード表です。|
-|x-Hitachi-KEIS90|日立 KEIS83/90 のコード表です。|
-|x-Hitachi-EBCDIC-KEIS78|日立 EBCDIC + KEIS78 のコード表です。|
-|x-Hitachi-EBCDIC-KEIS90|日立 EBCDIC + KEIS83/90 のコード表です。|
-|x-Hitachi-EBCDIK-KEIS78|日立 EBCDIK + KEIS78 のコード表です。|
-|x-Hitachi-EBCDIK-KEIS90|日立 EBCDIK + KEIS83/90 のコード表です。|
+|x-Hitachi-EBCDIC|日立 EBCDIC|
+|x-Hitachi-EBCDIK|日立 EBCDIK|
+|x-Hitachi-KEIS78|日立 KEIS78。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS78-HanyoDenshi|日立 KEIS78。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS78-AdobeJapan1|日立 KEIS78。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS78-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS78-HanyoDenshi-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS78-AdobeJapan1-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS78-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS78-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS78-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS83|日立 KEIS83/90。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS83-HanyoDenshi|日立 KEIS83/90。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS83-AdobeJapan1|日立 KEIS83/90。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS83-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS83-HanyoDenshi-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS83-AdobeJapan1-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS83-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS83-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-Hitachi-KEIS83-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 
 ### NEC系文字セット（ベータ）
 
 |文字セット名|説明|
 |----------|----|
-|x-NEC-EBCDIK|NEC EBCDICカナ文字 のコード表です。|
-|x-NEC-JIPSJ|NEC JIPS(J) のコード表です。|
-|x-NEC-JIPSE|NEC JIPS(E) のコード表です。|
-|x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J) のコード表です。|
-|x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J) のコード表です。|
-|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
-|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(J) のコード表です。|
-|x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) のコード表です。|
-|x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) のコード表です。|
-|x-NEC-JIPSE-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(E) のコード表です。|
-|x-NEC-JIPSE-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 + NEC JIPS(E) のコード表です。|
+|x-NEC-EBCDIK|NEC EBCDICカナ文字|
+|x-NEC-JIPSJ|NEC JIPS(J)。異体字セレクタは出力されません。|
+|x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J)。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J)。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSJ-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSE|NEC JIPS(E)。異体字セレクタは出力されません。|
+|x-NEC-JIPSE-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) 。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) 。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSE-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSE-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 
 ## ライセンス
 

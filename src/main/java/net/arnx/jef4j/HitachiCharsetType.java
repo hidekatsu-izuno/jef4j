@@ -19,19 +19,19 @@ enum HitachiCharsetType {
 	EBCDIC("x-Hitachi-EBCDIC", 0, -1, false),
 	EBCDIK("x-Hitachi-EBCDIK", 1, -1, false),
 	KEIS78("x-Hitachi-KEIS78", -1, 0, false),
-	KEIS90("x-Hitachi-KEIS90", -1, 1, false),
+	KEIS83("x-Hitachi-KEIS83", -1, 1, false),
 	KEIS78_EBCDIC("x-Hitachi-KEIS78-EBCDIC", 0, 0, false),
 	KEIS78_EBCDIK("x-Hitachi-KEIS78-EBCDIK", 1, 0, false),
 	KEIS78_HD_EBCDIC("x-Hitachi-KEIS78-HanyoDenshi-EBCDIC", 0, 0, true),
 	KEIS78_HD_EBCDIK("x-Hitachi-KEIS78-HanyoDenshi-EBCDIK", 1, 0, true),
 	KEIS78_AJ1_EBCDIC("x-Hitachi-KEIS78-AdobeJapan1-EBCDIC", 0, 0, true),
 	KEIS78_AJ1_EBCDIK("x-Hitachi-KEIS78-AdobeJapan1-EBCDIK", 1, 0, true),
-	KEIS90_EBCDIC("x-Hitachi-KEIS90-EBCDIC", 0, 1, false),
-	KEIS90_EBCDIK("x-Hitachi-KEIS90-EBCDIK", 1, 1, false),
-	KEIS90_HD_EBCDIC("x-Hitachi-KEIS90-HanyoDenshi-EBCDIC", 0, 1, true),
-	KEIS90_HD_EBCDIK("x-Hitachi-KEIS90-HanyoDenshi-EBCDIK", 1, 1, true),
-	KEIS90_AJ1_EBCDIC("x-Hitachi-KEIS90-AdobeJapan1-EBCDIC", 0, 1, true),
-	KEIS90_AJ1_EBCDIK("x-Hitachi-KEIS90-AdobeJapan1-EBCDIK", 1, 1, true);
+	KEIS83_EBCDIC("x-Hitachi-KEIS83-EBCDIC", 0, 1, false),
+	KEIS83_EBCDIK("x-Hitachi-KEIS83-EBCDIK", 1, 1, false),
+	KEIS83_HD_EBCDIC("x-Hitachi-KEIS83-HanyoDenshi-EBCDIC", 0, 1, true),
+	KEIS83_HD_EBCDIK("x-Hitachi-KEIS83-HanyoDenshi-EBCDIK", 1, 1, true),
+	KEIS83_AJ1_EBCDIC("x-Hitachi-KEIS83-AdobeJapan1-EBCDIC", 0, 1, true),
+	KEIS83_AJ1_EBCDIK("x-Hitachi-KEIS83-AdobeJapan1-EBCDIK", 1, 1, true);
 
 	private final String charsetName;
 	private final int sbcsTableNo;
