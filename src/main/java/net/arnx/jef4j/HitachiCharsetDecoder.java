@@ -85,16 +85,9 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 					if (b == 0x40 && b2 == 0x40) {
 						out.put('\u3000');
 						mark += 2;
-					} else if (b >= 0x81 && b <= 0x8F) { // Private Use Area
+					} else if (b >= 0x81 && b <= 0xA0) { // Private Use Area
 						if (b2 >= 0xA1 && b2 <= 0xFE) {
 							out.put((char)(0xE000 + (b - 0x81) * 94 + (b2 - 0xA1)));
-							mark += 2;
-						} else {
-							return CoderResult.unmappableForLength(2);
-						}
-					} else if (b == 0xA0) { // Private Use Area
-						if (b2 >= 0xA1 && b2 <= 0xFE) {
-							out.put((char)(0xEE5E + (b - 0xA0) * 94 + (b2 - 0xA1)));
 							mark += 2;
 						} else {
 							return CoderResult.unmappableForLength(2);

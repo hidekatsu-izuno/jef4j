@@ -1,5 +1,7 @@
 [
 { "keis": "4040", "unicode":  "3000", "text": "　", "options": [] },
+{ "keis": "73FA", "unicode":  "4EE4", "text": "令", "options": ["decode_only", "combination"] },
+{ "keis": "73FB", "unicode":  "548C", "text": "和", "options": ["decode_only", "combination"] },
 { "keis": "A1A1", "unicode":  "3000", "text": "　", "options": ["decode_only"] },
 { "keis": "A1A2", "unicode":  "3001", "text": "、", "options": [] },
 { "keis": "A1A3", "unicode":  "3002", "text": "。", "options": [] },

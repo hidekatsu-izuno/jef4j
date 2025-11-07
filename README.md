@@ -99,15 +99,18 @@ KEIS83、はその後、IBM拡張文字への対応などが行われた KEIS90�
 |カテゴリ|コード域|
 |-----|------|
 |全角空白|0x4040|
-|拡張文字セット2|0x59A1～0x80FE|
-|利用者定義|0x81A1～0x9EFE、0xA0A1～0xA0FE|
-|拡張文字セット3|0x9FA1～0x9FFE|
-|基本文字セット|0xA1A1～0xCEFE|
+|拡張文字セット3|0x59A1～0x80FE|
+|ユーザ定義文字|0x81A1～0xA0FE|
+|基本文字セット(非漢字)|0xA1A1～0xACFE|
+|システムユース文字、書式制御文|0xADA1～0xAFFE|
+|基本文字セット(漢字)|0xB0A1～0xCEFE|
 |拡張文字セット1|0xD1A1～0xFEFE|
 
-基本文字セットは JIS 第一水準、拡張文字セット1は JIS 第二水準の JIS コード体系に 0x8080 加算したものであるため、結果的に EUC-JP と互換性があります（特に字体変更のない KEIS-83 はそのままです）。
+基本文字セットは JIS 第一水準、拡張文字セット1は JIS 第二水準の JIS コード体系に 0x8080 加算したものであるため、結果的に EUC-JP と互換性があります（特に字体変更のない KEIS-83 はそのままです）。拡張文字セット2は存在しません。
 
-拡張文字セット2、拡張文字セット3 については、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+拡張文字セット3 については、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+
+※富士通社資料には 0x9FA1～0x9FD8 に拡張文字セット3が割り当てられているという記載があるが、日立社資料にそれを裏付ける資料は見つかっていない。
 
 ### KEIS と EBCDIC/EBCDIK の併用
 
@@ -118,15 +121,15 @@ KEIS 漢字コード体系には半角英数や半角カナは含まれません
 |全角シフト|シフトアウト|0x0A42|
 |半角シフト|シフトイン|0x0A41|
 
-#### KEIS の利用者定義領域の取り扱い
+#### KEIS のユーザ定義文字の取り扱い
 
-KEIS の利用者定義文字は2パートに分かれますが、Unicode 私的利用領域には以下のようにマッピングされます。
+KEIS のユーザ定義文字は、Unicode 私的利用領域には以下のようにマッピングされます。
 
-- 0x81A1～0x8FFE (3677文字): E000～EE5D
-- 0xA0A1～0xA0FE (93文字): EE5E～EEBA
+- 0x81A1～0xA0FE (3008文字): E000～EBBF
 
 #### KEIS に関する資料
 
+- [Hitachi Virtual Storage Platform 5000 Cross-OS File Exchange ユーザーズガイド](https://itpfdoc.hitachi.co.jp/manuals/4047/40471JU64_SVOSRF987/40471JU64.pdf)
 - [Interstage Charset Manager Standard Edition V9 使用手引書 C.8 KEISコード系の概要](https://software.fujitsu.com/jp/manual/manualfiles/m200002/b1wd0741/14z200/b0741-c-08-00.html)
 - [文字コード表 日本語EUC(euc-jp)](http://charset.7jp.net/euc.html)
 - [OpenTP1 Version 7 マニュアル](https://itpfdoc.hitachi.co.jp/manuals/3000/30003D5851/CLNT0276.HTM)

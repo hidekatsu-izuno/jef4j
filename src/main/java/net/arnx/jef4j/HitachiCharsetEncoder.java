@@ -144,13 +144,9 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 					out.put(value);
 					mark++;
 				} else if (type.handleMBCS()) { // Double Bytes
-					if (c >= '\uE000' && c <= '\uEE5D') { // Private Use Area
+					if (c >= '\uE000' && c <= '\uEBBF') { // Private Use Area
 						out.put((byte)((0x81 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
-						mark++;
-					} else if (c >= '\uEE5E' && c <= '\uEEBA') { // Private Use Area
-						out.put((byte)((0xA0 + (c - 0xEE5E) / 94) & 0xFF));
-						out.put((byte)((0xA1 + (c - 0xEE5E) % 94) & 0xFF));
 						mark++;
 					} else {
 						long key;
