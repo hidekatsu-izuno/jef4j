@@ -30,8 +30,8 @@ public class CharsetTableGenerator {
 				new CharsetInfo("x-Fujitsu-ASCII: 富士通 EBCDIC (ASCII)", "/fujitsu_ascii_mapping.json", 0x0, 0xF, 0x0, 0xF)
 			},
 			new CharsetInfo[] {
-				new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 標準漢字/標準非漢字", "/fujitsu_jef_mapping.json", 0xA1, 0xFE, 0x0, 0xF),
-				new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 拡張漢字/拡張非漢字", "/fujitsu_jef_mapping.json", 0x41, 0x7F, 0x0, 0xF)
+				new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 標準漢字/標準非漢字", "/fujitsu_jef_mapping.json", 0xA1, 0xFE, 0xA, 0xF),
+				new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 拡張漢字/拡張非漢字", "/fujitsu_jef_mapping.json", 0x41, 0x7F, 0xA, 0xF)
 			}
 		);
 
@@ -43,14 +43,14 @@ public class CharsetTableGenerator {
 				new CharsetInfo("x-Hitachi-EBCDIK: 日立 EBCDIK", "/hitachi_ebcdik_mapping.json", 0x0, 0xF, 0x0, 0xF),
 			},
 			new CharsetInfo[] {
-				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(非漢字)", "/hitachi_keis78_mapping.json", 0xA1, 0xAC, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(漢字)", "/hitachi_keis78_mapping.json", 0xB0, 0xCE, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット1", "/hitachi_keis78_mapping.json", 0xD1, 0xFE, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット3", "/hitachi_keis78_mapping.json", 0x59, 0x80, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(非漢字)", "/hitachi_keis83_mapping.json", 0xA1, 0xAC, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(漢字)", "/hitachi_keis83_mapping.json", 0xB0, 0xCE, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット1", "/hitachi_keis83_mapping.json", 0xD1, 0xFE, 0x0, 0xF),
-				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット3", "/hitachi_keis83_mapping.json", 0x59, 0x80, 0x0, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(非漢字)", "/hitachi_keis78_mapping.json", 0xA1, 0xAC, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(漢字)", "/hitachi_keis78_mapping.json", 0xB0, 0xCE, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット1", "/hitachi_keis78_mapping.json", 0xD1, 0xFE, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット3", "/hitachi_keis78_mapping.json", 0x59, 0x80, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(非漢字)", "/hitachi_keis83_mapping.json", 0xA1, 0xAC, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(漢字)", "/hitachi_keis83_mapping.json", 0xB0, 0xCE, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット1", "/hitachi_keis83_mapping.json", 0xD1, 0xFE, 0xA, 0xF),
+				new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット3", "/hitachi_keis83_mapping.json", 0x59, 0x80, 0xA, 0xF),
 			}
 		);
 
@@ -61,9 +61,9 @@ public class CharsetTableGenerator {
 				new CharsetInfo("x-NEC-EBCDIK: NEC EBCDIC カタカナ", "/nec_ebcdik_mapping.json", 0x0, 0xF, 0x0, 0xF)
 			},
 			new CharsetInfo[] {
-				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G0集合", "/nec_jips_mapping.json", 0x21, 0x73, 0x0, 0x7),
-				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G1集合", "/nec_jips_mapping.json", 0xA1, 0xDF, 0x8, 0xF),
-				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G2集合", "/nec_jips_mapping.json", 0xA1, 0xFE, 0x8, 0xF)
+				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G0集合", "/nec_jips_mapping.json", 0x21, 0x73, 0x2, 0x7),
+				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G1集合", "/nec_jips_mapping.json", 0xA1, 0xDF, 0xA, 0xF),
+				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G2集合", "/nec_jips_mapping.json", 0xA1, 0xFE, 0xA, 0xF)
 			}
 		);
 	}
@@ -104,11 +104,11 @@ public class CharsetTableGenerator {
 				out.append("<caption>" + csInfo.name + "</caption>\n");
 				out.append("<tr>");
 				out.append("<th><sub>H</sub>&nbsp;<sup>L</sup></th>");
-				for (int j = 0; j <= 0xF; j++) {
+				for (int j = csInfo.start2; j <= csInfo.end2; j++) {
 					out.append("<th>" + ByteUtils.hex(j, 1) + "</th>");
 				}
 				out.append("</tr>\n");
-				for (int i = csInfo.start; i <= csInfo.end; i++) {
+				for (int i = csInfo.start1; i <= csInfo.end1; i++) {
 					out.append("<tr>");
 					out.append("<th>" + ByteUtils.hex(i, 1) + "</th>");
 					for (int j = csInfo.start2; j <= csInfo.end2; j++) {
@@ -133,7 +133,7 @@ public class CharsetTableGenerator {
 
 				out.append("<table class=\"charmap\">\n");
 				out.append("<caption>" + csInfo.name + "</caption>\n");
-				for (int i = csInfo.start; i <= csInfo.end; i++) {
+				for (int i = csInfo.start1; i <= csInfo.end1; i++) {
 					out.append("<tr>");
 					out.append("<th><sub>H</sub>&nbsp;<sup>L</sup></th>");
 					for (int j = 0x0; j <= 0xF; j++) {
@@ -175,17 +175,17 @@ public class CharsetTableGenerator {
 
 		String name;
 		String mapping;
-		int start;
-		int end;
+		int start1;
+		int end1;
 		int start2;
 		int end2;
 		Map<Integer, String> map;
 
-		public CharsetInfo(String name, String mapping, int start, int end, int start2, int end2) {
+		public CharsetInfo(String name, String mapping, int start1, int end1, int start2, int end2) {
 			this.name = name;
 			this.mapping = mapping;
-			this.start = start;
-			this.end = end;
+			this.start1 = start1;
+			this.end1 = end1;
 			this.start2 = start2;
 			this.end2 = end2;
 		}
