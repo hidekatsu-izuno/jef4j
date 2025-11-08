@@ -111,7 +111,7 @@ public class CharsetTableGenerator {
 				for (int i = csInfo.start; i <= csInfo.end; i++) {
 					out.append("<tr>");
 					out.append("<th>" + ByteUtils.hex(i, 1) + "</th>");
-					for (int j = csInfo.start2; j <= csInfo.start2; j++) {
+					for (int j = csInfo.start2; j <= csInfo.end2; j++) {
 						String value = map.get((i << 4) | j);
 						if (value == null) {
 							out.append("<td class=\"unmapped\">&nbsp;</td>");
