@@ -17,8 +17,6 @@ JEF (JAPANESE PROCESSING EXTENDED FEATURE) は、富士通株式会社のメイ�
 
 1979 年に策定された、と聞くと古臭いと思われるかもしれません。しかし、実際には最新の Unicode でも異体字セレクタを使わないとカバーできない様々な漢字が収録されており、漢字集合としては決して古びたものではありません。富士通社のメインフレームは多くの公共機関でも使われており、その意味で日本の基盤を支える文字コード体系のひとつと言うことができるかもしれません。
 
-[現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/mappings.html)からご覧いただけます。
-
 ### JEF 漢字コード体系の構造
 
 JEF漢字コード体系自体は JIS78 (JIS C 6226:1978)に基づく JIS非漢字、JIS第一水準、第二水準からなる標準のコード域と拡張漢字、拡張非漢字と呼ばれる追加のコード域からなる 2 バイトのコード体系です。
@@ -104,8 +102,9 @@ KEIS83、はその後、IBM拡張文字への対応などが行われた KEIS90�
 
 基本文字セットは JIS 第一水準、拡張文字セット1は JIS 第二水準の JIS コード体系に 0x8080 加算したものであるため、結果的に EUC-JP と互換性があります（特に字体変更のない KEIS-83 はそのままです）。拡張文字セット2は存在しません。
 
-拡張文字セット3 については、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+拡張文字セット3 についてどのような文字が配置されているかは、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
 
+※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字やコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円で買い取りさせてただきます。
 ※富士通社資料には 0x9FA1～0x9FD8 に拡張文字セット3が割り当てられているという記載があるが、日立社資料にそれを裏付ける資料は見つかっていない。
 
 ### KEIS と EBCDIC/EBCDIK の併用
@@ -138,15 +137,14 @@ JIPS には、JISコード配列をそのまま採用した JIPS(J) と JISコ�
 
 ### JIPS 漢字コード体系の構造
 
-JIPS 漢字コード体系は 2バイトの各バイトを2分割ずつにした4領域で定義され、それぞれ G0～G3集合と呼ばれます。
-そのうち G0集合については、JIS78 (JIS C 6226:1978) の JISコード配列がそのまま配置されます。
+JIPS 漢字コード体系は ISO/IEC 2022 同様 2バイトの各バイトを2分割ずつにしたG0～G3集合に文字が配置されます。
+このうち G0集合については、基本的に JIS78 (JIS C 6226:1978) の JISコード配列がそのまま配置されています。また、G3集合は使用されていません。
 
 |カテゴリ|コード域|
 |-----|------|
 |G0集合|0x2121～0x7E7E|
 |G1集合|0xA1A1～0xFEFE|
 |G2集合|0xA121～0xFE7E|
-|G3集合|0x21A1～0x7EFE|
 
 なおG0、G1集合のうち下記範囲は外字領域として定義されています。
 
@@ -155,7 +153,9 @@ JIPS 漢字コード体系は 2バイトの各バイトを2分割ずつにした
 |G0外字領域|0x7421～0x7E7E|
 |G1外字領域|0xE0A1～0xFEFE|
 
-G1～G3集合 については、情報がなく部分的な対応に留まっています。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+G1、G2集合 にどのような文字が配置されているかは、情報がなく部分的な対応に留まっています。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
+
+※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字やコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円で買い取りさせてただきます。
 
 ### JIPS と EBCDICカナ文字 の併用
 
@@ -259,6 +259,8 @@ byte[] bytes = text.getBytes(charset);
 
 変換に失敗した場合の置換文字としては、半角/全角空白が使用されます。Windows-31J など他の文字コードでは'?'が使用されますが、シフトイン/シフトアウトでの切り替えがあるため、どちらでも有効な文字として解釈できる半角空白（JEF/EBCDIC併用時は半角空白２文字）に置換しています。
 
+[現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/fujitsu_mappings.html)からご覧いただけます。
+
 ### 日立系文字セット（ベータ）
 
 |文字セット名|説明|
@@ -284,23 +286,27 @@ byte[] bytes = text.getBytes(charset);
 |x-Hitachi-KEIS83-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS83-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 
+[現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/hitachi_mappings.html)からご覧いただけます。
+
 ### NEC系文字セット（ベータ）
 
 |文字セット名|説明|
 |----------|----|
-|x-NEC-EBCDIK|NEC EBCDICカナ文字|
+|x-NEC-EBCDIK|NEC EBCDIC カタカナ|
 |x-NEC-JIPSJ|NEC JIPS(J)。異体字セレクタは出力されません。|
 |x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J)。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J)。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
-|x-NEC-JIPSJ-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
-|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
-|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSJ-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 |x-NEC-JIPSE|NEC JIPS(E)。異体字セレクタは出力されません。|
-|x-NEC-JIPSE-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-NEC-JIPSE-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
 |x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) 。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) 。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
-|x-NEC-JIPSE-HanyoDenshi-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
-|x-NEC-JIPSE-AdobeJapan1-EBCDIK|NEC EBCDICカナ文字 と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSE-HanyoDenshi-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSE-AdobeJapan1-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+
+[現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/nec_mappings.html)からご覧いただけます。
 
 ## ライセンス
 
