@@ -326,7 +326,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	}
 	
 	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
-		return type.handleIVS() ? 4 : type.handleMBCS() ? 2 : 1;
+		return type.handleIVS() || (type.handleMBCS() && type.handleSBCS()) ? 4 : type.handleMBCS() ? 2 : 1;
 	}
 	
 	private static byte[] getReplacementChar(FujitsuCharsetType type) {

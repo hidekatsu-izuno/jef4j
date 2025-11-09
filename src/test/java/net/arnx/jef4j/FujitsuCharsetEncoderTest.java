@@ -30,7 +30,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator;
+import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetEncoderTest {
@@ -45,13 +45,13 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					boolean decodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -63,8 +63,8 @@ public class FujitsuCharsetEncoderTest {
 						}
 					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
-						expected.put(unicode.asText(), ebcdic.asText());
+					if (unicode != null && code != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
+						expected.put(unicode.asText(), code.asText());
 					}
 				}
 			}
@@ -103,13 +103,13 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					boolean decodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -121,8 +121,8 @@ public class FujitsuCharsetEncoderTest {
 						}
 					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
-						expected.put(unicode.asText(), ebcdic.asText());
+					if (unicode != null && code != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
+						expected.put(unicode.asText(), code.asText());
 					}
 				}
 			}
@@ -161,13 +161,13 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					JsonNode unicode = node.get("unicode");
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					boolean decodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -179,8 +179,8 @@ public class FujitsuCharsetEncoderTest {
 						}
 					}
 
-					if (unicode != null && ebcdic != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
-						expected.put(unicode.asText(), ebcdic.asText());
+					if (unicode != null && code != null && !"FFFD".equals(unicode.asText()) && !decodeOnly) {
+						expected.put(unicode.asText(), code.asText());
 					}
 				}
 			}
@@ -214,12 +214,13 @@ public class FujitsuCharsetEncoderTest {
 	@Test
 	public void testFujitsuJefEncoder() throws IOException {
 		Charset JEF = Charset.forName("x-Fujitsu-JEF");
+		assertEquals("71AC", hex("\uD82C\uDC19\u3099".getBytes(JEF)));
 		assertEquals("4040A4A240404040B3A44040", hex("aあbc海d".getBytes(JEF)));
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -235,9 +236,9 @@ public class FujitsuCharsetEncoderTest {
 						}
 					}
 					
-					String unicode = toChars(node, false, false, false);
+					String unicode = toChars(node, false, false);
 					if (!unicode.equals("FFFD") && !decodeOnly) {
-						expected.put(unicode, node.get("jef").asText());
+						expected.put(unicode, node.get("code").asText());
 					}
 				}
 			}
@@ -249,13 +250,14 @@ public class FujitsuCharsetEncoderTest {
 				.newEncoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
-		CharBuffer cb = CharBuffer.allocate(2);
+		CharBuffer cb = CharBuffer.allocate(3);
 	
 		for (int cp = 0; cp <= 0x2FFFF; cp++) {
 			if (cp >= 0xE000 && cp <= 0xF8FF) {
 				continue;
 			}
 
+			boolean success = false;
 			cb.clear();
 			cb.put(Character.toChars(cp));
 			cb.flip();
@@ -264,7 +266,25 @@ public class FujitsuCharsetEncoderTest {
 				cb.flip();
 				
 				actual.put(hex(cb), hex(bb));
+				success = true;
 			} catch (CharacterCodingException e) {
+			}
+
+			ce.reset();
+			if (success) {
+				if (useSp3099(cp)) {
+					cb.clear();
+					cb.put(Character.toChars(cp));
+					cb.put('\u3099');
+					cb.flip();
+					try {
+						ByteBuffer bb = ce.encode(cb);
+						cb.flip();
+						actual.put(hex(cb), hex(bb));
+					} catch (CharacterCodingException e) {
+					}
+					ce.reset();
+				}
 			}
 			
 			ce.reset();
@@ -287,7 +307,7 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -306,9 +326,9 @@ public class FujitsuCharsetEncoderTest {
 						}
 					}
 
-					String unicode = toChars(node, true, false, false);
+					String unicode = toChars(node, false, false);
 					if (!unicode.equals("FFFD") && reversible && !decodeOnly) {
-						expected.put(unicode, node.get("jef").asText());
+						expected.put(unicode, node.get("code").asText());
 					}
 				}
 			}
@@ -343,35 +363,7 @@ public class FujitsuCharsetEncoderTest {
 			ce.reset();
 
 			if (success) {
-				if (cp == 0x1B025
-					|| cp == 0x1B02A
-					|| cp == 0x1B02C
-					|| cp == 0x1B048
-					|| cp == 0x1B05F
-					|| cp == 0x1B0BA
-					|| cp == 0x1B019
-					|| cp == 0x1B034
-					|| cp == 0x1B038
-					|| cp == 0x1B03D
-					|| cp == 0x1B03F
-					|| cp == 0x1B041
-					|| cp == 0x1B048
-					|| cp == 0x1B04E
-					|| cp == 0x1B04F
-					|| cp == 0x1B055
-					|| cp == 0x1B05B
-					|| cp == 0x1B05F
-					|| cp == 0x1B066
-					|| cp == 0x1B06A
-					|| cp == 0x1B06B
-					|| cp == 0x1B06D
-					|| cp == 0x1B072
-					|| cp == 0x1B0A3
-					|| cp == 0x1B0A9
-					|| cp == 0x1B0AF
-					|| cp == 0x1B0B1
-					|| cp == 0x1B0B6
-				) {
+				if (useSp3099(cp)) {
 					cb.clear();
 					cb.put(Character.toChars(cp));
 					cb.put('\u3099');
@@ -416,20 +408,30 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					boolean decodeOnly = false;
 
-					String unicode = toChars(node, true, false, false);
-					if (!unicode.equals("FFFD")) {
-						expected.put(unicode, node.get("jef").asText());
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
 					}
 
-					unicode = toChars(node, true, true, false);
-					if (!unicode.equals("FFFD")) {
-						expected.put(unicode, node.get("jef").asText());
+					String unicode = toChars(node, false, false);
+					if (!unicode.equals("FFFD") && !decodeOnly) {
+						expected.put(unicode, node.get("code").asText());
+					}
+
+					unicode = toChars(node, true, false);
+					if (!unicode.equals("FFFD") && !decodeOnly) {
+						expected.put(unicode, node.get("code").asText());
 					}
 				}
 			}
@@ -464,35 +466,7 @@ public class FujitsuCharsetEncoderTest {
 			ce.reset();
 
 			if (success) {
-				if (cp == 0x1B025
-					|| cp == 0x1B02A
-					|| cp == 0x1B02C
-					|| cp == 0x1B048
-					|| cp == 0x1B05F
-					|| cp == 0x1B0BA
-					|| cp == 0x1B019
-					|| cp == 0x1B034
-					|| cp == 0x1B038
-					|| cp == 0x1B03D
-					|| cp == 0x1B03F
-					|| cp == 0x1B041
-					|| cp == 0x1B048
-					|| cp == 0x1B04E
-					|| cp == 0x1B04F
-					|| cp == 0x1B055
-					|| cp == 0x1B05B
-					|| cp == 0x1B05F
-					|| cp == 0x1B066
-					|| cp == 0x1B06A
-					|| cp == 0x1B06B
-					|| cp == 0x1B06D
-					|| cp == 0x1B072
-					|| cp == 0x1B0A3
-					|| cp == 0x1B0A9
-					|| cp == 0x1B0AF
-					|| cp == 0x1B0B1
-					|| cp == 0x1B0B6
-				) {
+				if (useSp3099(cp)) {
 					cb.clear();
 					cb.put(Character.toChars(cp));
 					cb.put('\u3099');
@@ -537,20 +511,30 @@ public class FujitsuCharsetEncoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					boolean decodeOnly = false;
 
-					String unicode = toChars(node, true, false, false);
-					if (!unicode.equals("FFFD")) {
-						expected.put(unicode, node.get("jef").asText());
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("decode_only".equals(child.asText())) {
+								decodeOnly = true;
+							}
+						}
 					}
 
-					unicode = toChars(node, true, false, true);
-					if (!unicode.equals("FFFD")) {
-						expected.put(unicode, node.get("jef").asText());
+					String unicode = toChars(node, false, false);
+					if (!unicode.equals("FFFD") && !decodeOnly) {
+						expected.put(unicode, node.get("code").asText());
+					}
+
+					unicode = toChars(node, false, true);
+					if (!unicode.equals("FFFD") && !decodeOnly) {
+						expected.put(unicode, node.get("code").asText());
 					}
 				}
 			}
@@ -585,35 +569,7 @@ public class FujitsuCharsetEncoderTest {
 			ce.reset();
 
 			if (success) {
-				if (cp == 0x1B025
-					|| cp == 0x1B02A
-					|| cp == 0x1B02C
-					|| cp == 0x1B048
-					|| cp == 0x1B05F
-					|| cp == 0x1B0BA
-					|| cp == 0x1B019
-					|| cp == 0x1B034
-					|| cp == 0x1B038
-					|| cp == 0x1B03D
-					|| cp == 0x1B03F
-					|| cp == 0x1B041
-					|| cp == 0x1B048
-					|| cp == 0x1B04E
-					|| cp == 0x1B04F
-					|| cp == 0x1B055
-					|| cp == 0x1B05B
-					|| cp == 0x1B05F
-					|| cp == 0x1B066
-					|| cp == 0x1B06A
-					|| cp == 0x1B06B
-					|| cp == 0x1B06D
-					|| cp == 0x1B072
-					|| cp == 0x1B0A3
-					|| cp == 0x1B0A9
-					|| cp == 0x1B0AF
-					|| cp == 0x1B0B1
-					|| cp == 0x1B0B6
-				) {
+				if (useSp3099(cp)) {
 					cb.clear();
 					cb.put(Character.toChars(cp));
 					cb.put('\u3099');
@@ -847,15 +803,31 @@ public class FujitsuCharsetEncoderTest {
 		assertNull(actual.get("EC1E"));
 		assertNull(actual.get("F8FF"));
 	}
-	
-	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi, boolean useAdobeJapan1) {
+
+	@Test
+	public void testFujitsuJefEbcdicEncoder() throws IOException {
+		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
+		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_EBCDIC)));
+	}
+
+	@Test
+	public void testFujitsuJefEbcdikEncoder() throws IOException {
+		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
+		assertEquals("8128A4A2298228B3A42983", hex("ｱあｲ海ｳ".getBytes(JEF_EBCDIK)));
+	}
+
+	@Test
+	public void testFujitsuJefAsciiEncoder() throws IOException {
+		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
+		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_ASCII)));
+	}
+		
+	private static String toChars(JsonNode node, boolean useHanyoDenshi, boolean useAdobeJapan1) {
 		List<String> parts = new ArrayList<>(); 
 		parts.add(node.get("unicode").asText());
-		if (useSP) {
-			JsonNode spNode = node.get("sp");
-			if (spNode != null) {
-				parts.add(spNode.asText());
-			}
+		JsonNode spNode = node.get("sp");
+		if (spNode != null) {
+			parts.add(spNode.asText());
 		}
 		if (useHanyoDenshi) {
 			JsonNode hdNode = node.get("hd");
@@ -882,21 +854,34 @@ public class FujitsuCharsetEncoderTest {
 		return sb.toString();
 	}
 
-	@Test
-	public void testFujitsuJefEbcdicDecoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
-		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_EBCDIC)));
-	}
-
-	@Test
-	public void testFujitsuJefEbcdikDecoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
-		assertEquals("8128A4A2298228B3A42983", hex("ｱあｲ海ｳ".getBytes(JEF_EBCDIK)));
-	}
-
-	@Test
-	public void testFujitsuJefAsciiDecoder() throws IOException {
-		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
-		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_ASCII)));
+	private static boolean useSp3099(int cp) {
+		return cp == 0x1B025
+				|| cp == 0x1B02A
+				|| cp == 0x1B02C
+				|| cp == 0x1B048
+				|| cp == 0x1B05F
+				|| cp == 0x1B0BA
+				|| cp == 0x1B019
+				|| cp == 0x1B034
+				|| cp == 0x1B038
+				|| cp == 0x1B03D
+				|| cp == 0x1B03F
+				|| cp == 0x1B041
+				|| cp == 0x1B048
+				|| cp == 0x1B04E
+				|| cp == 0x1B04F
+				|| cp == 0x1B055
+				|| cp == 0x1B05B
+				|| cp == 0x1B05F
+				|| cp == 0x1B066
+				|| cp == 0x1B06A
+				|| cp == 0x1B06B
+				|| cp == 0x1B06D
+				|| cp == 0x1B072
+				|| cp == 0x1B0A3
+				|| cp == 0x1B0A9
+				|| cp == 0x1B0AF
+				|| cp == 0x1B0B1
+				|| cp == 0x1B0B6;
 	}
 }

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.arnx.jef4j.tools.FujitsuCharsetIndexGenerator;
+import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetDecoderTest {
@@ -45,12 +45,12 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					JsonNode unicode = node.get("unicode");
 					boolean encodeOnly = false;
 					
@@ -63,8 +63,8 @@ public class FujitsuCharsetDecoderTest {
 						}
 					}
 
-					if (ebcdic != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
-						expected.put(ebcdic.asText(), unicode.asText());
+					if (code != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
+						expected.put(code.asText(), unicode.asText());
 					}
 				}
 			}
@@ -105,12 +105,12 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					JsonNode unicode = node.get("unicode");
 					boolean encodeOnly = false;
 					
@@ -123,8 +123,8 @@ public class FujitsuCharsetDecoderTest {
 						}
 					}
 
-					if (ebcdic != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
-						expected.put(ebcdic.asText(), unicode.asText());
+					if (code != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
+						expected.put(code.asText(), unicode.asText());
 					}
 				}
 			}
@@ -171,12 +171,12 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
-					JsonNode ebcdic = node.get("ebcdic");
+					JsonNode code = node.get("code");
 					JsonNode unicode = node.get("unicode");
 					boolean encodeOnly = false;
 					
@@ -189,8 +189,8 @@ public class FujitsuCharsetDecoderTest {
 						}
 					}
 
-					if (ebcdic != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
-						expected.put(ebcdic.asText(), unicode.asText());
+					if (code != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
+						expected.put(code.asText(), unicode.asText());
 					}
 				}
 			}
@@ -231,7 +231,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -249,7 +249,7 @@ public class FujitsuCharsetDecoderTest {
 					
 					String unicode = toChars(node, true, false, false);
 					if (!unicode.equals("FFFD") && !encodeOnly) {
-						expected.put(node.get("jef").asText(), unicode);
+						expected.put(node.get("code").asText(), unicode);
 					}
 				}
 			}
@@ -303,7 +303,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -324,7 +324,7 @@ public class FujitsuCharsetDecoderTest {
 
 					String unicode = toChars(node, true, false, false);
 					if (!unicode.equals("FFFD") && reversible && !encodeOnly) {
-						expected.put(node.get("jef").asText(), unicode);
+						expected.put(node.get("code").asText(), unicode);
 					}
 				}
 			}
@@ -371,7 +371,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -379,7 +379,7 @@ public class FujitsuCharsetDecoderTest {
 
 					String unicode = toChars(node, true, true, false);
 					if (!unicode.equals("FFFD")) {
-						expected.put(node.get("jef").asText(), unicode);
+						expected.put(node.get("code").asText(), unicode);
 					}
 				}
 			}
@@ -426,7 +426,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -434,7 +434,7 @@ public class FujitsuCharsetDecoderTest {
 
 					String unicode = toChars(node, true, false, true);
 					if (!unicode.equals("FFFD")) {
-						expected.put(node.get("jef").asText(), unicode);
+						expected.put(node.get("code").asText(), unicode);
 					}
 				}
 			}

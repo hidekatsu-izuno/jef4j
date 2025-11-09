@@ -23,48 +23,91 @@ import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.LongRecord;
 import net.arnx.jef4j.util.Record;
 
-public class FujitsuCharsetIndexGenerator {
+public class CharsetIndexGenerator {
 	public static void main(String[] args) throws IOException {
+		writeCharsetIndex(
+			"src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat",
+			"src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat",
+			new String[] {
+				"fujitsu_ebcdic_mapping.json",
+				"fujitsu_ebcdik_mapping.json",
+				"fujitsu_ascii_mapping.json"
+			},
+			new String[] {
+				"fujitsu_jef_mapping.json"
+			}
+		);
+
+		writeCharsetIndex(
+			"src/main/resources/net/arnx/jef4j/HitachiEncodeMap.dat",
+			"src/main/resources/net/arnx/jef4j/HitachiDecodeMap.dat",
+			new String[] {
+				"hitachi_ebcdic_mapping.json",
+				"hitachi_ebcdik_mapping.json"
+			},
+			new String[] {
+				"hitachi_keis78_mapping.json",
+				"hitachi_keis83_mapping.json"
+			}
+		);
+
+		writeCharsetIndex(
+			"src/main/resources/net/arnx/jef4j/NecEncodeMap.dat",
+			"src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
+			new String[] {
+				"nec_ebcdik_mapping.json"
+			},
+			new String[] {
+				"nec_jips_mapping.json"
+			}
+		);
+	}
+
+	public static void writeCharsetIndex(
+		String outEncodeFile,
+		String outDecodeFile,
+		String[] sbcsList,
+		String[] mbcsList
+	) throws IOException {
 		List<Object> encoders = new ArrayList<>();
 		List<Object> decoders = new ArrayList<>();
 		
-		FujitsuCharsetIndexGenerator generator = new FujitsuCharsetIndexGenerator();
-		generator.generateEbcdicIndex("fujitsu_ascii_mapping.json", encoders, decoders);
-		generator.generateEbcdicIndex("fujitsu_ebcdic_mapping.json", encoders, decoders);
-		generator.generateEbcdicIndex("fujitsu_ebcdik_mapping.json", encoders, decoders);
-		generator.generateJefIndex("fujitsu_jef_mapping.json", encoders, decoders);
+		CharsetIndexGenerator generator = new CharsetIndexGenerator();
+		for (String csInfo : sbcsList) {
+			generator.generateSBCSIndex(csInfo, encoders, decoders);
+		}
+		for (String csInfo : mbcsList) {
+			generator.generateMBCSIndex(csInfo, encoders, decoders);
+		}
 		
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat"))) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outEncodeFile))) {
 			for (Object encoder : encoders) {
 				out.writeObject(encoder);
 			}
 		}
-		
-		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat"))) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(outDecodeFile))) {
 			for (Object decoder : decoders) {
 				out.writeObject(decoder);
 			}
 		}
-
-		System.out.println("Finish!");
 	}
 
 	private JsonFactory factory = new JsonFactory();
 	private ObjectMapper mapper = new ObjectMapper();
 	
-	private void generateEbcdicIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
+	private void generateSBCSIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
 		byte[] encoderMap = new byte[256];
 		byte[] decoderMap = new byte[256];
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
+				CharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 				
 					String unicode = node.get("unicode").asText();
-					String ebcdic = node.get("ebcdic").asText();
+					String code = node.get("code").asText();
 					boolean decodeOnly = false;
 					boolean encodeOnly = false;
 
@@ -80,7 +123,7 @@ public class FujitsuCharsetIndexGenerator {
 					}
 
 					int iUnicode = Integer.parseUnsignedInt(unicode, 16);
-					int iEbcdic = Integer.parseUnsignedInt(ebcdic, 16);
+					int iEbcdic = Integer.parseUnsignedInt(code, 16);
 					if (iUnicode == '\u203E') {
 						iUnicode = iUnicode - '\u203E' + '\u00B0';
 					} else if (iUnicode >= '\uFF61') {
@@ -101,12 +144,12 @@ public class FujitsuCharsetIndexGenerator {
 		decoders.add(decoderMap);
 	}
 	
-	private void generateJefIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
-		Map<String, String[][]> unicode2jefMap = new TreeMap<>();
-		Map<String, String[][]> jef2hdunicodeMap = new TreeMap<>();
+	private void generateMBCSIndex(String filename, List<Object> encoders, List<Object> decoders) throws IOException {
+		Map<String, String[][]> unicode2codeMap = new TreeMap<>();
+		Map<String, String[][]> code2hdunicodeMap = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				FujitsuCharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
+				CharsetIndexGenerator.class.getResourceAsStream("/" + filename), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -119,7 +162,7 @@ public class FujitsuCharsetIndexGenerator {
 
 					String hdunicode = toKey(node, "hd");
 					String aj1unicode = toKey(node, "aj1");
-					String jef = node.get("jef").asText();
+					String code = node.get("code").asText();
 					boolean decodeOnly = false;
 					boolean encodeOnly = false;
 					boolean reversible = true;
@@ -148,12 +191,12 @@ public class FujitsuCharsetIndexGenerator {
 							continue;
 						}
 						String prefix = sunicode.substring(0, sunicode.length()-1) + "0";
-						String[][] array = unicode2jefMap.computeIfAbsent(prefix, key -> new String[3][]);
+						String[][] array = unicode2codeMap.computeIfAbsent(prefix, key -> new String[3][]);
 						if (array[i] == null) {
 							array[i] = new String[16];
 						}
 						if (!decodeOnly) {
-							array[i][Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = jef;
+							array[i][Integer.parseUnsignedInt(sunicode.substring(sunicode.length()-1), 16)] = code;
 						}
 					}
 
@@ -163,12 +206,12 @@ public class FujitsuCharsetIndexGenerator {
 						}
 						if (!sunicode.equals(ivsUnicode[i])) {
 							String prefix = ivsUnicode[i].substring(0, ivsUnicode[i].length()-1) + "0";
-							String[][] array = unicode2jefMap.computeIfAbsent(prefix, key -> new String[3][]);
+							String[][] array = unicode2codeMap.computeIfAbsent(prefix, key -> new String[3][]);
 							if (array[i] == null) {
 								array[i] = new String[16];
 							}
 							if (!decodeOnly) {
-								array[i][Integer.parseUnsignedInt(ivsUnicode[i].substring(ivsUnicode[i].length()-1), 16)] = jef;
+								array[i][Integer.parseUnsignedInt(ivsUnicode[i].substring(ivsUnicode[i].length()-1), 16)] = code;
 							}
 						}
 					}
@@ -177,20 +220,20 @@ public class FujitsuCharsetIndexGenerator {
 						if (ivsUnicode[i] == null) {
 							continue;
 						}
-						String prefix = jef.substring(0, jef.length()-1) + "0";
-						String[][] array = jef2hdunicodeMap.computeIfAbsent(prefix, key -> new String[3][]);
+						String prefix = code.substring(0, code.length()-1) + "0";
+						String[][] array = code2hdunicodeMap.computeIfAbsent(prefix, key -> new String[3][]);
 						if (array[i] == null) {
 							array[i] = new String[16];
 						}
 						if (!encodeOnly) {
-							array[i][Integer.parseUnsignedInt(jef.substring(jef.length()-1), 16)] = ivsUnicode[i];
+							array[i][Integer.parseUnsignedInt(code.substring(code.length()-1), 16)] = ivsUnicode[i];
 						}
 					}
 				}
 			}
 			
-			LongObjMap<Record[]> jefEncoder = new LongObjMap<>();
-			for (Map.Entry<String, String[][]> entry : unicode2jefMap.entrySet()) {
+			LongObjMap<Record[]> encodeMap = new LongObjMap<>();
+			for (Map.Entry<String, String[][]> entry : unicode2codeMap.entrySet()) {
 				long key = Long.parseUnsignedLong(entry.getKey(), 16);
 				String[][] array = entry.getValue();
 				Record[] records = new Record[array.length];
@@ -226,11 +269,11 @@ public class FujitsuCharsetIndexGenerator {
 						}
 					}
 				}
-				jefEncoder.put(key, records);
+				encodeMap.put(key, records);
 			}
 
-			LongObjMap<Record[]> jefDecoder = new LongObjMap<>();
-			for (Map.Entry<String, String[][]> entry : jef2hdunicodeMap.entrySet()) {
+			LongObjMap<Record[]> decodeMap = new LongObjMap<>();
+			for (Map.Entry<String, String[][]> entry : code2hdunicodeMap.entrySet()) {
 				long key = Long.parseUnsignedLong(entry.getKey(), 16);
 				String[][] array = entry.getValue();
 				Record[] records = new Record[array.length];
@@ -290,11 +333,11 @@ public class FujitsuCharsetIndexGenerator {
 						}
 					}
 				}
-				jefDecoder.put(key, records);
+				decodeMap.put(key, records);
 			}
 			
-			encoders.add(jefEncoder);
-			decoders.add(jefDecoder);
+			encoders.add(encodeMap);
+			decoders.add(decodeMap);
 		}
 	}
 	
