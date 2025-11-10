@@ -183,20 +183,24 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					mark++;
 				} else if (type.handleMBCS()) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uE409') { // Private Use Area
+						byte b1 = (byte)((0x74 + (c - 0xE000) / 94) & 0xFF);
+						byte b2 = (byte)((0x21 + (c - 0xE000) % 94) & 0xFF);
 						if (type.handleJIPSE()) {
-
-						} else {
-							out.put((byte)((0x74 + (c - 0xE000) / 94) & 0xFF));
-							out.put((byte)((0x21 + (c - 0xE000) % 94) & 0xFF));
+							b1 = JIS8_EBCDIC_MAP[b1 & 0xFF];
+							b2 = JIS8_EBCDIC_MAP[b2 & 0xFF];
 						}
+						out.put(b1);
+						out.put(b2);
 						mark++;
 					} else if (c >= '\uE40A' && c <= '\uEF6B') { // Private Use Area
+						byte b1 = (byte)((0xE0 + (c - 0xE40A) / 94) & 0xFF);
+						byte b2 = (byte)((0xA1 + (c - 0xE40A) % 94) & 0xFF);
 						if (type.handleJIPSE()) {
-
-						} else {
-							out.put((byte)((0xE0 + (c - 0xE40A) / 94) & 0xFF));
-							out.put((byte)((0xA1 + (c - 0xE40A) % 94) & 0xFF));
+							b1 = JIS8_EBCDIC_MAP[b1 & 0xFF];
+							b2 = JIS8_EBCDIC_MAP[b2 & 0xFF];
 						}
+						out.put(b1);
+						out.put(b2);
 						mark++;
 					} else {
 						long key;

@@ -166,12 +166,18 @@ JIPS 漢字コード体系には半角英数や半角カナは含まれません
 |全角シフト|シフトアウト|JIPS(J)：0x1A70、JIPS(E)：0x3F75|
 |半角シフト|シフトイン|JIPS(J)：0x1A71、JIPS(E)：0x3F76|
 
-#### JIPS の外字領域の取り扱い
+### JIPS の外字領域の取り扱い
 
 JIPSの利用者定義文字は各集合の後半部分に配置されます。複数のパートに分かれるため、Unicode 私的利用領域に以下のようにマッピングされます。
 
 - G0集合 0x7421～0x7D7E (1034文字): E000～E409
 - G1集合 0xE0A1～0xFEFE (2914文字): E40A～EF6B
+
+### JIPS(J) と JIPS(E) の変換
+
+JIPS(E) は JIPS(J) の各バイトを JIS8 の文字 → EBCDIC の文字に従いマッピングし変換したものです。
+
+※外字に関しては上記ルールに従わないという情報もあるのですが変換方法がわからず、現時点ではそのまま変換をかけています。
 
 ### JIPS に関する参考文献
 
@@ -180,6 +186,7 @@ JIPSの利用者定義文字は各集合の後半部分に配置されます。�
 - [歴博 REKIHAKU 小形克宏「Windows外字と、その互換性をめぐる争い」](http://kanji.zinbun.kyoto-u.ac.jp/~yasuoka/publications/2013-09Rekihaku.pdf)
 - [PC-9801プログラマーズBible](https://dn790009.ca.archive.org/0/items/PC9801Bible/PC-9801Bible_%E6%9D%B1%E4%BA%AC%E7%90%86%E7%A7%91%E5%A4%A7%E5%AD%A6%20%281%29.pdf)
 - [NEC WebOTX Manual V10.1 (第7版)](https://docs.nec.co.jp/sites/default/files/webotx_manual_v101/WebOTX/101/html/serviceintegration/olfadapter/ref/library/convert.html?utm_source=chatgpt.com)
+- [uCosminexus Interschema ユーザーズガイド 付録K.4　EBCDIC／EBCDIKのコード表](https://itpfdoc.hitachi.co.jp/manuals/3020/30203J3820/ISUS0268.HTM)
 
 ## 異体字セレクタとは
 
@@ -333,7 +340,3 @@ Apache License 2.0 で配布します。
 - 2018/3/27 version 0.7.2: 拡張非漢字領域にあった漢字部品用コードのマッピングが漏れていたため追加しました。
 - 2018/3/11 version 0.7.1: 字形に対する Unicode 値が不明であった２文字（JEF:6AC6、JEF:48C2）が CJK 統合漢字拡張 B および F に存在することがわかったためマッピングを修正しました。
 - 2018/3/11 version 0.7.0: 「FACOM JEF 文字コード索引辞書 (1980/第二版)」 に基づき拡張漢字領域のコードを追加し、多数のマッピング不備を修正しました。
-
-## 参考文献
-
-- [uCosminexus Interschema ユーザーズガイド 付録K.4　EBCDIC／EBCDIKのコード表](https://itpfdoc.hitachi.co.jp/manuals/3020/30203J3820/ISUS0268.HTM)
