@@ -175,9 +175,15 @@ JIPSの利用者定義文字は各集合の後半部分に配置されます。�
 
 ### JIPS(J) と JIPS(E) の変換
 
-JIPS(E) は JIPS(J) の各バイトを JIS8 の文字 → EBCDIC の文字に従いマッピングし変換したものです。
+JIPS(E) は JIPS(J) の各バイトを JIS8 (JIS X0201) とEBCDIC の同一文字のバイト値をマッピングし変換したものです。
 
 ※外字に関しては上記ルールに従わないという情報もあるのですが変換方法がわからず、現時点ではそのまま変換をかけています。
+
+### JIPS(J) とNEC内部コードの変換
+
+NEC のオフコンでは JIPS の他に[「NEC内部コード」と呼ばれるコード体系が存在していた](https://offcom.jp/modules/amanual/index.php/ouyou/mojicode/moji_code11.html)ようです。
+
+jef4j では現時点ではサポートしていません。
 
 ### JIPS に関する参考文献
 
