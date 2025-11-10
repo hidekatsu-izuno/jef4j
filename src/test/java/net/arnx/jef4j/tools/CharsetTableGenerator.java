@@ -58,7 +58,8 @@ public class CharsetTableGenerator {
 			"NEC文字コード表",
 			"docs/nec_mappings.html",
 			new CharsetInfo[] {
-				new CharsetInfo("x-NEC-EBCDIK: NEC EBCDIC カタカナ", "/nec_ebcdik_mapping.json", 0x0, 0xF, 0x0, 0xF)
+				new CharsetInfo("x-NEC-EBCDIK: NEC EBCDIC カタカナ", "/nec_ebcdik_mapping.json", 0x0, 0xF, 0x0, 0xF),
+				new CharsetInfo("x-NEC-JIS8: NEC JIS8 (JIS X0201)", "/nec_jis8_mapping.json", 0x0, 0xF, 0x0, 0xF)
 			},
 			new CharsetInfo[] {
 				new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G0集合", "/nec_jips_mapping.json", 0x21, 0x73, 0x2, 0x7),
