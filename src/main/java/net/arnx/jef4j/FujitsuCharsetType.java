@@ -31,7 +31,7 @@ enum FujitsuCharsetType {
 	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", 0, 1, true),
 	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", 1, 1, true),
 	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII",  2, 1, true),
-	JEF_R("x-Fujitsu-JEF-Reversible", -1, 2, false);
+	JEF_R("x-Fujitsu-JEF-Roundtrip", -1, 2, false);
 	
 	private final String charsetName;
 	private final int sbcsTableNo;

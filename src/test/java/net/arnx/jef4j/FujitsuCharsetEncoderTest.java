@@ -299,8 +299,8 @@ public class FujitsuCharsetEncoderTest {
 	}
 
 	@Test
-	public void testFujitsuJefReversibleEncoder() throws IOException {
-		Charset JEF = Charset.forName("x-Fujitsu-JEF-Reversible");
+	public void testFujitsuJefRoundtripEncoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-Roundtrip");
 		assertEquals("4040A4A240404040B3A44040", hex("aあbc海d".getBytes(JEF)));
 		assertEquals("79DF", hex("\u00A1".getBytes(JEF)));
 
@@ -313,21 +313,21 @@ public class FujitsuCharsetEncoderTest {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					boolean decodeOnly = false;
-					boolean reversible = true;
+					boolean roundtrip = true;
 					
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
 							if ("decode_only".equals(child.asText())) {
 								decodeOnly = true;
-							} else if ("irreversible".equals(child.asText())) {
-								reversible = false;
+							} else if ("oneway".equals(child.asText())) {
+								roundtrip = false;
 							}
 						}
 					}
 
 					String unicode = toChars(node, false, false);
-					if (!unicode.equals("FFFD") && reversible && !decodeOnly) {
+					if (!unicode.equals("FFFD") && roundtrip && !decodeOnly) {
 						expected.put(unicode, node.get("code").asText());
 					}
 				}

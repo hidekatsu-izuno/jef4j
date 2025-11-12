@@ -216,7 +216,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						} else {
 							int mark2 = in.position();
 							char c3 = in.get();
-							if (c3 == '\u3099') {
+							if (c3 == '\u3099' || c3 == '\u309A') {
 								long key2 = ((long)c3) << 20 | key;
 								Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
 								Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;

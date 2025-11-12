@@ -124,6 +124,7 @@ KEIS のユーザ定義文字は、Unicode 私的利用領域には以下のよ�
 
 #### KEIS に関する資料
 
+- [画面・帳票サポートシステム　XMAP3 メインフレーム連携ガイド](https://itpfdoc.hitachi.co.jp/manuals/3020/3020759580/G5950334.HTM)
 - [Hitachi Virtual Storage Platform 5000 Cross-OS File Exchange ユーザーズガイド](https://itpfdoc.hitachi.co.jp/manuals/4047/40471JU64_SVOSRF987/40471JU64.pdf)
 - [Interstage Charset Manager Standard Edition V9 使用手引書 C.8 KEISコード系の概要](https://software.fujitsu.com/jp/manual/manualfiles/m200002/b1wd0741/14z200/b0741-c-08-00.html)
 - [文字コード表 日本語EUC(euc-jp)](http://charset.7jp.net/euc.html)
@@ -257,7 +258,7 @@ byte[] bytes = text.getBytes(charset);
 |x-Fujitsu-EBCDIK|富士通 EBCDIC (カナ文字)|
 |x-Fujitsu-ASCII|富士通 EBCDIC (ASCII)|
 |x-Fujitsu-JEF|富士通 JEF。異体字セレクタは出力されません。|
-|x-Fujitsu-JEF-Reversible|JEF のうち、相互変換（JEF⇔Unicode）が可能なコードのみに限定したものです。主にデータ移行用途です。|
+|x-Fujitsu-JEF-Roundtrip|JEF のうち、相互変換（JEF⇔Unicode）が可能なコードのみに限定したものです。主にデータ移行用途です。|
 |x-Fujitsu-JEF-HanyoDenshi|富士通 JEF。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Fujitsu-JEF-AdobeJapan1|富士通 JEF。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
 |x-Fujitsu-JEF-EBCDIC|富士通 EBCDIC (英小文字) と JEF をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
@@ -331,6 +332,8 @@ Apache License 2.0 で配布します。
 
 ## 変更履歴
 
+- 2025/8/13 version 0.12.0:
+  - 【非互換】「x-Fujitsu-JEF-Reversible」の名前をより適切な「x-Fujitsu-JEF-Roundtrip」に変更しました。
 - 2025/8/13 version 0.11.0: 
   - Adobe Japan-1 の IVS を使った変換に対応しました。
   - データ移行を想定し逆変換（JEF→Unicode→JEF）が可能なコードのみに限定した「x-Fujitsu-JEF-Reversible」を追加しました。

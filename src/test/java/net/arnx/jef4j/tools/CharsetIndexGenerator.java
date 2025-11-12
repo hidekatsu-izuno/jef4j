@@ -55,7 +55,8 @@ public class CharsetIndexGenerator {
 			"src/main/resources/net/arnx/jef4j/NecEncodeMap.dat",
 			"src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
 			new String[] {
-				"nec_ebcdik_mapping.json"
+				"nec_ebcdik_mapping.json",
+				"nec_jis8_mapping.json"
 			},
 			new String[] {
 				"nec_jips_mapping.json"
@@ -165,7 +166,7 @@ public class CharsetIndexGenerator {
 					String code = node.get("code").asText();
 					boolean decodeOnly = false;
 					boolean encodeOnly = false;
-					boolean reversible = true;
+					boolean roundtrip = true;
 
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
@@ -174,8 +175,8 @@ public class CharsetIndexGenerator {
 								decodeOnly = true;
 							} else if ("encode_only".equals(child.asText())) {
 								encodeOnly = true;
-							} else if ("irreversible".equals(child.asText())) {
-								reversible = false;
+							} else if ("oneway".equals(child.asText())) {
+								roundtrip = false;
 							}
 						}
 					}
@@ -183,7 +184,7 @@ public class CharsetIndexGenerator {
 					String[] ivsUnicode = new String[] {
 						hdunicode,
 						aj1unicode,
-						reversible ? sunicode : null
+						roundtrip ? sunicode : null
 					};
 
 					for (int i = 0; i < ivsUnicode.length; i++) {

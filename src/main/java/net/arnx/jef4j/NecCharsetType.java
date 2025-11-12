@@ -17,13 +17,17 @@ package net.arnx.jef4j;
 
 enum NecCharsetType {
 	EBCDIK("x-NEC-EBCDIK", 0, -1, false, false),
+	JIS8("x-NEC-JIS8", 1, -1, false, false),
 	JIPSJ("x-NEC-JIPSJ", -1, 0, false, false),
 	JIPSE("x-NEC-JIPSE", -1, 0, true, false),
 	JIPSJ_EBCDIK("x-NEC-JIPSJ-EBCDIK", 0, 0, false, false),
-	JIPSE_EBCDIK("x-NEC-JIPSE-EBCDIK", 0, 0, true, false),
 	JIPSJ_HD_EBCDIK("x-NEC-JIPSJ-HanyoDenshi-EBCDIK", 0, 0, false, true),
-	JIPSE_HD_EBCDIK("x-NEC-JIPSE-HanyoDenshi-EBCDIK",  0, 0, true, true),
 	JIPSJ_AJ1_EBCDIK("x-NEC-JIPSJ-AdobeJapan1-EBCDIK",  0, 1, false, true),
+	JIPSJ_JIS8("x-NEC-JIPSJ-JIS8", 1, 0, false, false),
+	JIPSJ_HD_JIS8("x-NEC-JIPSJ-HanyoDenshi-JIS8", 1, 0, false, true),
+	JIPSJ_AJ1_JIS8("x-NEC-JIPSJ-AdobeJapan1-JIS8",  1, 1, false, true),
+	JIPSE_EBCDIK("x-NEC-JIPSE-EBCDIK", 0, 0, true, false),
+	JIPSE_HD_EBCDIK("x-NEC-JIPSE-HanyoDenshi-EBCDIK",  0, 0, true, true),
 	JIPSE_AJ1_EBCDIK("x-NEC-JIPSE-AdobeJapan1-EBCDIK",  0, 1, true, true);
 	
 	private final String charsetName;

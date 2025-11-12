@@ -31,21 +31,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
-public class FujitsuCharsetDecoderTest {
+public class HitachiCharsetDecoderTest {
 	private JsonFactory factory = new JsonFactory();
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
-	public void testFujitsuEbcdicDecoder() throws IOException {
-		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
-		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, EBCDIC));
+	public void testHitachiEbcdicDecoder() throws IOException {
+		Charset EBCDIC = Charset.forName("x-Hitachi-EBCDIC");
+		assertEquals(
+			"a\u008E\uFFFDus\u008E\uFF61b\u008E\uFFFD\uFF9Bu\u008E\uFF61c", 
+			new String(new byte[] {
+				(byte)0x81, 
+				(byte)0x0A, (byte)0x41, 
+				(byte)0xA4, 
+				(byte)0xA2, 
+				(byte)0x0A, (byte)0x42, 
+				(byte)0x82, 
+				(byte)0x0A, (byte)0x41, 
+				(byte)0xB3, 
+				(byte)0xA4, 
+				(byte)0x0A, (byte)0x42, 
+				(byte)0x83
+			}, EBCDIC));
 
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_ebcdic_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -96,16 +108,26 @@ public class FujitsuCharsetDecoderTest {
 	}
 
 	@Test
-	public void testFujitsuEbcdikDecoder() throws IOException {
-		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
-		assertEquals("ｱ\uFFFDﾏﾍ\uFFFDｲ\uFFFD\uFFFDﾏ\uFFFDｳ", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+	public void testHitachiEbcdikDecoder() throws IOException {
+		Charset EBCDIK = Charset.forName("x-Hitachi-EBCDIK");
+		assertEquals("ｱ\u008E｡ﾏﾍ\u008E｢ｲ\u008E｡\uFFFDﾏ\u008E｢ｳ", new String(new byte[] {
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0xA4, 
+			(byte)0xA2, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0xB3, 
+			(byte)0xA4, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0x83
 		}, EBCDIK));
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -162,76 +184,26 @@ public class FujitsuCharsetDecoderTest {
 	}
 
 	@Test
-	public void testFujitsuAsciiDecoder() throws IOException {
-		Charset ASCII = Charset.forName("x-Fujitsu-ASCII");
-		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, ASCII));
-
-		Map<String, String> expected = new TreeMap<>();
-
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					JsonNode node = mapper.readTree(parser);
-					JsonNode code = node.get("code");
-					JsonNode unicode = node.get("unicode");
-					boolean encodeOnly = false;
-					
-					JsonNode optionsNode = node.get("options");
-					if (optionsNode != null && optionsNode.isArray()) {
-						for (JsonNode child : optionsNode) {
-							if ("encode_only".equals(child.asText())) {
-								encodeOnly = true;
-							}
-						}
-					}
-
-					if (code != null && unicode != null && !"FFFD".equals(unicode.asText()) && !encodeOnly) {
-						expected.put(code.asText(), unicode.asText());
-					}
-				}
-			}
-		}
-		
-		Map<String, String> actual = new TreeMap<>();
-		
-		CharsetDecoder cd = ASCII
-				.newDecoder()
-				.onUnmappableCharacter(CodingErrorAction.REPORT)
-				.onMalformedInput(CodingErrorAction.REPORT);
-		ByteBuffer bb = ByteBuffer.allocate(2);
-	
-		for (int i = 0; i <= 0xFF; i++) {
-			bb.clear();
-			bb.put((byte)(i & 0xFF));
-			bb.flip();
-			try {
-				CharBuffer cb = cd.decode(bb);
-				bb.flip();
-				
-				actual.put(hex(bb), hex(cb));
-			} catch (CharacterCodingException e) {
-			}
-			
-			cd.reset();
-		}
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void testFujitsuJefDecoder() throws IOException {
-		Charset JEF = Charset.forName("x-Fujitsu-JEF");
+	public void testHitachiKeis78Decoder() throws IOException {
+		Charset JEF = Charset.forName("x-Hitachi-KEIS78");
 		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+			(byte)0x81, 
+			(byte)0x28, 
+			(byte)0xA4, 
+			(byte)0xA2, 
+			(byte)0x29, 
+			(byte)0x82, 
+			(byte)0x28, 
+			(byte)0xB3, 
+			(byte)0xA4, 
+			(byte)0x29, 
+			(byte)0x83
 		}, JEF));
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -292,38 +264,33 @@ public class FujitsuCharsetDecoderTest {
 	}
 
 	@Test
-	public void testFujitsuJefRoundtripDecoder() throws IOException {
-		Charset JEF = Charset.forName("x-Fujitsu-JEF-Roundtrip");
+	public void testHitachiKeis83Decoder() throws IOException {
+		Charset JEF = Charset.forName("x-Hitachi-KEIS83");
 		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
 			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
 		}, JEF));
-		assertEquals("\u4E08", new String(new byte[] { (byte)0xBE, (byte)0xE6 }, JEF));
-		assertEquals("\uFFFD", new String(new byte[] { (byte)0x41, (byte)0xA5 }, JEF));
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					JsonNode node = mapper.readTree(parser);					
+					JsonNode node = mapper.readTree(parser);
 					boolean encodeOnly = false;
-					boolean roundtrip = true;
-
+					
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
 							if ("encode_only".equals(child.asText())) {
 								encodeOnly = true;
-							} else if ("oneway".equals(child.asText())) {
-								roundtrip = false;
 							}
 						}
 					}
-
+					
 					String unicode = toChars(node, true, false, false);
-					if (!unicode.equals("FFFD") && roundtrip && !encodeOnly) {
+					if (!unicode.equals("FFFD") && !encodeOnly) {
 						expected.put(node.get("code").asText(), unicode);
 					}
 				}
@@ -367,11 +334,11 @@ public class FujitsuCharsetDecoderTest {
 	}
 
 	@Test
-	public void testFujitsuJefHanyoDenshiDecoder() throws IOException {
+	public void testHitachiKeis78HanyoDenshiDecoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -387,7 +354,7 @@ public class FujitsuCharsetDecoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF-HanyoDenshi")
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS78-HanyoDenshi")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -420,13 +387,68 @@ public class FujitsuCharsetDecoderTest {
 			assertEquals(expected.get(key), actual.get(key), key);
 		}
 	}
-		
+
 	@Test
-	public void testFujitsuJefAdobeJapan1Decoder() throws IOException {
+	public void testHitachiKeis83HanyoDenshiDecoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					String unicode = toChars(node, true, true, false);
+					if (!unicode.equals("FFFD")) {
+						expected.put(node.get("code").asText(), unicode);
+					}
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS83-HanyoDenshi")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+	
+		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+
+			bb.clear();
+			bb.put((byte)((i >> 8) & 0xFF));
+			bb.put((byte)(i & 0xFF));
+			bb.flip();
+			try {
+				CharBuffer cb = cd.decode(bb);
+				bb.flip();
+				
+				actual.put(hex(bb), hex(cb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			cd.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(expected.get(key), actual.get(key), key);
+		}
+	}
+
+	@Test
+	public void testHitachiKEIS78AdobeJapan1Decoder() throws IOException {
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -442,7 +464,62 @@ public class FujitsuCharsetDecoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF-AdobeJapan1")
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS78-AdobeJapan1")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+	
+		for (int i = 0; i < 0xFFFF; i++) {
+			if (i >= 0x80A0 && i <= 0xA0FF) {
+				continue;
+			}
+
+			bb.clear();
+			bb.put((byte)((i >> 8) & 0xFF));
+			bb.put((byte)(i & 0xFF));
+			bb.flip();
+			try {
+				CharBuffer cb = cd.decode(bb);
+				bb.flip();
+				
+				actual.put(hex(bb), hex(cb));
+			} catch (CharacterCodingException e) {
+			}
+			
+			cd.reset();
+		}
+		
+		Set<String> keys = new TreeSet<>();
+		keys.addAll(expected.keySet());
+		keys.addAll(actual.keySet());
+		for (String key : keys) {
+			assertEquals(expected.get(key), actual.get(key), key);
+		}
+	}
+		
+	@Test
+	public void testHitachiKEIS83AdobeJapan1Decoder() throws IOException {
+		Map<String, String> expected = new TreeMap<>();
+		
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					JsonNode node = mapper.readTree(parser);
+
+					String unicode = toChars(node, true, false, true);
+					if (!unicode.equals("FFFD")) {
+						expected.put(node.get("code").asText(), unicode);
+					}
+				}
+			}
+		}
+		
+		Map<String, String> actual = new TreeMap<>();
+		
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS83-AdobeJapan1")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -477,10 +554,44 @@ public class FujitsuCharsetDecoderTest {
 	}
 
 	@Test
-	public void testFujitsuJefUserDefinedSpaceDecoder() throws IOException {
+	public void testHitachiKEIS78UserDefinedSpaceDecoder() throws IOException {
 		Map<String, String> actual = new TreeMap<>();
 
-		CharsetDecoder cd = Charset.forName("x-Fujitsu-JEF")
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS78")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+
+		for (int b1 = 0x80; b1 <= 0xA0; b1++) {
+			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
+				bb.clear();
+				bb.put((byte)(b1 & 0xFF));
+				bb.put((byte)(b2 & 0xFF));
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					
+					actual.put(hex(bb), hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+			}
+		}
+
+		assertEquals("E000", actual.get("80A1"));
+		assertEquals("E05D", actual.get("80FE"));
+		assertEquals("E814", actual.get("96A1"));
+		assertEquals("E871", actual.get("96FE"));
+		assertEquals("EBC0", actual.get("A0A1"));
+		assertEquals("EC1D", actual.get("A0FE"));
+	}
+
+	@Test
+	public void testHitachiKEIS83UserDefinedSpaceDecoder() throws IOException {
+		Map<String, String> actual = new TreeMap<>();
+
+		CharsetDecoder cd = Charset.forName("x-Hitachi-KEIS83")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -511,29 +622,37 @@ public class FujitsuCharsetDecoderTest {
 	}
 	
 	@Test
-	public void testFujitsuJefEbcdicEncoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
+	public void testHitachiKEIS78EbcdicEncoder() throws IOException {
+		Charset JEF_EBCDIC = Charset.forName("x-Hitachi-KEIS78-EBCDIC");
 		assertEquals("aあb海c", new String(new byte[] {
 			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
 		}, JEF_EBCDIC));
 	}
 
 	@Test
-	public void testFujitsuJefEbcdikEncoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
+	public void testHitachiKEIS83EbcdicEncoder() throws IOException {
+		Charset JEF_EBCDIC = Charset.forName("x-Hitachi-KEIS83-EBCDIC");
+		assertEquals("aあb海c", new String(new byte[] {
+			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
+		}, JEF_EBCDIC));
+	}
+
+	@Test
+	public void testHitachiKEIS78EbcdikEncoder() throws IOException {
+		Charset JEF_EBCDIK = Charset.forName("x-Hitachi-KEIS78-EBCDIK");
 		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
 			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
 		}, JEF_EBCDIK));
 	}
 
 	@Test
-	public void testFujitsuJefAsciiEncoder() throws IOException {
-		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
-		assertEquals("aあb海c", new String(new byte[] {
+	public void testHitachiKEIS83EbcdikEncoder() throws IOException {
+		Charset JEF_EBCDIK = Charset.forName("x-Hitachi-KEIS83-EBCDIK");
+		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
 			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_ASCII));
+		}, JEF_EBCDIK));
 	}
-	
+
 	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi, boolean useAdobeJapan1) {
 		List<String> parts = new ArrayList<>(); 
 		parts.add(node.get("unicode").asText());
