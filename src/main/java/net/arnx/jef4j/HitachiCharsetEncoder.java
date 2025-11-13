@@ -143,7 +143,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 					}
 					out.put(value);
 					mark++;
-				} else if (type.handleMBCS()) { // Double Bytes
+				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uEBBF') { // Private Use Area
 						out.put((byte)((0x81 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
@@ -178,7 +178,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 							return CoderResult.unmappableForLength(1);
 						}
 						
-						if (type.handleSBCS() && type.handleMBCS() && !kshifted) {
+						if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && !kshifted) {
 							if (out.remaining() < 2) {
 								return CoderResult.OVERFLOW;
 							}
@@ -212,7 +212,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 								} else {
 									in.position(mark2);
 								}
-							} else if (type.handleIVS() && c3 == '\uDB40') {
+							} else if (type.getIVSTableNo() != -1 && c3 == '\uDB40') {
 								if (!in.hasRemaining()) {
 									if (isEndOfInput()) {
 										cr = CoderResult.malformedForLength(1);
@@ -283,7 +283,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.handleSBCS() && type.handleMBCS() && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
@@ -307,14 +307,14 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 	}
 
 	private static float getAverageBytesPerChar(HitachiCharsetType type) {
-		return type.handleMBCS() ? 2 : 1;
+		return type.getMBCSTableNo() != -1 ? 2 : 1;
 	}
 	
 	private static float getMaxBytesPerChar(HitachiCharsetType type) {
-		return type.handleIVS() ? 4 : type.handleMBCS() ? 2 : 1;
+		return type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
 	}
 	
 	private static byte[] getReplacementChar(HitachiCharsetType type) {
-		return type.handleMBCS() ? new byte[] { 0x40, 0x40 } : new byte[] { 0x40 };
+		return type.getMBCSTableNo() != -1 ? new byte[] { 0x40, 0x40 } : new byte[] { 0x40 };
 	}
 }

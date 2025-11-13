@@ -185,20 +185,20 @@ public class HitachiCharsetDecoderTest {
 
 	@Test
 	public void testHitachiKeis78Decoder() throws IOException {
-		Charset JEF = Charset.forName("x-Hitachi-KEIS78");
-		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
+		Charset KEIS78 = Charset.forName("x-Hitachi-KEIS78");
+		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
 			(byte)0x81, 
-			(byte)0x28, 
+			(byte)0x0A, (byte)0x41, 
 			(byte)0xA4, 
 			(byte)0xA2, 
-			(byte)0x29, 
+			(byte)0x0A, (byte)0x42,  
 			(byte)0x82, 
-			(byte)0x28, 
+			(byte)0x0A, (byte)0x41, 
 			(byte)0xB3, 
 			(byte)0xA4, 
-			(byte)0x29, 
+			(byte)0x0A, (byte)0x42,  
 			(byte)0x83
-		}, JEF));
+		}, KEIS78));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -229,7 +229,7 @@ public class HitachiCharsetDecoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetDecoder cd = JEF
+		CharsetDecoder cd = KEIS78
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -265,10 +265,20 @@ public class HitachiCharsetDecoderTest {
 
 	@Test
 	public void testHitachiKeis83Decoder() throws IOException {
-		Charset JEF = Charset.forName("x-Hitachi-KEIS83");
-		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF));
+		Charset KEIS83 = Charset.forName("x-Hitachi-KEIS83");
+		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0xA4, 
+			(byte)0xA2, 
+			(byte)0x0A, (byte)0x42,  
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0xB3, 
+			(byte)0xA4, 
+			(byte)0x0A, (byte)0x42,  
+			(byte)0x83
+		}, KEIS83));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -299,7 +309,7 @@ public class HitachiCharsetDecoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetDecoder cd = JEF
+		CharsetDecoder cd = KEIS83
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
