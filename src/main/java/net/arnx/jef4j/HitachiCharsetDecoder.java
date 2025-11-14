@@ -50,17 +50,20 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 		try {
 			while (in.hasRemaining()) {
 				int b = in.get() & 0xFF;
-				if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && b == 0x0A) {
+				if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+					&& b == 0x0A) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
 					int b2 = in.get() & 0xFF;
-					if (b2 == 0x41) {
+					if (b2 == 0x42) {
 						kshifted = true;
 						mark += 2;
-					} else if (b2 == 0x42) {
+						continue;
+					} else if (b2 == 0x41) {
 						kshifted = false;
 						mark += 2;
+						continue;
 					} else {
 						return CoderResult.unmappableForLength(1);
 					}
@@ -100,7 +103,7 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 						}
 					} else {
 						Record[] records = mmap.get((b << 8) | (b2 & 0xF0));
-						Record record = records != null ? records[type.getMBCSTableNo()] : null;
+						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.unmappableForLength(2);

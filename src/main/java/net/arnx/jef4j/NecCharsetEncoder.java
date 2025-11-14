@@ -6,15 +6,14 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 public class NecCharsetEncoder extends CharsetEncoder {
-	private static final byte[][] SBCS_MAP = new byte[1][];
-	private static final LongObjMap<Record[]> MBCS_MAP;
-	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
 	private static final byte[] JIS8_EBCDIC_MAP = new byte[] {
 		(byte)0x00, (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x37, (byte)0x2D, (byte)0x2E, (byte)0x2F, // 00-07
 		(byte)0x16, (byte)0x05, (byte)0x15, (byte)0x0B, (byte)0x0C, (byte)0x0D, (byte)0x0E, (byte)0x0F, // 08-0F
@@ -50,11 +49,16 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		(byte)0xEE, (byte)0xEF, (byte)0xFA, (byte)0xFB, (byte)0xFC, (byte)0xFD, (byte)0xFE, (byte)0xFF  // F8-FF
 	};
 
+	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
+	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
+	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
+
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				NecCharsetEncoder.class.getResourceAsStream("NecEncodeMap.dat"))) {
-			SBCS_MAP[0] = (byte[])in.readObject();
-			MBCS_MAP = (LongObjMap<Record[]>)in.readObject();
+			SBCS_MAP.add((byte[])in.readObject());
+			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -62,6 +66,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 
     private final NecCharsetType type;
 	private final byte[] map;
+	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
@@ -70,7 +75,9 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
-		this.map = (sbcsTableNo != -1) ? SBCS_MAP[sbcsTableNo] : null;
+		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
+		int mbcsTableNo = type.getMBCSTableNo();
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
 	}
 
 	@Override
@@ -181,7 +188,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					}
 					out.put(value);
 					mark++;
-				} else if (type.handleMBCS()) { // Double Bytes
+				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uE409') { // Private Use Area
 						byte b1 = (byte)((0x74 + (c - 0xE000) / 94) & 0xFF);
 						byte b2 = (byte)((0x21 + (c - 0xE000) % 94) & 0xFF);
@@ -226,13 +233,13 @@ public class NecCharsetEncoder extends CharsetEncoder {
 							key = c;
 						}
 						
-						Record[] records = MBCS_MAP.get(key & 0xFFFFFFF0);
-						Record record = records != null ? records[type.getMBCSTableNo()] : null;
+						Record[] records = mmap.get(key & 0xFFFFFFF0);
+						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
 						if (record == null || !record.exists((int)(key & 0xF))) {
 							return CoderResult.unmappableForLength(1);
 						}
 						
-						if (type.handleSBCS() && type.handleMBCS() && !kshifted) {
+						if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && !kshifted) {
 							if (out.remaining() < 2) {
 								return CoderResult.OVERFLOW;
 							}
@@ -263,15 +270,15 @@ public class NecCharsetEncoder extends CharsetEncoder {
 							char c3 = in.get();
 							if (c3 == '\u3099' || c3 == '\u309A') {
 								long key2 = ((long)c3) << 20 | key;
-								Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
-								Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
+								Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
+								Record record2 = records2 != null ? records2[Math.max(type.getIVSTableNo(), 0)] : null;
 								if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 									mc = (char)record2.get((int)(key2 & 0xF));
 									progress++;
 								} else {
 									in.position(mark2);
 								}
-							} else if (type.handleIVS() && c3 == '\uDB40') {
+							} else if (type.getIVSTableNo() != -1 && c3 == '\uDB40') {
 								if (!in.hasRemaining()) {
 									if (isEndOfInput()) {
 										cr = CoderResult.malformedForLength(1);
@@ -286,7 +293,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 									char c4 = in.get();
 									if (Character.isLowSurrogate(c4)) {
 										long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
-										Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
+										Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
 										Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
 										if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 											mc = (char)record2.get((int)(key2 & 0xF));
@@ -348,7 +355,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.handleSBCS() && type.handleMBCS() && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
 			if (out.remaining() < 2) {
 				return CoderResult.OVERFLOW;
 			}
@@ -378,16 +385,17 @@ public class NecCharsetEncoder extends CharsetEncoder {
 	}
 
 	private static float getAverageBytesPerChar(NecCharsetType type) {
-		return type.handleMBCS() ? 2 : 1;
+		return type.getMBCSTableNo() != -1 ? 2 : 1;
 	}
 	
 	private static float getMaxBytesPerChar(NecCharsetType type) {
-		return type.handleIVS() || (type.handleMBCS() && type.handleSBCS()) ? 4 : type.handleMBCS() ? 2 : 1;
+		return type.getIVSTableNo() != -1 || (type.getMBCSTableNo() != -1 && type.getSBCSTableNo() != -1) ? 4 :
+			type.getMBCSTableNo() != -1 ? 2 : 1;
 	}
 	
 	private static byte[] getReplacementChar(NecCharsetType type) {
-		return type.handleMBCS() && !type.handleSBCS() ? 
+		return type.getMBCSTableNo() != -1 && type.getSBCSTableNo() == -1 ? 
 			(type.handleJIPSE() ? new byte[] { 0x4F, 0x4F } : new byte[] { 0x21, 0x21 }) : 
-				new byte[] { 0x40 };
+			new byte[] { 0x40 };
 	}
 }

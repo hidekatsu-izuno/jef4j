@@ -16,54 +16,42 @@
 package net.arnx.jef4j;
 
 enum FujitsuCharsetType {
-	EBCDIC("x-Fujitsu-EBCDIC", 0, -1, false),
-	EBCDIK("x-Fujitsu-EBCDIK", 1, -1, false),
-	ASCII("x-Fujitsu-ASCII", 2, -1, false),
-	JEF("x-Fujitsu-JEF", -1, 0, false),
-	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", 0, 0, false),
-	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", 1, 0, false),
-	JEF_ASCII("x-Fujitsu-JEF-ASCII", 2, 0, false),
-	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", -1, 0, true),
-	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", 0, 0, true),
-	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", 1, 0, true),
-	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", 2, 0, true),
-	JEF_AJ1("x-Fujitsu-JEF-AdobeJapan1", -1, 1, true),
-	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", 0, 1, true),
-	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", 1, 1, true),
-	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII",  2, 1, true),
-	JEF_R("x-Fujitsu-JEF-Roundtrip", -1, 2, false);
+	EBCDIC("x-Fujitsu-EBCDIC", 0, -1, -1),
+	EBCDIK("x-Fujitsu-EBCDIK", 1, -1, -1),
+	ASCII("x-Fujitsu-ASCII", 2, -1, -1),
+	JEF("x-Fujitsu-JEF", -1, 0, -1),
+	JEF_EBCDIC("x-Fujitsu-JEF-EBCDIC", 0, 0, 0),
+	JEF_EBCDIK("x-Fujitsu-JEF-EBCDIK", 1, 0, 0),
+	JEF_ASCII("x-Fujitsu-JEF-ASCII", 2, 0, 0),
+	JEF_HD("x-Fujitsu-JEF-HanyoDenshi", -1, 0, 0),
+	JEF_HD_EBCDIC("x-Fujitsu-JEF-HanyoDenshi-EBCDIC", 0, 0, 0),
+	JEF_HD_EBCDIK("x-Fujitsu-JEF-HanyoDenshi-EBCDIK", 1, 0, 0),
+	JEF_HD_ASCII("x-Fujitsu-JEF-HanyoDenshi-ASCII", 2, 0, 0),
+	JEF_AJ1("x-Fujitsu-JEF-AdobeJapan1", -1, 0, 1),
+	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", 0, 0, 1),
+	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", 1, 0, 1),
+	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII",  2, 0, 1),
+	JEF_R("x-Fujitsu-JEF-Roundtrip", -1, 0, 2);
 	
 	private final String charsetName;
 	private final int sbcsTableNo;
 	private final int mbcsTableNo;
-	private final boolean handleIVS;
+	private final int ivsTableNo;
 	
 	FujitsuCharsetType(
 		String charsetName, 
 		int sbcsTableNo,
 		int mbcsTableNo,
-		boolean handleIVS
+		int ivsTableNo
 	) {
 		this.charsetName = charsetName;
 		this.sbcsTableNo = sbcsTableNo;
-		this.handleIVS = handleIVS;
+		this.ivsTableNo = ivsTableNo;
 		this.mbcsTableNo = mbcsTableNo;
 	}
 	
 	public String getCharsetName() {
 		return charsetName;
-	}
-
-	boolean handleSBCS() {
-		return sbcsTableNo != -1;
-	}
-	
-	boolean handleMBCS() {
-		return mbcsTableNo != -1;
-	}
-	
-	boolean handleIVS() {
-		return handleIVS;
 	}
 
 	int getSBCSTableNo() {
@@ -72,5 +60,9 @@ enum FujitsuCharsetType {
 
 	int getMBCSTableNo() {
 		return mbcsTableNo;
+	}
+	
+	int getIVSTableNo() {
+		return ivsTableNo;
 	}
 }

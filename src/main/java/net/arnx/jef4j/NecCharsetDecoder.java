@@ -6,14 +6,14 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 public class NecCharsetDecoder extends CharsetDecoder {
-	private static final byte[][] SBCS_MAP = new byte[1][];
-	private static final LongObjMap<Record[]> MBCS_MAP;
 	private static final byte[] EBCDIK_JIS8_MAP = new byte[] {
 		(byte)0x00, (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x9C, (byte)0x09, (byte)0x86, (byte)0x7F, // 00-07
 		(byte)0x97, (byte)0x8D, (byte)0x8E, (byte)0x0B, (byte)0x0C, (byte)0x0D, (byte)0x0E, (byte)0x0F, // 08-0F
@@ -48,13 +48,16 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		(byte)0x30, (byte)0x31, (byte)0x32, (byte)0x33, (byte)0x34, (byte)0x35, (byte)0x36, (byte)0x37, // F0-F7
 		(byte)0x38, (byte)0x39, (byte)0xFA, (byte)0xFB, (byte)0xFC, (byte)0xFD, (byte)0xFE, (byte)0xFF  // F8-FF
 	};
-	
+
+	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
+	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
+
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				NecCharsetDecoder.class.getResourceAsStream("NecDecodeMap.dat"))) {
-			SBCS_MAP[0] = (byte[])in.readObject();
-			SBCS_MAP[1] = (byte[])in.readObject();
-			MBCS_MAP = (LongObjMap<Record[]>)in.readObject();
+			SBCS_MAP.add((byte[])in.readObject());
+			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -62,6 +65,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 
     private final NecCharsetType type;
 	private final byte[] map;
+	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 
@@ -69,7 +73,9 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
-		this.map = (sbcsTableNo != -1) ? SBCS_MAP[sbcsTableNo] : null;
+		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
+		int mbcsTableNo = type.getMBCSTableNo();
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
 	}
 
 	@Override
@@ -78,7 +84,8 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		try {
 			while (in.hasRemaining()) {
 				int b = in.get() & 0xFF;
-				if (type.handleSBCS() && type.handleMBCS() && b == (type.handleJIPSE() ? 0x3F : 0x1A)) {
+				if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+					&& b == (type.handleJIPSE() ? 0x3F : 0x1A)) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
@@ -86,9 +93,11 @@ public class NecCharsetDecoder extends CharsetDecoder {
 					if (b2 == (type.handleJIPSE() ? 0x75 : 0x70)) {
 						kshifted = true;
 						mark += 2;
+						continue;
 					} else if (b2 == (type.handleJIPSE() ? 0x76 : 0x71)) {
 						kshifted = false;
 						mark += 2;
+						continue;
 					} else {
 						return CoderResult.unmappableForLength(1);
 					}
@@ -111,7 +120,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 					}
 					out.put(c);
 					mark++;
-				} else if (type.handleMBCS() && (b >= 0x21 && b <= 0x7E) || (b >= 0xA1 && b <= 0xFE)) {
+				} else if (type.getMBCSTableNo() != -1 && (b >= 0x21 && b <= 0x7E) || (b >= 0xA1 && b <= 0xFE)) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
@@ -137,8 +146,8 @@ public class NecCharsetDecoder extends CharsetDecoder {
 							return CoderResult.unmappableForLength(2);
 						}
 					} else {
-						Record[] records = MBCS_MAP.get((b << 8) | (b2 & 0xF0));
-						Record record = records != null ? records[type.getMBCSTableNo()] : null;
+						Record[] records = mmap.get((b << 8) | (b2 & 0xF0));
+						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
 						int pos = b2 & 0xF;
 						if (record == null || !record.exists(pos)) {
 							return CoderResult.unmappableForLength(2);
@@ -159,7 +168,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 						if (combi == 0) {
 							combiLen = 0;
 						} else if (Character.isSupplementaryCodePoint(combi)) {
-							if (type.handleIVS()) {
+							if (type.getIVSTableNo() != -1) {
 								combiLen = 2;
 							} else {
 								combiLen = 0;
@@ -205,6 +214,6 @@ public class NecCharsetDecoder extends CharsetDecoder {
 	}
 
     private static float getMaxCharsPerByte(NecCharsetType type) {
-		return type.handleMBCS() ? 2.0F : 1.0F;
+		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

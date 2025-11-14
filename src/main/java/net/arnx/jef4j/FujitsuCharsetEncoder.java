@@ -21,30 +21,33 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 class FujitsuCharsetEncoder extends CharsetEncoder {
-	private static final byte[][] SBCS_MAP = new byte[3][];
-	private static final LongObjMap<Record[]> MBCS_MAP;
+	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
+	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
 	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
-			SBCS_MAP[0] = (byte[])in.readObject();
-			SBCS_MAP[1] = (byte[])in.readObject();
-			SBCS_MAP[2] = (byte[])in.readObject();
-			MBCS_MAP = (LongObjMap<Record[]>)in.readObject();
+			SBCS_MAP.add((byte[])in.readObject());
+			SBCS_MAP.add((byte[])in.readObject());
+			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
 	private final FujitsuCharsetType type;
-	private final byte[] map;
+	private final byte[] smap;
+	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
@@ -53,7 +56,9 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
-		this.map = (sbcsTableNo != -1) ? SBCS_MAP[sbcsTableNo] : null;
+		this.smap = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
+		int mbcsTableNo = type.getMBCSTableNo();
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
 	}
 
 	@Override
@@ -123,14 +128,14 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 				if (c >= '\uFFFE') {
 					return CoderResult.unmappableForLength(1);
 				} else if (c <= '\u007F' || (
-					map != null && (
+					smap != null && (
 						c <= '\u009F'
 						|| c == '\u00A3' || c == '\u00A6' || c == '\u00AC'
 						|| c == '\u203E' 
 						|| (c >= '\uFF61' && c <= '\uFF9F')
 					)
 				)) {
-					if (map == null) {
+					if (smap == null) {
 						return CoderResult.unmappableForLength(1);
 					} else {
 						if (c == '\u203E') {
@@ -140,7 +145,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 						}
 					}
 					
-					byte value = map[c];
+					byte value = smap[c];
 					if (c != '\0' && value == 0) {
 						return CoderResult.unmappableForLength(1);
 					}
@@ -158,7 +163,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					}
 					out.put(value);
 					mark++;
-				} else if (type.handleMBCS()) { // Double Bytes
+				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uEC1D') { // Private Use Area
 						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
@@ -187,13 +192,13 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							key = c;
 						}
 						
-						Record[] records = MBCS_MAP.get(key & 0xFFFFFFF0);
-						Record record = records != null ? records[type.getMBCSTableNo()] : null;
+						Record[] records = mmap.get(key & 0xFFFFFFF0);
+						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
 						if (record == null || !record.exists((int)(key & 0xF))) {
 							return CoderResult.unmappableForLength(1);
 						}
 						
-						if (type.handleSBCS() && type.handleMBCS() && !kshifted) {
+						if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && !kshifted) {
 							if (!out.hasRemaining()) {
 								return CoderResult.OVERFLOW;
 							}
@@ -218,15 +223,15 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 							char c3 = in.get();
 							if (c3 == '\u3099' || c3 == '\u309A') {
 								long key2 = ((long)c3) << 20 | key;
-								Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
-								Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
+								Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
+								Record record2 = records2 != null ? records2[Math.max(type.getIVSTableNo(), 0)] : null;
 								if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 									mc = (char)record2.get((int)(key2 & 0xF));
 									progress++;
 								} else {
 									in.position(mark2);
 								}
-							} else if (type.handleIVS() && c3 == '\uDB40') {
+							} else if (type.getIVSTableNo() != -1 && c3 == '\uDB40') {
 								if (!in.hasRemaining()) {
 									if (isEndOfInput()) {
 										cr = CoderResult.malformedForLength(1);
@@ -241,7 +246,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 									char c4 = in.get();
 									if (Character.isLowSurrogate(c4)) {
 										long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
-										Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
+										Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
 										Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
 										if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 											mc = (char)record2.get((int)(key2 & 0xF));
@@ -297,7 +302,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.handleSBCS() && type.handleMBCS() && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
@@ -322,14 +327,18 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	}
 	
 	private static float getAverageBytesPerChar(FujitsuCharsetType type) {
-		return type.handleMBCS() ? 2 : 1;
+		return type.getMBCSTableNo() != -1 ? 2 : 
+			1;
 	}
 	
 	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
-		return type.handleIVS() || (type.handleMBCS() && type.handleSBCS()) ? 4 : type.handleMBCS() ? 2 : 1;
+		return type.getIVSTableNo()  != -1 || (type.getMBCSTableNo() != -1 && type.getSBCSTableNo() != -1) ? 4 :
+			type.getMBCSTableNo() != -1 ? 2 :
+			1;
 	}
 	
 	private static byte[] getReplacementChar(FujitsuCharsetType type) {
-		return type.handleMBCS() ? new byte[] { 0x40, 0x40 } : new byte[] { 0x40 };
+		return type.getMBCSTableNo() != -1 ? new byte[] { 0x40, 0x40 } : 
+			new byte[] { 0x40 };
 	}
 }

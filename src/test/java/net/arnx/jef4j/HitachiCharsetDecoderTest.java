@@ -589,12 +589,12 @@ public class HitachiCharsetDecoderTest {
 			}
 		}
 
-		assertEquals("E000", actual.get("80A1"));
-		assertEquals("E05D", actual.get("80FE"));
-		assertEquals("E814", actual.get("96A1"));
-		assertEquals("E871", actual.get("96FE"));
-		assertEquals("EBC0", actual.get("A0A1"));
-		assertEquals("EC1D", actual.get("A0FE"));
+		assertEquals("E000", actual.get("81A1"));
+		assertEquals("E05D", actual.get("81FE"));
+		assertEquals("E7B6", actual.get("96A1"));
+		assertEquals("E813", actual.get("96FE"));
+		assertEquals("EB62", actual.get("A0A1"));
+		assertEquals("EBBF", actual.get("A0FE"));
 	}
 
 	@Test
@@ -623,44 +623,76 @@ public class HitachiCharsetDecoderTest {
 			}
 		}
 
-		assertEquals("E000", actual.get("80A1"));
-		assertEquals("E05D", actual.get("80FE"));
-		assertEquals("E814", actual.get("96A1"));
-		assertEquals("E871", actual.get("96FE"));
-		assertEquals("EBC0", actual.get("A0A1"));
-		assertEquals("EC1D", actual.get("A0FE"));
+		assertEquals("E000", actual.get("81A1"));
+		assertEquals("E05D", actual.get("81FE"));
+		assertEquals("E7B6", actual.get("96A1"));
+		assertEquals("E813", actual.get("96FE"));
+		assertEquals("EB62", actual.get("A0A1"));
+		assertEquals("EBBF", actual.get("A0FE"));
 	}
 	
 	@Test
 	public void testHitachiKEIS78EbcdicEncoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Hitachi-KEIS78-EBCDIC");
+		Charset KEIS78_EBCDIC = Charset.forName("x-Hitachi-KEIS78-EBCDIC");
 		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIC));
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xA4, (byte)0xA2, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xB3, (byte)0xA4, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x83
+		}, KEIS78_EBCDIC));
 	}
 
 	@Test
 	public void testHitachiKEIS83EbcdicEncoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Hitachi-KEIS83-EBCDIC");
+		Charset KEIS83_EBCDIC = Charset.forName("x-Hitachi-KEIS83-EBCDIC");
 		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIC));
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xA4, (byte)0xA2, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xB3, (byte)0xA4, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x83
+		}, KEIS83_EBCDIC));
 	}
 
 	@Test
 	public void testHitachiKEIS78EbcdikEncoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Hitachi-KEIS78-EBCDIK");
+		Charset KEIS78_EBCDIK = Charset.forName("x-Hitachi-KEIS78-EBCDIK");
 		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIK));
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xA4, (byte)0xA2, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xB3, (byte)0xA4, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x83
+		}, KEIS78_EBCDIK));
 	}
 
 	@Test
 	public void testHitachiKEIS83EbcdikEncoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Hitachi-KEIS83-EBCDIK");
+		Charset KEIS83_EBCDIK = Charset.forName("x-Hitachi-KEIS83-EBCDIK");
 		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
-			(byte)0x81, (byte)0x28, (byte)0xA4, (byte)0xA2, (byte)0x29, (byte)0x82, (byte)0x28, (byte)0xB3, (byte)0xA4, (byte)0x29, (byte)0x83
-		}, JEF_EBCDIK));
+			(byte)0x81, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xA4, (byte)0xA2, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x82, 
+			(byte)0x0A, (byte)0x42, 
+			(byte)0xB3, (byte)0xA4, 
+			(byte)0x0A, (byte)0x41, 
+			(byte)0x83
+		}, KEIS83_EBCDIK));
 	}
 
 	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi, boolean useAdobeJapan1) {

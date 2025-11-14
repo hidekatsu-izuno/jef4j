@@ -6,22 +6,25 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
 @SuppressWarnings("unchecked")
 public class HitachiCharsetEncoder extends CharsetEncoder {
-	private static final byte[][] SBCS_MAP = new byte[2][];
-	private static final LongObjMap<Record[]> MBCS_MAP;
+	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
+	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
 	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
 				HitachiCharsetEncoder.class.getResourceAsStream("HitachiEncodeMap.dat"))) {
-			SBCS_MAP[0] = (byte[])in.readObject();
-			SBCS_MAP[1] = (byte[])in.readObject();
-			MBCS_MAP = (LongObjMap<Record[]>)in.readObject();
+			SBCS_MAP.add((byte[])in.readObject());
+			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -29,6 +32,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 
     private final HitachiCharsetType type;
 	private final byte[] map;
+	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
@@ -37,7 +41,9 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
-		this.map = (sbcsTableNo != -1) ? SBCS_MAP[sbcsTableNo] : null;
+		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
+		int mbcsTableNo = type.getMBCSTableNo();
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
 	}
 
 	@Override
@@ -134,7 +140,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 							return CoderResult.OVERFLOW;
 						}
 						out.put((byte)0x01);
-						out.put((byte)0x42);
+						out.put((byte)0x41);
 						kshifted = false;
 					}
 
@@ -172,8 +178,8 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 							key = c;
 						}
 						
-						Record[] records = MBCS_MAP.get(key & 0xFFFFFFF0);
-						Record record = records != null ? records[type.getMBCSTableNo()] : null;
+						Record[] records = mmap.get(key & 0xFFFFFFF0);
+						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
 						if (record == null || !record.exists((int)(key & 0xF))) {
 							return CoderResult.unmappableForLength(1);
 						}
@@ -183,7 +189,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 								return CoderResult.OVERFLOW;
 							}
 							out.put((byte)0x0A);
-							out.put((byte)0x41);
+							out.put((byte)0x42);
 							kshifted = true;
 						}
 						
@@ -204,7 +210,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 							char c3 = in.get();
 							if (c3 == '\u3099' || c3 == '\u309A') {
 								long key2 = ((long)c3) << 20 | key;
-								Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
+								Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
 								Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
 								if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 									mc = (char)record2.get((int)(key2 & 0xF));
@@ -227,7 +233,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 									char c4 = in.get();
 									if (Character.isLowSurrogate(c4)) {
 										long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
-										Record[] records2 = MBCS_MAP.get(key2 & 0xFFFFFFFFF0L);
+										Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
 										Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
 										if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 											mc = (char)record2.get((int)(key2 & 0xF));
