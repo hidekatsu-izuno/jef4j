@@ -327,14 +327,19 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	}
 	
 	private static float getAverageBytesPerChar(FujitsuCharsetType type) {
-		return type.getMBCSTableNo() != -1 ? 2 : 
-			1;
+		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
+			size += 0.5F;
+		}
+		return size;
 	}
 	
 	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
-		return type.getIVSTableNo()  != -1 || (type.getMBCSTableNo() != -1 && type.getSBCSTableNo() != -1) ? 4 :
-			type.getMBCSTableNo() != -1 ? 2 :
-			1;
+		float size = type.getIVSTableNo() != -1 ? 6 : type.getMBCSTableNo() != -1 ? 3 : 1;
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
+			size += 1;
+		}
+		return size;
 	}
 	
 	private static byte[] getReplacementChar(FujitsuCharsetType type) {

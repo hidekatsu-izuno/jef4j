@@ -139,7 +139,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 						if (out.remaining() < 2) {
 							return CoderResult.OVERFLOW;
 						}
-						out.put((byte)0x01);
+						out.put((byte)0x0A);
 						out.put((byte)0x41);
 						kshifted = false;
 					}
@@ -313,11 +313,19 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 	}
 
 	private static float getAverageBytesPerChar(HitachiCharsetType type) {
-		return type.getMBCSTableNo() != -1 ? 2 : 1;
+		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
+			size += 1;
+		}
+		return size;
 	}
 	
 	private static float getMaxBytesPerChar(HitachiCharsetType type) {
-		return type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
+		float size = type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
+			size += 2;
+		}
+		return size;
 	}
 	
 	private static byte[] getReplacementChar(HitachiCharsetType type) {
