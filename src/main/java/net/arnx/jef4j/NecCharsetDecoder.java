@@ -75,7 +75,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
-		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(0) : null;
 	}
 
 	@Override
@@ -85,16 +85,16 @@ public class NecCharsetDecoder extends CharsetDecoder {
 			while (in.hasRemaining()) {
 				int b = in.get() & 0xFF;
 				if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
-					&& b == (type.handleJIPSE() ? 0x3F : 0x1A)) {
+					&& b == (type.getMBCSTableNo() == 1 ? 0x3F : 0x1A)) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
 					int b2 = in.get() & 0xFF;
-					if (b2 == (type.handleJIPSE() ? 0x75 : 0x70)) {
+					if (b2 == (type.getMBCSTableNo() == 1 ? 0x75 : 0x70)) {
 						kshifted = true;
 						mark += 2;
 						continue;
-					} else if (b2 == (type.handleJIPSE() ? 0x76 : 0x71)) {
+					} else if (b2 == (type.getMBCSTableNo() == 1 ? 0x76 : 0x71)) {
 						kshifted = false;
 						mark += 2;
 						continue;
@@ -126,7 +126,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 					}
 					
 					int b2 = in.get() & 0xFF;
-					if (type.handleJIPSE()) {
+					if (type.getMBCSTableNo() == 1) {
 						b = EBCDIK_JIS8_MAP[b & 0xFF];
 						b2 = EBCDIK_JIS8_MAP[b2 & 0xFF];
 					}

@@ -173,7 +173,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 						if (out.remaining() < 2) {
 							return CoderResult.OVERFLOW;
 						}
-						if (type.handleJIPSE()) {
+						if (type.getMBCSTableNo() == 1) {
 							out.put((byte)0x3F);
 							out.put((byte)0x76);
 						} else {
@@ -192,7 +192,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					if (c >= '\uE000' && c <= '\uE409') { // Private Use Area
 						byte b1 = (byte)((0x74 + (c - 0xE000) / 94) & 0xFF);
 						byte b2 = (byte)((0x21 + (c - 0xE000) % 94) & 0xFF);
-						if (type.handleJIPSE()) {
+						if (type.getMBCSTableNo() == 1) {
 							b1 = JIS8_EBCDIC_MAP[b1 & 0xFF];
 							b2 = JIS8_EBCDIC_MAP[b2 & 0xFF];
 						}
@@ -202,7 +202,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					} else if (c >= '\uE40A' && c <= '\uEF6B') { // Private Use Area
 						byte b1 = (byte)((0xE0 + (c - 0xE40A) / 94) & 0xFF);
 						byte b2 = (byte)((0xA1 + (c - 0xE40A) % 94) & 0xFF);
-						if (type.handleJIPSE()) {
+						if (type.getMBCSTableNo() == 1) {
 							b1 = JIS8_EBCDIC_MAP[b1 & 0xFF];
 							b2 = JIS8_EBCDIC_MAP[b2 & 0xFF];
 						}
@@ -243,7 +243,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 							if (out.remaining() < 2) {
 								return CoderResult.OVERFLOW;
 							}
-							if (type.handleJIPSE()) {
+							if (type.getMBCSTableNo() == 1) {
 								out.put((byte)0x3F);
 								out.put((byte)0x75);
 							} else {
@@ -315,7 +315,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 
 						byte b1 = (byte)((mc >> 8) & 0xFF);
 						byte b2 = (byte)(mc & 0xFF);
-						if (type.handleJIPSE()) {
+						if (type.getMBCSTableNo() == 1) {
 							b1 = JIS8_EBCDIC_MAP[b1 & 0xFF];
 							b2 = JIS8_EBCDIC_MAP[b2 & 0xFF];
 						}
@@ -359,7 +359,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 			if (out.remaining() < 2) {
 				return CoderResult.OVERFLOW;
 			}
-			if (type.handleJIPSE()) {
+			if (type.getMBCSTableNo() == 1) {
 				out.put((byte)0x3F);
 				out.put((byte)0x76);
 			} else {
@@ -402,7 +402,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 	
 	private static byte[] getReplacementChar(NecCharsetType type) {
 		return type.getMBCSTableNo() != -1 && type.getSBCSTableNo() == -1 ? 
-			(type.handleJIPSE() ? new byte[] { 0x4F, 0x4F } : new byte[] { 0x21, 0x21 }) : 
-			new byte[] { 0x40 };
+			(type.getMBCSTableNo() == 1 ? new byte[] { 0x4F, 0x4F } : new byte[] { 0x21, 0x21 }) : 
+			(type.getSBCSTableNo() == 1 ? new byte[] { 0x40 } : new byte[] { 0x20 });
 	}
 }

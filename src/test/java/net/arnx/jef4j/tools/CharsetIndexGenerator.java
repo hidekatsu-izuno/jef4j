@@ -55,8 +55,8 @@ public class CharsetIndexGenerator {
 			"src/main/resources/net/arnx/jef4j/NecEncodeMap.dat",
 			"src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
 			new String[] {
-				"nec_ebcdik_mapping.json",
-				"nec_jis8_mapping.json"
+				"nec_jis8_mapping.json",
+				"nec_ebcdik_mapping.json"
 			},
 			new String[] {
 				"nec_jips_mapping.json"

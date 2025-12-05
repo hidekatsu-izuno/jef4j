@@ -104,7 +104,8 @@ KEIS83、はその後、IBM拡張文字への対応などが行われた KEIS90�
 
 拡張文字セット3 についてどのような文字が配置されているかは、情報がなく対応できておりません。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
 
-※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字や字形そのものやコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円で買い取りさせてただきます。
+※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字や字形そのものやコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円を超えない範囲で買い取りさせてただきます。
+
 ※富士通社資料には 0x9FA1～0x9FD8 に拡張文字セット3が割り当てられているという記載があるが、日立社資料にそれを裏付ける資料は見つかっていない。
 
 ### KEIS と EBCDIC/EBCDIK の併用
@@ -134,7 +135,12 @@ KEIS のユーザ定義文字は、Unicode 私的利用領域には以下のよ�
 ## JIPS 漢字コードとは
 
 JIPS (Japanese Information Processing System) とは日本電気株式会社のオフコンで使われていた漢字コード体系です。
-JIPS には、JISコード配列をそのまま採用した JIPS(J) と JISコードを EBCDIC 範囲にマッピングした JIPS(E) があります。
+JIPS には、システムの違いによりJISコード配列をそのまま採用した JIPS(J) と JISコードを EBCDIC 範囲にマッピングした JIPS(E) があります。また、JIPS(J) を漢字シフトなしで利用できるように工夫した NEC内部コード というものもあります。
+
+- ACOS-2/4: EBCDIC(カナ) + JIPS(E)
+- ACOS-6: JIS8 + JIPS(J)
+- ITX、A-VXなど: EBCDIC(カナ) + NEC内部コード(E) ※漢字シフト不要
+- NTOS、PTOSなど: JIS8 + NEC内部コード(J) ※漢字シフト不要
 
 ### JIPS 漢字コード体系の構造
 
@@ -156,7 +162,7 @@ JIPS 漢字コード体系は ISO/IEC 2022 同様 2バイトの各バイトを2�
 
 G1、G2集合 にどのような文字が配置されているかは、情報がなく部分的な対応に留まっています。情報をお持ちの方は<a href="https://github.com/hidekatsu-izuno/jef4j/issues">issues までご連絡</a>いただけますと幸いです。
 
-※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字や字形そのものやコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円で買い取りさせてただきます。
+※書籍のスクリーンショットを公開することは著作権法上許容されませんのでお控えください。一方、文字や字形そのものやコードのマッピング自体は著作権法上の保護対象ではないため記載いただいても構いません。また、「HITAC文字コード表」、「日本電気標準文字セット辞書（拡張）」など原資料をお持ちの方で書籍をお譲り頂ける方がおりましたら各1万円を超えない範囲で買い取りさせてただきます。
 
 ### JIPS と EBCDICカナ文字 の併用
 
@@ -181,8 +187,6 @@ JIPS(E) は JIPS(J) の各バイトを JIS8 (JIS X0201) とEBCDIC の同一文�
 ※外字に関しては上記ルールに従わないという情報もあるのですが変換方法がわからず、現時点ではそのまま変換をかけています。
 
 ### JIPS(J) とNEC内部コードの変換
-
-NEC のオフコンでは JIPS の他に[「NEC内部コード」と呼ばれるコード体系が存在していた](https://offcom.jp/modules/amanual/index.php/ouyou/mojicode/moji_code11.html)ようです。
 
 jef4j では現時点ではサポートしていません。
 
@@ -306,13 +310,14 @@ byte[] bytes = text.getBytes(charset);
 
 |文字セット名|説明|
 |----------|----|
+|x-NEC-JIS8|NEC JIS X0201|
 |x-NEC-EBCDIK|NEC EBCDIC カタカナ|
 |x-NEC-JIPSJ|NEC JIPS(J)。異体字セレクタは出力されません。|
 |x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J)。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J)。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
-|x-NEC-JIPSJ-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
-|x-NEC-JIPSJ-HanyoDenshi-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
-|x-NEC-JIPSJ-AdobeJapan1-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-NEC-JIPSJ-JIS8|NEC NEC JIS X0201 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
+|x-NEC-JIPSJ-HanyoDenshi-JIS8|NEC NEC JIS X0201 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
+|x-NEC-JIPSJ-AdobeJapan1-JIS8|NEC NEC JIS X0201 と NEC JIPS(J) をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 |x-NEC-JIPSE|NEC JIPS(E)。異体字セレクタは出力されません。|
 |x-NEC-JIPSE-EBCDIK|NEC EBCDIC カタカナ と NEC JIPS(E) をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
 |x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) 。異体字セレクタにはIVD汎用電子のものが使用されます。|
@@ -332,8 +337,9 @@ Apache License 2.0 で配布します。
 
 ## 変更履歴
 
-- 2025/8/13 version 0.12.0:
+- 2025/11/20 version 0.12.0:
   - 【非互換】「x-Fujitsu-JEF-Reversible」の名前をより適切な「x-Fujitsu-JEF-Roundtrip」に変更しました。
+  - 日立系やNEC系のコード体系にも対応しました。現段階では 
 - 2025/8/13 version 0.11.0: 
   - Adobe Japan-1 の IVS を使った変換に対応しました。
   - データ移行を想定し逆変換（JEF→Unicode→JEF）が可能なコードのみに限定した「x-Fujitsu-JEF-Reversible」を追加しました。
