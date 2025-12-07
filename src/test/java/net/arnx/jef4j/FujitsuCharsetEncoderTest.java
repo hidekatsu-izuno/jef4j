@@ -313,7 +313,7 @@ public class FujitsuCharsetEncoderTest {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
 					boolean decodeOnly = false;
-					boolean roundtrip = true;
+					boolean oneway = false;
 					
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
@@ -321,13 +321,13 @@ public class FujitsuCharsetEncoderTest {
 							if ("decode_only".equals(child.asText())) {
 								decodeOnly = true;
 							} else if ("oneway".equals(child.asText())) {
-								roundtrip = false;
+								oneway = true;
 							}
 						}
 					}
 
 					String unicode = toChars(node, false, false);
-					if (!unicode.equals("FFFD") && roundtrip && !decodeOnly) {
+					if (!unicode.equals("FFFD") && !oneway && !decodeOnly) {
 						expected.put(unicode, node.get("code").asText());
 					}
 				}
