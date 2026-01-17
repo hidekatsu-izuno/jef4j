@@ -111,8 +111,8 @@ publishing {
 	}
 }
 
-def pgpPublicKey = project.property("pgpPublicKey")
-def pgpSecretKey = project.property("pgpSecretKey")
+def pgpPublicKey = System.getenv("PGP_PUBLIC_KEY")
+def pgpSecretKey = System.getenv("PGP_SECRET_KEY")
 
 jreleaser {
 	signing {
