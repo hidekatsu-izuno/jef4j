@@ -188,23 +188,17 @@ public class NecCharsetDecoderTest {
 	@Test
 	public void testNecJipsjDecoder() throws IOException {
 		Charset JIPSJ = Charset.forName("x-NEC-JIPSJ");
-		assertEquals("\u3000\uFFFD陲\uFFFD饌\uFFFD陬\uFFFD\uFFFD", new String(new byte[] {
+		assertEquals("\u3000Ａあ亜", new String(new byte[] {
 			(byte)0x21, (byte)0x21, //
-			(byte)0x41, //
-			(byte)0x1A, (byte)0x70, //
+			(byte)0x23, (byte)0x41, //
 			(byte)0x24, (byte)0x22, //
-			(byte)0x1A, (byte)0x71, //
-			(byte)0x42, //
-			(byte)0x1A, (byte)0x70, //
-			(byte)0x25, (byte)0x22, //
-			(byte)0x1A, (byte)0x71, //
-			(byte)0xB1, //
+			(byte)0x30, (byte)0x21  //
 		}, JIPSJ));
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -237,7 +231,7 @@ public class NecCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
-			if ((i >= 0x7421 && i <= 0x7D7E) || (i >= 0xE0A1 && i <= 0xFEFE)) {
+			if ((i >= 0x7421 && i <= 0x7E7E) || (i >= 0xE0A1 && i <= 0xFEFE)) {
 				continue;
 			}
 			
@@ -267,24 +261,41 @@ public class NecCharsetDecoderTest {
 	@Test
 	public void testNecJipseDecoder() throws IOException {
 		Charset JIPSE = Charset.forName("x-NEC-JIPSE");
-		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xA4, 
-			(byte)0xA2, 
-			(byte)0x0A, (byte)0x42,  
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xB3, 
-			(byte)0xA4, 
-			(byte)0x0A, (byte)0x42,  
-			(byte)0x83
+		assertEquals("\u3000Ａあ亜", new String(new byte[] {
+			(byte)0x4F, (byte)0x4F, //
+			(byte)0x7B, (byte)0xC1, //
+			(byte)0xE0, (byte)0x7F, //
+			(byte)0xF0, (byte)0x4F  //
 		}, JIPSE));
+
+		Map<String, String> jeMap = new TreeMap<>();
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					String jis8 = null;
+					String ebcdik = null;
+					while (parser.nextToken() != JsonToken.END_OBJECT) {
+						String fieldName = parser.currentName();
+						parser.nextToken();
+						if ("jis8".equals(fieldName)) {
+							jis8 = parser.getText();
+						} else if ("ebcdik".equals(fieldName)) {
+							ebcdik = parser.getText();
+						}
+					}
+					if (jis8 != null && ebcdik != null) {
+						jeMap.put(jis8, ebcdik);
+					}
+				}
+			}
+		}
 
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -302,7 +313,9 @@ public class NecCharsetDecoderTest {
 					
 					String unicode = toChars(node, true, false, false);
 					if (!unicode.equals("FFFD") && !encodeOnly) {
-						expected.put(node.get("code").asText(), unicode);
+						String code = node.get("code").asText();
+						code = jeMap.get(code.substring(0, 2)) + jeMap.get(code.substring(2, 4));
+						expected.put(code, unicode);
 					}
 				}
 			}
@@ -317,7 +330,7 @@ public class NecCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
-			if (i >= 0x80A0 && i <= 0xA0FF) {
+			if (i >= 0xE000 && i <= 0xEF6B) {
 				continue;
 			}
 			
@@ -349,7 +362,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -404,7 +417,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jipsj_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -459,7 +472,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jipsj_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -514,7 +527,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jipsj_mapping.json"), 
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
