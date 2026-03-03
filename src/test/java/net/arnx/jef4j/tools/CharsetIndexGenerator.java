@@ -56,7 +56,8 @@ public class CharsetIndexGenerator {
 			"src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
 			new String[] {
 				"nec_jis8_mapping.json",
-				"nec_ebcdik_mapping.json"
+				"nec_ebcdik_mapping.json",
+				"nec_jis8_ebcdik_mapping.json"
 			},
 			new String[] {
 				"nec_jips_mapping.json"
@@ -106,36 +107,45 @@ public class CharsetIndexGenerator {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
-				
-					String unicode = node.get("unicode").asText();
-					String code = node.get("code").asText();
-					boolean decodeOnly = false;
-					boolean encodeOnly = false;
 
-					JsonNode optionsNode = node.get("options");
-					if (optionsNode != null && optionsNode.isArray()) {
-						for (JsonNode child : optionsNode) {
-							if ("decode_only".equals(child.asText())) {
-								decodeOnly = true;
-							} else if ("encode_only".equals(child.asText())) {
-								encodeOnly = true;
+					if (filename.equals("nec_jis8_ebcdik_mapping.json")) {
+						String jis8 = node.get("jis8").asText();
+						String ebcdik = node.get("ebcdik").asText();
+						int iJis8 = Integer.parseUnsignedInt(jis8, 16);
+						int iEbcdik = Integer.parseUnsignedInt(ebcdik, 16);
+						encoderMap[iJis8] = (byte)iEbcdik;
+						decoderMap[iEbcdik] = (byte)iJis8;
+					} else {
+						String unicode = node.get("unicode").asText();
+						String code = node.get("code").asText();
+						boolean decodeOnly = false;
+						boolean encodeOnly = false;
+
+						JsonNode optionsNode = node.get("options");
+						if (optionsNode != null && optionsNode.isArray()) {
+							for (JsonNode child : optionsNode) {
+								if ("decode_only".equals(child.asText())) {
+									decodeOnly = true;
+								} else if ("encode_only".equals(child.asText())) {
+									encodeOnly = true;
+								}
 							}
 						}
-					}
 
-					int iUnicode = Integer.parseUnsignedInt(unicode, 16);
-					int iEbcdic = Integer.parseUnsignedInt(code, 16);
-					if (iUnicode == '\u203E') {
-						iUnicode = iUnicode - '\u203E' + '\u00B0';
-					} else if (iUnicode >= '\uFF61') {
-						iUnicode = iUnicode - '\uFF61' + '\u00C0';
-					}
-					
-					if (!decodeOnly) {
-						encoderMap[iUnicode] = (byte)iEbcdic;
-					}
-					if (!encodeOnly) {
-						decoderMap[iEbcdic] = (byte)iUnicode;
+						int iUnicode = Integer.parseUnsignedInt(unicode, 16);
+						int iEbcdic = Integer.parseUnsignedInt(code, 16);
+						if (iUnicode == '\u203E') {
+							iUnicode = iUnicode - '\u203E' + '\u00B0';
+						} else if (iUnicode >= '\uFF61') {
+							iUnicode = iUnicode - '\uFF61' + '\u00C0';
+						}
+						
+						if (!decodeOnly) {
+							encoderMap[iUnicode] = (byte)iEbcdic;
+						}
+						if (!encodeOnly) {
+							decoderMap[iEbcdic] = (byte)iUnicode;
+						}
 					}
 				}
 			}

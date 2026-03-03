@@ -38,18 +38,16 @@ public class NecCharsetDecoderTest {
 	@Test
 	public void testNecJis8Decoder() throws IOException {
 		Charset JIS8 = Charset.forName("x-NEC-JIS8");
-		assertEquals("ｱ\u008E｡ﾏﾍ\u008E｢ｲ\u008E｡\uFFFDﾏ\u008E｢ｳ", new String(new byte[] {
-			(byte)0xB1, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xA1, 
-			(byte)0xCF, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xB3, 
-			(byte)0xA4, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0x83
+		assertEquals("A\u001Ap$\"\u001AqB\u001Ap%\"\u001Aqｱ", new String(new byte[] {
+			(byte)0x41, //
+			(byte)0x1A, (byte)0x70, //
+			(byte)0x24, (byte)0x22, //
+			(byte)0x1A, (byte)0x71, //
+			(byte)0x42, //
+			(byte)0x1A, (byte)0x70, //
+			(byte)0x25, (byte)0x22, //
+			(byte)0x1A, (byte)0x71, //
+			(byte)0xB1, //
 		}, JIS8));
 
 		Map<String, String> expected = new TreeMap<>();
@@ -190,18 +188,17 @@ public class NecCharsetDecoderTest {
 	@Test
 	public void testNecJipsjDecoder() throws IOException {
 		Charset JIPSJ = Charset.forName("x-NEC-JIPSJ");
-		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xA4, 
-			(byte)0xA2, 
-			(byte)0x0A, (byte)0x42,  
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0xB3, 
-			(byte)0xA4, 
-			(byte)0x0A, (byte)0x42,  
-			(byte)0x83
+		assertEquals("\u3000\uFFFD陲\uFFFD饌\uFFFD陬\uFFFD\uFFFD", new String(new byte[] {
+			(byte)0x21, (byte)0x21, //
+			(byte)0x41, //
+			(byte)0x1A, (byte)0x70, //
+			(byte)0x24, (byte)0x22, //
+			(byte)0x1A, (byte)0x71, //
+			(byte)0x42, //
+			(byte)0x1A, (byte)0x70, //
+			(byte)0x25, (byte)0x22, //
+			(byte)0x1A, (byte)0x71, //
+			(byte)0xB1, //
 		}, JIPSJ));
 
 		Map<String, String> expected = new TreeMap<>();
@@ -240,7 +237,7 @@ public class NecCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
-			if (i >= 0x80A0 && i <= 0xA0FF) {
+			if ((i >= 0x7421 && i <= 0x7D7E) || (i >= 0xE0A1 && i <= 0xFEFE)) {
 				continue;
 			}
 			

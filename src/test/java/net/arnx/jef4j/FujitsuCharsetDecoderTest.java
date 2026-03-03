@@ -39,8 +39,17 @@ public class FujitsuCharsetDecoderTest {
 	public void testFujitsuEbcdicDecoder() throws IOException {
 		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
 		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
-				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
-				(byte) 0xA4, (byte) 0x29, (byte) 0x83
+				(byte) 0x81, //
+				(byte) 0x28, //
+				(byte) 0xA4, //
+				(byte) 0xA2, //
+				(byte) 0x29, //
+				(byte) 0x82, //
+				(byte) 0x28, //
+				(byte) 0xB3, //
+				(byte) 0xA4, //
+				(byte) 0x29, //
+				(byte) 0x83  //
 		}, EBCDIC));
 
 		Map<String, String> expected = new TreeMap<>();
