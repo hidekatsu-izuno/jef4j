@@ -88,83 +88,90 @@ public class NecCharsetDecoder extends CharsetDecoder {
 					}
 					out.put(c);
 					mark++;
-				} else if (type.getMBCSTableNo() != -1 && (b >= 0x21 && b <= 0x7E) || (b >= 0xA1 && b <= 0xFE)) {
-					if (!in.hasRemaining()) {
-						return CoderResult.UNDERFLOW;
-					}
-					
-					int b2 = in.get() & 0xFF;
+				} else if (type.getMBCSTableNo() != -1) {
 					if (type.getMBCSTableNo() == 1) {
-						b = EBCDIK_JIS8_MAP[b & 0xFF];
-						b2 = EBCDIK_JIS8_MAP[b2 & 0xFF];
+						b = EBCDIK_JIS8_MAP[b & 0xFF] & 0xFF;
 					}
 
-					if (b >= 0x74 && b <= 0x7E) { // Private Use Area
-						if (b2 >= 0x21 && b2 <= 0x7E) {
-							out.put((char)(0xE000 + (b - 0x74) * 94 + (b2 - 0x21)));
-							mark += 2;
-						} else {
-							return CoderResult.unmappableForLength(2);
-						}
-					} else if (b >= 0xE0 && b <= 0xFE) { // Private Use Area
-						if (b2 >= 0xA1 && b2 <= 0xFE) {
-							out.put((char)(0xE40A + (b - 0xE0) * 94 + (b2 - 0xA1)));
-							mark += 2;
-						} else {
-							return CoderResult.unmappableForLength(2);
-						}
-					} else {
-						Record[] records = mmap.get((b << 8) | (b2 & 0xF0));
-						Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
-						int pos = b2 & 0xF;
-						if (record == null || !record.exists(pos)) {
-							return CoderResult.unmappableForLength(2);
+					if ((b >= 0x21 && b <= 0x7E) || (b >= 0xA1 && b <= 0xFE)) {
+						if (!in.hasRemaining()) {
+							return CoderResult.UNDERFLOW;
 						}
 						
-						long mc = record.get(pos);
-						int base = (int)(mc & 0xFFFFF);
-						int combi = (int)((mc >> 20) & 0xFFFFF);
-						
-						int baseLen;
-						if (Character.isSupplementaryCodePoint(base)) {
-							baseLen = 2;
-						} else {
-							baseLen = 1;
+						int b2 = in.get() & 0xFF;
+						if (type.getMBCSTableNo() == 1) {
+							b2 = EBCDIK_JIS8_MAP[b2 & 0xFF] & 0xFF;
 						}
-						
-						int combiLen;
-						if (combi == 0) {
-							combiLen = 0;
-						} else if (Character.isSupplementaryCodePoint(combi)) {
-							if (type.getIVSTableNo() != -1) {
-								combiLen = 2;
+
+						if (b >= 0x74 && b <= 0x7E) { // Private Use Area
+							if (b2 >= 0x21 && b2 <= 0x7E) {
+								out.put((char)(0xE000 + (b - 0x74) * 94 + (b2 - 0x21)));
+								mark += 2;
 							} else {
-								combiLen = 0;
+								return CoderResult.unmappableForLength(2);
+							}
+						} else if (b >= 0xE0 && b <= 0xFE) { // Private Use Area
+							if (b2 >= 0xA1 && b2 <= 0xFE) {
+								out.put((char)(0xE40A + (b - 0xE0) * 94 + (b2 - 0xA1)));
+								mark += 2;
+							} else {
+								return CoderResult.unmappableForLength(2);
 							}
 						} else {
-							combiLen = 1;
+							Record[] records = mmap.get((b << 8) | (b2 & 0xF0));
+							Record record = records != null ? records[Math.max(type.getIVSTableNo(), 0)] : null;
+							int pos = b2 & 0xF;
+							if (record == null || !record.exists(pos)) {
+								return CoderResult.unmappableForLength(2);
+							}
+							
+							long mc = record.get(pos);
+							int base = (int)(mc & 0xFFFFF);
+							int combi = (int)((mc >> 20) & 0xFFFFF);
+							
+							int baseLen;
+							if (Character.isSupplementaryCodePoint(base)) {
+								baseLen = 2;
+							} else {
+								baseLen = 1;
+							}
+							
+							int combiLen;
+							if (combi == 0) {
+								combiLen = 0;
+							} else if (Character.isSupplementaryCodePoint(combi)) {
+								if (type.getIVSTableNo() != -1) {
+									combiLen = 2;
+								} else {
+									combiLen = 0;
+								}
+							} else {
+								combiLen = 1;
+							}
+							
+							if (out.remaining() < (baseLen + combiLen)) {
+								return CoderResult.OVERFLOW;
+							}
+							
+							if (baseLen == 2) {
+								out.put(Character.highSurrogate(base));
+								out.put(Character.lowSurrogate(base));
+							} else if (baseLen == 1) {
+								out.put((char)base);
+							} else {
+								return CoderResult.unmappableForLength(2);
+							}
+							
+							if (combiLen == 2) {
+								out.put(Character.highSurrogate(combi));
+								out.put(Character.lowSurrogate(combi));
+							} else if (combiLen == 1) {
+								out.put((char)combi);
+							}
+							mark += 2;
 						}
-						
-						if (out.remaining() < (baseLen + combiLen)) {
-							return CoderResult.OVERFLOW;
-						}
-						
-						if (baseLen == 2) {
-							out.put(Character.highSurrogate(base));
-							out.put(Character.lowSurrogate(base));
-						} else if (baseLen == 1) {
-							out.put((char)base);
-						} else {
-							return CoderResult.unmappableForLength(2);
-						}
-						
-						if (combiLen == 2) {
-							out.put(Character.highSurrogate(combi));
-							out.put(Character.lowSurrogate(combi));
-						} else if (combiLen == 1) {
-							out.put((char)combi);
-						}
-						mark += 2;
+					} else {
+						return CoderResult.unmappableForLength(1);
 					}
 				} else {
 					return CoderResult.unmappableForLength(1);

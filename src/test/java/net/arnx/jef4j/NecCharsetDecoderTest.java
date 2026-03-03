@@ -269,6 +269,7 @@ public class NecCharsetDecoderTest {
 		}, JIPSE));
 
 		Map<String, String> jeMap = new TreeMap<>();
+		Map<String, String> ejMap = new TreeMap<>();
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
@@ -287,6 +288,7 @@ public class NecCharsetDecoderTest {
 					}
 					if (jis8 != null && ebcdik != null) {
 						jeMap.put(jis8, ebcdik);
+						ejMap.put(ebcdik, jis8);
 					}
 				}
 			}
@@ -314,8 +316,8 @@ public class NecCharsetDecoderTest {
 					String unicode = toChars(node, true, false, false);
 					if (!unicode.equals("FFFD") && !encodeOnly) {
 						String code = node.get("code").asText();
-						code = jeMap.get(code.substring(0, 2)) + jeMap.get(code.substring(2, 4));
-						expected.put(code, unicode);
+						String eCode = jeMap.get(code.substring(0, 2)) + jeMap.get(code.substring(2, 4));
+						expected.put(eCode, unicode);
 					}
 				}
 			}
@@ -330,7 +332,9 @@ public class NecCharsetDecoderTest {
 		ByteBuffer bb = ByteBuffer.allocate(2);
 	
 		for (int i = 0; i < 0xFFFF; i++) {
-			if (i >= 0xE000 && i <= 0xEF6B) {
+			String hex = ByteUtils.hex(i, 4);
+			int ei = Integer.parseInt(ejMap.get(hex.substring(0, 2)) + ejMap.get(hex.substring(2, 4)), 16);
+			if ((ei >= 0x7421 && ei <= 0x7E7E) || (ei >= 0xE0A1 && ei <= 0xFEFE)) {
 				continue;
 			}
 			
