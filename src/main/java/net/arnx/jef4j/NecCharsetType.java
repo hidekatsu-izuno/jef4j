@@ -25,8 +25,8 @@ enum NecCharsetType {
 	JIPSJ_HD_JIS8("x-NEC-JIPSJ-HanyoDenshi-JIS8", 1, 0, 0),
 	JIPSJ_AJ1_JIS8("x-NEC-JIPSJ-AdobeJapan1-JIS8",  1, 1, 1),
 	JIPSE("x-NEC-JIPSE", -1, 1, -1),
-	JIPSE_HD("x-NEC-JIPSJ-HanyoDenshi", -1, 1, 0),
-	JIPSE_AJ1("x-NEC-JIPSJ-AdobeJapan1", -1, 1, 1),
+	JIPSE_HD("x-NEC-JIPSE-HanyoDenshi", -1, 1, 0),
+	JIPSE_AJ1("x-NEC-JIPSE-AdobeJapan1", -1, 1, 1),
 	JIPSE_EBCDIK("x-NEC-JIPSE-EBCDIK", 1, 1, -1),
 	JIPSE_HD_EBCDIK("x-NEC-JIPSE-HanyoDenshi-EBCDIK",  1, 1, 0),
 	JIPSE_AJ1_EBCDIK("x-NEC-JIPSE-AdobeJapan1-EBCDIK",  1, 1, 1);

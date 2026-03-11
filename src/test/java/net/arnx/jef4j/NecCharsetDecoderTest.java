@@ -20,6 +20,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -34,6 +36,36 @@ import net.arnx.jef4j.util.ByteUtils;
 public class NecCharsetDecoderTest {
 	private JsonFactory factory = new JsonFactory();
 	private ObjectMapper mapper = new ObjectMapper();
+
+	private Map<String, String> jeMap = new TreeMap<>();
+	private Map<String, String> ejMap = new TreeMap<>();
+
+	@BeforeEach
+	public void setUp() throws IOException {
+		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
+				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
+				StandardCharsets.UTF_8)))) {
+			while (parser.nextToken() != JsonToken.END_ARRAY) {
+				if (parser.currentToken() == JsonToken.START_OBJECT) {
+					String jis8 = null;
+					String ebcdik = null;
+					while (parser.nextToken() != JsonToken.END_OBJECT) {
+						String fieldName = parser.currentName();
+						parser.nextToken();
+						if ("jis8".equals(fieldName)) {
+							jis8 = parser.getText();
+						} else if ("ebcdik".equals(fieldName)) {
+							ebcdik = parser.getText();
+						}
+					}
+					if (jis8 != null && ebcdik != null) {
+						jeMap.put(jis8, ebcdik);
+						ejMap.put(ebcdik, jis8);
+					}
+				}
+			}
+		}
+	}
 
 	@Test
 	public void testNecJis8Decoder() throws IOException {
@@ -268,32 +300,6 @@ public class NecCharsetDecoderTest {
 			(byte)0xF0, (byte)0x4F  //
 		}, JIPSE));
 
-		Map<String, String> jeMap = new TreeMap<>();
-		Map<String, String> ejMap = new TreeMap<>();
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					String jis8 = null;
-					String ebcdik = null;
-					while (parser.nextToken() != JsonToken.END_OBJECT) {
-						String fieldName = parser.currentName();
-						parser.nextToken();
-						if ("jis8".equals(fieldName)) {
-							jis8 = parser.getText();
-						} else if ("ebcdik".equals(fieldName)) {
-							ebcdik = parser.getText();
-						}
-					}
-					if (jis8 != null && ebcdik != null) {
-						jeMap.put(jis8, ebcdik);
-						ejMap.put(ebcdik, jis8);
-					}
-				}
-			}
-		}
-
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
@@ -418,32 +424,6 @@ public class NecCharsetDecoderTest {
 
 	@Test
 	public void testNecJipseHanyoDenshiDecoder() throws IOException {
-		Map<String, String> jeMap = new TreeMap<>();
-		Map<String, String> ejMap = new TreeMap<>();
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					String jis8 = null;
-					String ebcdik = null;
-					while (parser.nextToken() != JsonToken.END_OBJECT) {
-						String fieldName = parser.currentName();
-						parser.nextToken();
-						if ("jis8".equals(fieldName)) {
-							jis8 = parser.getText();
-						} else if ("ebcdik".equals(fieldName)) {
-							ebcdik = parser.getText();
-						}
-					}
-					if (jis8 != null && ebcdik != null) {
-						jeMap.put(jis8, ebcdik);
-						ejMap.put(ebcdik, jis8);
-					}
-				}
-			}
-		}
-
 		Map<String, String> expected = new TreeMap<>();
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
@@ -557,32 +537,6 @@ public class NecCharsetDecoderTest {
 		
 	@Test
 	public void testNecJipseAdobeJapan1Decoder() throws IOException {
-		Map<String, String> jeMap = new TreeMap<>();
-		Map<String, String> ejMap = new TreeMap<>();
-		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
-				StandardCharsets.UTF_8)))) {
-			while (parser.nextToken() != JsonToken.END_ARRAY) {
-				if (parser.currentToken() == JsonToken.START_OBJECT) {
-					String jis8 = null;
-					String ebcdik = null;
-					while (parser.nextToken() != JsonToken.END_OBJECT) {
-						String fieldName = parser.currentName();
-						parser.nextToken();
-						if ("jis8".equals(fieldName)) {
-							jis8 = parser.getText();
-						} else if ("ebcdik".equals(fieldName)) {
-							ebcdik = parser.getText();
-						}
-					}
-					if (jis8 != null && ebcdik != null) {
-						jeMap.put(jis8, ebcdik);
-						ejMap.put(ebcdik, jis8);
-					}
-				}
-			}
-		}
-
 		Map<String, String> expected = new TreeMap<>();
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
 				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
@@ -650,7 +604,23 @@ public class NecCharsetDecoderTest {
 				.onMalformedInput(CodingErrorAction.REPORT);
 		ByteBuffer bb = ByteBuffer.allocate(2);
 
-		for (int b1 = 0x80; b1 <= 0xA0; b1++) {
+		for (int b1 = 0x74; b1 <= 0x7E; b1++) {
+			for (int b2 = 0x21; b2 <= 0x7E; b2++) {
+				bb.clear();
+				bb.put((byte)(b1 & 0xFF));
+				bb.put((byte)(b2 & 0xFF));
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					
+					actual.put(hex(bb), hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+			}
+		}
+
+		for (int b1 = 0xE0; b1 <= 0xFE; b1++) {
 			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
 				bb.clear();
 				bb.put((byte)(b1 & 0xFF));
@@ -666,12 +636,10 @@ public class NecCharsetDecoderTest {
 			}
 		}
 
-		assertEquals("E000", actual.get("81A1"));
-		assertEquals("E05D", actual.get("81FE"));
-		assertEquals("E7B6", actual.get("96A1"));
-		assertEquals("E813", actual.get("96FE"));
-		assertEquals("EB62", actual.get("A0A1"));
-		assertEquals("EBBF", actual.get("A0FE"));
+		assertEquals("E000", actual.get("7421"));
+		assertEquals("E409", actual.get("7E7E"));
+		assertEquals("E40A", actual.get("E0A1"));
+		assertEquals("EF6B", actual.get("FEFE"));
 	}
 
 	@Test
@@ -684,11 +652,16 @@ public class NecCharsetDecoderTest {
 				.onMalformedInput(CodingErrorAction.REPORT);
 		ByteBuffer bb = ByteBuffer.allocate(2);
 
-		for (int b1 = 0x80; b1 <= 0xA0; b1++) {
-			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
+		for (int b1 = 0x74; b1 <= 0x7E; b1++) {
+			for (int b2 = 0x21; b2 <= 0x7E; b2++) {
+				int be1 = Integer.parseInt(jeMap.get(ByteUtils.hex(b1, 2)), 16);
+				int be2 = Integer.parseInt(jeMap.get(ByteUtils.hex(b2, 2)), 16);
+				if (b1 == 0x74 && b2 == 0x21) {
+					System.out.println(ByteUtils.hex(be1, 2) + ByteUtils.hex(be2, 2));
+				}
 				bb.clear();
-				bb.put((byte)(b1 & 0xFF));
-				bb.put((byte)(b2 & 0xFF));
+				bb.put((byte)(be1 & 0xFF));
+				bb.put((byte)(be2 & 0xFF));
 				bb.flip();
 				try {
 					CharBuffer cb = cd.decode(bb);
@@ -700,76 +673,62 @@ public class NecCharsetDecoderTest {
 			}
 		}
 
-		assertEquals("E000", actual.get("81A1"));
-		assertEquals("E05D", actual.get("81FE"));
-		assertEquals("E7B6", actual.get("96A1"));
-		assertEquals("E813", actual.get("96FE"));
-		assertEquals("EB62", actual.get("A0A1"));
-		assertEquals("EBBF", actual.get("A0FE"));
+		for (int b1 = 0xE0; b1 <= 0xFE; b1++) {
+			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
+				int be1 = Integer.parseInt(jeMap.get(ByteUtils.hex(b1, 2)), 16);
+				int be2 = Integer.parseInt(jeMap.get(ByteUtils.hex(b2, 2)), 16);
+				//System.out.println(ByteUtils.hex(be1, 2) + ByteUtils.hex(be2, 2));
+
+				bb.clear();
+				bb.put((byte)(be1 & 0xFF));
+				bb.put((byte)(be2 & 0xFF));
+				bb.flip();
+				try {
+					CharBuffer cb = cd.decode(bb);
+					bb.flip();
+					
+					actual.put(hex(bb), hex(cb));
+				} catch (CharacterCodingException e) {
+				}
+			}
+		}
+
+		assertEquals("E000", actual.get("A34F"));
+		assertEquals("E409", actual.get("A1A1"));
+		assertEquals("E40A", actual.get("B842"));
+		assertEquals("EF6B", actual.get("FEFE"));
 	}
 	
 	@Test
 	public void testNecJipsjJis8Encoder() throws IOException {
 		Charset JIPSJ_JIS8 = Charset.forName("x-NEC-JIPSJ-JIS8");
 		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xA4, (byte)0xA2, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xB3, (byte)0xA4, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x83
+			(byte)0x61, 
+			(byte)0x1A, (byte)0x70, 
+			(byte)0x24, (byte)0x22, 
+			(byte)0x1A, (byte)0x71, 
+			(byte)0x62, 
+			(byte)0x1A, (byte)0x70, 
+			(byte)0x33, (byte)0x24, 
+			(byte)0x1A, (byte)0x71,
+			(byte)0x63
 		}, JIPSJ_JIS8));
 	}
 
 	@Test
-	public void testNecJipsjEbcdikEncoder() throws IOException {
-		Charset JIPSJ_EBCDIK = Charset.forName("x-NEC-JIPSJ-EBCDIK");
-		assertEquals("aあb海c", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xA4, (byte)0xA2, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xB3, (byte)0xA4, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x83
-		}, JIPSJ_EBCDIK));
-	}
-
-	@Test
-	public void testNecJipseJis8Encoder() throws IOException {
-		Charset JIPSE_JIS8 = Charset.forName("x-NEC-JIPSE-JIS8");
-		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xA4, (byte)0xA2, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xB3, (byte)0xA4, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x83
-		}, JIPSE_JIS8));
-	}
-
-	@Test
 	public void testNecJipseEbcdikEncoder() throws IOException {
-		Charset JIPSE_EBCDIK = Charset.forName("x-NEC-JIPSE-EBCDIK");
-		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
-			(byte)0x81, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xA4, (byte)0xA2, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x82, 
-			(byte)0x0A, (byte)0x42, 
-			(byte)0xB3, (byte)0xA4, 
-			(byte)0x0A, (byte)0x41, 
-			(byte)0x83
-		}, JIPSE_EBCDIK));
+		Charset JIPSJ_EBCDIK = Charset.forName("x-NEC-JIPSE-EBCDIK");
+		assertEquals("aあb海c", new String(new byte[] {
+			(byte)0x59, 
+			(byte)0x3F, (byte)0x75, 
+			(byte)0xE0, (byte)0x7F, 
+			(byte)0x3F, (byte)0x76, 
+			(byte)0x62, 
+			(byte)0x3F, (byte)0x75, 
+			(byte)0xF3, (byte)0xE0, 
+			(byte)0x3F, (byte)0x76, 
+			(byte)0x63
+		}, JIPSJ_EBCDIK));
 	}
 
 	private static String toChars(JsonNode node, boolean useSP, boolean useHanyoDenshi, boolean useAdobeJapan1) {
