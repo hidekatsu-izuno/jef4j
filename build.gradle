@@ -2,7 +2,7 @@ plugins {
 	id 'java-library'
     id 'maven-publish'
 	id 'signing'
-	id 'org.jreleaser' version '1.20.0'
+	id 'org.jreleaser' version '1.23.0'
 }
 
 group = 'net.arnx'
@@ -111,6 +111,7 @@ publishing {
 	}
 }
 
+def sonatypeUsername = System.getenv("SONATYPE_USERNAME")
 def pgpPublicKey = System.getenv("PGP_PUBLIC_KEY")
 def pgpSecretKey = System.getenv("PGP_SECRET_KEY")
 
