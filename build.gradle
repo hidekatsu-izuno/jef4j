@@ -111,17 +111,13 @@ publishing {
 	}
 }
 
-def sonatypeUsername = System.getenv("SONATYPE_USERNAME")
-def pgpPublicKey = System.getenv("PGP_PUBLIC_KEY")
-def pgpSecretKey = System.getenv("PGP_SECRET_KEY")
-
 jreleaser {
 	signing {
-		active = "ALWAYS"
-		armored = true
-		mode = "FILE"
-        publicKey = pgpPublicKey
-        secretKey = pgpSecretKey
+		pgp {
+			active = "ALWAYS"
+			armored = true
+			mode = "FILE"
+		}
 	}
 	deploy {
 		maven {
@@ -136,8 +132,7 @@ jreleaser {
 	}
 	release {
         github {
-            skipRelease = true
-			skipTag = true
+            enabled = false
         }
     }
 }
@@ -146,4 +141,4 @@ jreleaser {
 // git tag vX.X.X && git push origin --tags
 // gradle clean
 // gradle publish
-// gradle jreleaserFullRelease --stacktrace
+// gradle jreleaserDeploy --stacktrace
