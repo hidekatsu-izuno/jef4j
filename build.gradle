@@ -141,8 +141,8 @@ jreleaser {
     }
 }
 
-// ./gradlew build
+// gradle build
 // git tag vX.X.X && git push origin --tags
-// ./gradlew clean
-// ./gradlew publish
-// ./gradlew jreleaserFullRelease --stacktrace
+// gradle clean
+// gradle publish
+// gradle jreleaserFullRelease --stacktrace
