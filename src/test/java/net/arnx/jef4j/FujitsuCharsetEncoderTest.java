@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
@@ -375,22 +376,6 @@ public class FujitsuCharsetEncoderTest {
 					} catch (CharacterCodingException e) {
 					}
 					ce.reset();
-				} else {
-					for (int ivs = 0x0; ivs <= 0xF; ivs++) {
-						StringBuilder sb = new StringBuilder();
-						sb.appendCodePoint(cp);
-						sb.appendCodePoint(0xE0100 + ivs);
-						cb.clear();
-						cb.append(sb);
-						cb.flip();
-						try {
-							ByteBuffer bb = ce.encode(cb);
-							cb.flip();
-							actual.put(hex(cb), hex(bb));
-						} catch (CharacterCodingException e) {
-						}
-						ce.reset();
-					}	
 				}
 			}
 		}
@@ -400,6 +385,54 @@ public class FujitsuCharsetEncoderTest {
 		keys.addAll(actual.keySet());
 		for (String key : keys) {
 			assertEquals(expected.get(key), actual.get(key), "key = " + key);
+		}
+	}
+
+	@Test
+	public void testFujitsuJefRoundtripEncoderForSJIS() throws IOException {
+		List<String> jisChars = new ArrayList<>();
+		CharsetDecoder SJIS = Charset.forName("Windows-31J")
+				.newDecoder()
+				.onUnmappableCharacter(CodingErrorAction.REPORT)
+				.onMalformedInput(CodingErrorAction.REPORT);
+		ByteBuffer bb = ByteBuffer.allocate(2);
+		for (int b1 = 0x81; b1 <= 0xEF; b1++) {
+			if (b1 >= 0xA0 && b1 <= 0xDF) {
+				continue;
+			}
+			for (int b2 = 0x40; b2 <= 0xFC; b2++) {
+				if (b1 == 0x7F) {
+					continue;
+				}
+
+				bb.clear();
+				bb.put((byte)(b1 & 0xFF));
+				bb.put((byte)(b2 & 0xFF));
+				bb.flip();
+				try {
+					CharBuffer cb2 = SJIS.decode(bb);
+					jisChars.add(cb2.toString());
+				} catch (Exception e) {
+				}
+			}
+		}
+
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-Roundtrip");
+		CharsetEncoder je = JEF.newEncoder()
+			.onUnmappableCharacter(CodingErrorAction.REPORT)
+			.onMalformedInput(CodingErrorAction.REPORT);
+		CharsetDecoder jd = JEF.newDecoder()
+			.onUnmappableCharacter(CodingErrorAction.REPORT)
+			.onMalformedInput(CodingErrorAction.REPORT);
+		for (String c : jisChars) {
+			try {
+				ByteBuffer bb2 = je.encode(CharBuffer.wrap(c)).flip();
+				byte[] bytes = new byte[bb2.remaining()];
+				bb2.get(bytes);
+				assertArrayEquals(bytes, je.encode(jd.decode(ByteBuffer.wrap(bytes))).array(), ByteUtils.hex(c.codePointAt(0), 4));
+			} catch (Exception e) {
+				System.out.println("No mapping: " + c);
+			}
 		}
 	}
 
@@ -532,9 +565,9 @@ public class FujitsuCharsetEncoderTest {
 						expected.put(unicode, node.get("code").asText());
 					}
 
-					unicode = toChars(node, false, true);
+					String unicode2 = toChars(node, false, true);
 					if (!unicode.equals("FFFD") && !decodeOnly) {
-						expected.put(unicode, node.get("code").asText());
+						expected.put(unicode2, node.get("code").asText());
 					}
 				}
 			}

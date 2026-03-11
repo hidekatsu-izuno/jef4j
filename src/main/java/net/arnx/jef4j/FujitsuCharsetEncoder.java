@@ -247,7 +247,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 									if (Character.isLowSurrogate(c4)) {
 										long key2 = ((long)Character.toCodePoint(c3, c4)) << 20 | key;
 										Record[] records2 = mmap.get(key2 & 0xFFFFFFFFF0L);
-										Record record2 = records2 != null ? records2[type.getMBCSTableNo()] : null;
+										Record record2 = records2 != null ? records2[type.getIVSTableNo()] : null;
 										if (record2 != null && record2.exists((int)(key2 & 0xF))) {
 											mc = (char)record2.get((int)(key2 & 0xF));
 											progress += 2;

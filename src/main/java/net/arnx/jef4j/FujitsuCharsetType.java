@@ -31,7 +31,7 @@ enum FujitsuCharsetType {
 	JEF_AJ1_EBCDIC("x-Fujitsu-JEF-AdobeJapan1-EBCDIC", 0, 0, 1),
 	JEF_AJ1_EBCDIK("x-Fujitsu-JEF-AdobeJapan1-EBCDIK", 1, 0, 1),
 	JEF_AJ1_ASCII("x-Fujitsu-JEF-AdobeJapan1-ASCII",  2, 0, 1),
-	JEF_R("x-Fujitsu-JEF-Roundtrip", -1, 0, 2);
+	JEF_RT("x-Fujitsu-JEF-Roundtrip", -1, 0, 2);
 	
 	private final String charsetName;
 	private final int sbcsTableNo;
@@ -46,8 +46,8 @@ enum FujitsuCharsetType {
 	) {
 		this.charsetName = charsetName;
 		this.sbcsTableNo = sbcsTableNo;
-		this.ivsTableNo = ivsTableNo;
 		this.mbcsTableNo = mbcsTableNo;
+		this.ivsTableNo = ivsTableNo;
 	}
 	
 	public String getCharsetName() {
