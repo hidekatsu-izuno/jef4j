@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'net.arnx'
-version = '0.12.0'
+version = '0.12.1'
 
 repositories {
     mavenCentral()
@@ -139,6 +139,5 @@ jreleaser {
 
 // gradle build
 // git tag vX.X.X && git push origin --tags
-// gradle clean
-// gradle publish
+// gradle clean publish
 // gradle jreleaserDeploy --stacktrace
