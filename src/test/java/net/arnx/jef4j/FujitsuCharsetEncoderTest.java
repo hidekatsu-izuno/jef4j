@@ -390,12 +390,36 @@ public class FujitsuCharsetEncoderTest {
 
 	@Test
 	public void testFujitsuJefRoundtripEncoderForSJIS() throws IOException {
-		List<String> jisChars = new ArrayList<>();
 		CharsetDecoder SJIS = Charset.forName("Windows-31J")
 				.newDecoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
-		ByteBuffer bb = ByteBuffer.allocate(2);
+		List<String> asciiChars = new ArrayList<>();
+		ByteBuffer bb = ByteBuffer.allocate(1);
+		for (int b = 0x00; b <= 0x7F; b++) {
+			asciiChars.add(Character.toString((char) b));
+		}
+
+		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
+		CharsetEncoder ee = EBCDIK.newEncoder()
+			.onUnmappableCharacter(CodingErrorAction.REPORT)
+			.onMalformedInput(CodingErrorAction.REPORT);
+		CharsetDecoder ed = EBCDIK.newDecoder()
+			.onUnmappableCharacter(CodingErrorAction.REPORT)
+			.onMalformedInput(CodingErrorAction.REPORT);
+		for (String c : asciiChars) {
+			try {
+				ByteBuffer bb2 = ee.encode(CharBuffer.wrap(c)).flip();
+				byte[] bytes = new byte[bb2.remaining()];
+				bb2.get(bytes);
+				assertArrayEquals(bytes, ee.encode(ed.decode(ByteBuffer.wrap(bytes))).array(), ByteUtils.hex(c.codePointAt(0), 4));
+			} catch (Exception e) {
+				System.out.println("No mapping: " + c);
+			}
+		}
+
+		List<String> jisChars = new ArrayList<>();
+		bb = ByteBuffer.allocate(2);
 		for (int b1 = 0x81; b1 <= 0xEF; b1++) {
 			if (b1 >= 0xA0 && b1 <= 0xDF) {
 				continue;

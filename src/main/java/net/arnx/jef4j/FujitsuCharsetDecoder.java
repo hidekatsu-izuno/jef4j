@@ -75,6 +75,21 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						kshifted = false;
 						mark++;
 						continue;
+					} else if (b == 0x30) {
+						if (!in.hasRemaining()) {
+							return CoderResult.UNDERFLOW;
+						}
+						
+						int mark2 = in.position();
+						int b2 = in.get() & 0xFF;
+						if (b2 == 0xE2) {
+							kshifted = true;
+							mark += 2;
+							continue;
+						} else {
+							in.position(mark2);
+							return CoderResult.unmappableForLength(1);
+						}
 					}
 				} else if (b == 0x28 || b == 0x38 || b == 0x29) {
 					return CoderResult.unmappableForLength(1);

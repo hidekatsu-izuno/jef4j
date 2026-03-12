@@ -79,7 +79,7 @@ JEF の利用者定義文字 3102 文字は、Unicode 私的利用領域 E000～
 - FACOM JEF 文字コード索引辞書 (1987年/第三版): 拡張漢字についてはこの資料を元にしています。現在では入手困難なため、図書館にて（書籍貸出不可のため）閲覧および著作権法で許可された範囲でコピーしたものを参照し、独自で Unicode へのマッピングを作成しています。
 - [JHT(ホスト連携ツール)SIMPLE版](http://www.vector.co.jp/soft/winnt/util/se094205.html)： Windows-31J の範囲は概ねこのツールからマッピングを生成しています。ただし、Windows-31J は JIS83 をベースにしているため、Unicode へのマッピングには不適当な部分があります。jef4j では、字形重視で Unicode にマッピングするなど多々変更を加えています。
 - [Linkexpress 運用ガイド コード変換型の対応表(EUC(S90)系/JEF-EBCDIC系)](http://software.fujitsu.com/jp/manual/manualfiles/m140001/j2x15930/12z200/unyo05/unyo0424.html)： JIS の字体変更の影響で追加された文字のマッピングがここに記載されています。jef4j では、Unicode との変換を目的としているため字形重視でマッピングしています。
-- [Canon F359 ユーザーズガイド](http://cweb.canon.jp/manual/lasershot/pdf/crmes-f359.pdf)：JEF 拡張非漢字のマッピングはこのガイドを元に作成しています。Unicode に該当する記号が存在しないため、変換できない部分があります。
+- [Canon F359 ユーザーズガイド](https://web.archive.org/web/20251211081906/http://cweb.canon.jp/manual/lasershot/pdf/crmes-f359.pdf)：JEF 拡張非漢字のマッピングはこのガイドを元に作成しています。Unicode に該当する記号が存在しないため、変換できない部分があります。
 
 ## KEIS 漢字コードとは
 
@@ -237,7 +237,7 @@ Maven Central Repository から取得できます。
 <dependency>
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.12.0</version>
+  <version>0.12.1</version>
 </dependency>
 ```
 
@@ -342,6 +342,9 @@ Apache License 2.0 で配布します。
 
 ## 変更履歴
 
+- 2026/3/12 version 0.12.1:
+  - 「x-Fujitsu-(EBCDIC|EBCDIK|ASCII)」においてマッピング不備により0x1Cのラウンドトリップが失敗する問題を修正しました。
+  - 「x-Fujitsu-JEF-(EBCDIC|EBCDIK|ASCII)」において7pt用の漢字シフトコードをサポートしました。
 - 2026/3/11 version 0.12.0:
   - 【非互換】「x-Fujitsu-JEF-Reversible」の名前を、より適切な「x-Fujitsu-JEF-Roundtrip」に変更しました。
   - 日立系やNEC系のコード体系にも対応しました。現段階ではJIS互換の標準領域のみのサポートとなります。

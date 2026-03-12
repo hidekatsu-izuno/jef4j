@@ -5520,6 +5520,7 @@
 { "code": "A6AF", "unicode":  "039F",                                               "text": "Ο", "options": [] },
 { "code": "A6B0", "unicode":  "03A0",                                               "text": "Π", "options": [] },
 { "code": "A6B1", "unicode":  "03A1",                                               "text": "Ρ", "options": [] },
+{ "code": "A6B2", "unicode":  "2211",                                               "text": "∑", "options": ["encode_only"] },
 { "code": "A6B2", "unicode":  "03A3",                                               "text": "Σ", "options": [] },
 { "code": "A6B3", "unicode":  "03A4",                                               "text": "Τ", "options": [] },
 { "code": "A6B4", "unicode":  "03A5",                                               "text": "Υ", "options": [] },

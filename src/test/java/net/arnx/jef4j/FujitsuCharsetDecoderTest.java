@@ -527,16 +527,22 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuJefEbcdicEncoder() throws IOException {
 		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
-		assertEquals("aあb海c", new String(new byte[] {
+		assertEquals("aあb海cアd", new String(new byte[] {
 				(byte) 0x81,
 				(byte) 0x28, 
 				(byte) 0xA4, (byte) 0xA2, 
 				(byte) 0x29, 
 				(byte) 0x82, 
-				(byte) 0x28, 
+				(byte) 0x38, 
 				(byte) 0xB3, (byte) 0xA4,
 				(byte) 0x29, 
-				(byte) 0x83
+				(byte) 0x83,
+				(byte) 0x30,
+				(byte) 0xE2, 
+				(byte) 0xA5, (byte) 0xA2,
+				(byte) 0x29, 
+				(byte) 0x84
+
 		}, JEF_EBCDIC));
 	}
 
