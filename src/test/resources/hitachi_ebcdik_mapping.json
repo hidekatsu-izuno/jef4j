@@ -165,7 +165,7 @@
 { "code": "A4", "unicode":  "FF8F", "text": "ﾏ", "options": [] },
 { "code": "A5", "unicode":  "FF90", "text": "ﾐ", "options": [] },
 { "code": "A6", "unicode":  "FF91", "text": "ﾑ", "options": [] },
-{ "code": "A8", "unicode":  "FF92", "text": "ﾒ", "options": [] },
+{ "code": "A7", "unicode":  "FF92", "text": "ﾒ", "options": [] },
 { "code": "A8", "unicode":  "FF93", "text": "ﾓ", "options": [] },
 { "code": "A9", "unicode":  "FF94", "text": "ﾔ", "options": [] },
 { "code": "AA", "unicode":  "FF95", "text": "ﾕ", "options": [] },

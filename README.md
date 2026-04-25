@@ -362,7 +362,9 @@ Apache License 2.0 で配布します。
 - src/test/resources/*.json
 
 ## 変更履歴
-
+- 2026/4/25 version 0.12.2:
+  - 「x-Fujitsu-JEF」のデコード時に「A1A1」が来た場合、全角空白に変換するようにしました。「A1A1」は正式にはJEFコードではありませんが、JISコードの全角空白に当たるため環境により変換が必要となる場合があります。
+  - 「x-Hitachi-EBCDIK」においてA8、8Fのマッピングが間違っていた問題を修正しました。（#5）
 - 2026/3/12 version 0.12.1:
   - 「x-Fujitsu-(EBCDIC|EBCDIK|ASCII)」においてマッピング不備により0x1Cのラウンドトリップが失敗する問題を修正しました。
   - 「x-Fujitsu-JEF-(EBCDIC|EBCDIK|ASCII)」において7pt用の漢字シフトコードをサポートしました。

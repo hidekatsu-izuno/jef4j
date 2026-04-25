@@ -216,6 +216,7 @@ public class FujitsuCharsetEncoderTest {
 	public void testFujitsuJefEncoder() throws IOException {
 		Charset JEF = Charset.forName("x-Fujitsu-JEF");
 		assertEquals("71AC", hex("\uD82C\uDC19\u3099".getBytes(JEF)));
+		assertEquals("4040", hex("\u3000".getBytes(JEF)));
 		assertEquals("4040A4A240404040B3A44040", hex("aあbc海d".getBytes(JEF)));
 
 		Map<String, String> expected = new TreeMap<>();
