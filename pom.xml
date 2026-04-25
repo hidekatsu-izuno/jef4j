@@ -194,7 +194,6 @@
               </execution>
             </executions>
             <configuration>
-              <armor>true</armor>
               <keyname>${gpg.keyname}</keyname>
             </configuration>
           </plugin>
