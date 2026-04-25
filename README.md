@@ -237,8 +237,29 @@ Maven Central Repository から取得できます。
 <dependency>
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.12.1</version>
+  <version>0.12.2</version>
 </dependency>
+```
+
+## ビルド
+
+ローカルビルドとテストは Maven で実行できます。
+
+```sh
+mvn verify
+```
+
+マッピング生成用の補助ツールは次のように実行できます。
+
+```sh
+mvn test-compile exec:java@generate-index
+mvn test-compile exec:java@generate-table
+```
+
+Maven Central への公開は Sonatype Central Portal 用トークンを `settings.xml` の `central` サーバーに設定したうえで、`release` プロファイル付きの `deploy` を実行します。
+
+```sh
+mvn -Prelease clean deploy
 ```
 
 ## 使い方

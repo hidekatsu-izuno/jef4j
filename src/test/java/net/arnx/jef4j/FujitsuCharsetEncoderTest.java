@@ -409,7 +409,8 @@ public class FujitsuCharsetEncoderTest {
 			.onMalformedInput(CodingErrorAction.REPORT);
 		for (String c : asciiChars) {
 			try {
-				ByteBuffer bb2 = ee.encode(CharBuffer.wrap(c)).flip();
+					ByteBuffer bb2 = ee.encode(CharBuffer.wrap(c));
+					bb2.flip();
 				byte[] bytes = new byte[bb2.remaining()];
 				bb2.get(bytes);
 				assertArrayEquals(bytes, ee.encode(ed.decode(ByteBuffer.wrap(bytes))).array(), ByteUtils.hex(c.codePointAt(0), 4));
@@ -450,7 +451,8 @@ public class FujitsuCharsetEncoderTest {
 			.onMalformedInput(CodingErrorAction.REPORT);
 		for (String c : jisChars) {
 			try {
-				ByteBuffer bb2 = je.encode(CharBuffer.wrap(c)).flip();
+					ByteBuffer bb2 = je.encode(CharBuffer.wrap(c));
+					bb2.flip();
 				byte[] bytes = new byte[bb2.remaining()];
 				bb2.get(bytes);
 				assertArrayEquals(bytes, je.encode(jd.decode(ByteBuffer.wrap(bytes))).array(), ByteUtils.hex(c.codePointAt(0), 4));
