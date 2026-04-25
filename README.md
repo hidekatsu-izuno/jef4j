@@ -405,3 +405,10 @@ Apache License 2.0 で配布します。
 - 2018/3/27 version 0.7.2: 拡張非漢字領域にあった漢字部品用コードのマッピングが漏れていたため追加しました。
 - 2018/3/11 version 0.7.1: 字形に対する Unicode 値が不明であった２文字（JEF:6AC6、JEF:48C2）が CJK 統合漢字拡張 B および F に存在することがわかったためマッピングを修正しました。
 - 2018/3/11 version 0.7.0: 「FACOM JEF 文字コード索引辞書 (1980/第二版)」 に基づき拡張漢字領域のコードを追加し、多数のマッピング不備を修正しました。
+
+<!--
+- mvn verify
+- git tag vX.XX.X && git push origin --tags
+- 取り消す場合: git tag -d vX.XX.X && git push origin :refs/tags/vX.XX.X
+- mvn -Prelease clean deploy
+-->
