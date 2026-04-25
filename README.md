@@ -320,6 +320,15 @@ byte[] bytes = text.getBytes(charset);
 |x-Hitachi-KEIS78-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
 |x-Hitachi-KEIS78-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS78-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS78-ShiftShingleSpace|日立 KEIS78。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-HanyoDenshi|日立 KEIS78。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-AdobeJapan1|日立 KEIS78。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-HanyoDenshi-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-AdobeJapan1-EBCDIC|日立 EBCDIC と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS78-ShiftShingleSpace-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS78 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS83|日立 KEIS83/90。異体字セレクタは出力されません。|
 |x-Hitachi-KEIS83-HanyoDenshi|日立 KEIS83/90。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS83-AdobeJapan1|日立 KEIS83/90。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
@@ -329,6 +338,15 @@ byte[] bytes = text.getBytes(charset);
 |x-Hitachi-KEIS83-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。|
 |x-Hitachi-KEIS83-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS83-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+|x-Hitachi-KEIS83-ShiftShingleSpace|日立 KEIS83/90。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-HanyoDenshi|日立 KEIS83/90。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-AdobeJapan1|日立 KEIS83/90。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-HanyoDenshi-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-AdobeJapan1-EBCDIC|日立 EBCDIC と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタは出力されません。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-HanyoDenshi-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはIVD汎用電子のものが使用されます。4040は半角空白2文字にデコードされます。|
+|x-Hitachi-KEIS83-ShiftShingleSpace-AdobeJapan1-EBCDIK|日立 EBCDIK と KEIS83/90 をシフトコードで切り替えながら出力します。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。4040は半角空白2文字にデコードされます。|
 
 [現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/hitachi_mappings.html)からご覧いただけます。
 
