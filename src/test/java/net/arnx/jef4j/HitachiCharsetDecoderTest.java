@@ -344,6 +344,18 @@ public class HitachiCharsetDecoderTest {
 	}
 
 	@Test
+	public void testHitachiKeis78ShiftSpaceSingleDecoder() {
+		assertEquals("\u3000", new String(new byte[] { (byte)0x40, (byte)0x40 }, Charset.forName("x-Hitachi-KEIS78")));
+		assertEquals("\u0020\u0020", new String(new byte[] { (byte)0x40, (byte)0x40 }, Charset.forName("x-Hitachi-KEIS78-ShiftSpaceSingle")));
+	}
+
+	@Test
+	public void testHitachiKeis83ShiftSpaceSingleDecoder() {
+		assertEquals("\u3000", new String(new byte[] { (byte)0x40, (byte)0x40 }, Charset.forName("x-Hitachi-KEIS83")));
+		assertEquals("\u0020\u0020", new String(new byte[] { (byte)0x40, (byte)0x40 }, Charset.forName("x-Hitachi-KEIS83-ShiftSpaceSingle")));
+	}
+
+	@Test
 	public void testHitachiKeis78HanyoDenshiDecoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 		

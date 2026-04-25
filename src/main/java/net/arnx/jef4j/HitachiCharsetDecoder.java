@@ -92,7 +92,15 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 					
 					int b2 = in.get() & 0xFF;
 					if (b == 0x40 && b2 == 0x40) {
-						out.put('\u3000');
+						if (type.isShiftSpaceSingle()) {
+							if (out.remaining() < 2) {
+								return CoderResult.OVERFLOW;
+							}
+							out.put('\u0020');
+							out.put('\u0020');
+						} else {
+							out.put('\u3000');
+						}
 						mark += 2;
 					} else if (b >= 0x81 && b <= 0xA0) { // Private Use Area
 						if (b2 >= 0xA1 && b2 <= 0xFE) {
