@@ -28,7 +28,6 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class HitachiCharsetDecoderTest {
@@ -57,7 +56,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_ebcdic_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_ebcdic_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -127,7 +126,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_ebcdik_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -203,7 +202,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -283,7 +282,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis83_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -360,7 +359,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -415,7 +414,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis83_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -470,7 +469,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis78_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis78_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -525,7 +524,7 @@ public class HitachiCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/hitachi_keis83_mapping.json"), 
+				this.getClass().getResourceAsStream("/hitachi_keis83_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {

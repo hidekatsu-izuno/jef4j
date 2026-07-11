@@ -249,11 +249,11 @@ Maven Central Repository から取得できます。
 mvn verify
 ```
 
-マッピング生成用の補助ツールは次のように実行できます。
+マッピング生成用の補助ツールは mise task として実行できます。
 
 ```sh
-mvn test-compile exec:java@generate-index
-mvn test-compile exec:java@generate-table
+mise run generate-index
+mise run generate-table
 ```
 
 Maven Central への公開は Sonatype Central Portal 用トークンを `settings.xml` の `central` サーバーに設定したうえで、`release` プロファイル付きの `deploy` を実行します。

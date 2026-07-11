@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class NecCharsetDecoderTest {
@@ -43,7 +42,7 @@ public class NecCharsetDecoderTest {
 	@BeforeEach
 	public void setUp() throws IOException {
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jis8_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -85,7 +84,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jis8_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jis8_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -161,7 +160,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_ebcdik_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_ebcdik_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -230,7 +229,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -303,7 +302,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -372,7 +371,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -426,7 +425,7 @@ public class NecCharsetDecoderTest {
 	public void testNecJipseHanyoDenshiDecoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -485,7 +484,7 @@ public class NecCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 		
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -539,7 +538,7 @@ public class NecCharsetDecoderTest {
 	public void testNecJipseAdobeJapan1Decoder() throws IOException {
 		Map<String, String> expected = new TreeMap<>();
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/nec_jips_mapping.json"), 
+				this.getClass().getResourceAsStream("/nec_jips_mapping.json"), 
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {

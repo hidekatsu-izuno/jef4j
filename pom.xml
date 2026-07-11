@@ -5,7 +5,7 @@
 
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.12.2</version>
+  <version>0.12.3</version>
   <packaging>jar</packaging>
 
   <name>jef4j</name>
@@ -126,36 +126,6 @@
             <goals>
               <goal>jar</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.5.0</version>
-        <executions>
-          <execution>
-            <id>generate-index</id>
-            <phase>none</phase>
-            <goals>
-              <goal>java</goal>
-            </goals>
-            <configuration>
-              <classpathScope>test</classpathScope>
-              <mainClass>net.arnx.jef4j.tools.CharsetIndexGenerator</mainClass>
-            </configuration>
-          </execution>
-          <execution>
-            <id>generate-table</id>
-            <phase>none</phase>
-            <goals>
-              <goal>java</goal>
-            </goals>
-            <configuration>
-              <classpathScope>test</classpathScope>
-              <mainClass>net.arnx.jef4j.tools.CharsetTableGenerator</mainClass>
-            </configuration>
           </execution>
         </executions>
       </plugin>

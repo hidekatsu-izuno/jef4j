@@ -1,3 +1,11 @@
 [tools]
 maven = "3.9.15"
 java = "21"
+
+[tasks.generate-index]
+description = "Generate charset encoder and decoder indexes"
+run = "mvn -q compile dependency:build-classpath -DincludeScope=test -Dmdep.outputFile=target/jshell.classpath && jshell --class-path \"target/classes:$(cat target/jshell.classpath)\" scripts/charset-index.jsh"
+
+[tasks.generate-table]
+description = "Generate charset mapping tables"
+run = "mvn -q compile dependency:build-classpath -DincludeScope=test -Dmdep.outputFile=target/jshell.classpath && jshell --class-path \"target/classes:$(cat target/jshell.classpath)\" scripts/charset-table.jsh"

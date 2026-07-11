@@ -28,7 +28,6 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.arnx.jef4j.tools.CharsetIndexGenerator;
 import net.arnx.jef4j.util.ByteUtils;
 
 public class FujitsuCharsetDecoderTest {
@@ -55,7 +54,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdic_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ebcdic_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -116,7 +115,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ebcdik_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ebcdik_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -183,7 +182,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_ascii_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ascii_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -246,7 +245,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_jef_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -319,7 +318,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_jef_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -387,7 +386,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_jef_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -442,7 +441,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				CharsetIndexGenerator.class.getResourceAsStream("/fujitsu_jef_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_jef_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
