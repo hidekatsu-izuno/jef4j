@@ -219,7 +219,7 @@ public class FujitsuCharsetEncoderTest {
 		assertEquals("4040", hex("\u3000".getBytes(JEF)));
 		assertEquals("C9EE", hex("\u4FAE".getBytes(JEF))); // 4FAE => C9EE,42BB(oneway)
 		assertEquals("42BB", hex("\uFA30".getBytes(JEF))); // FA30 => 42BB
-		assertEquals("B3EC", hex("\u8910".getBytes(JEF))); // 8910 => 63EE,B3EC(oneway) ???
+		assertEquals("63EE", hex("\u8910".getBytes(JEF))); // 8910 => 63EE,B3EC(oneway)
 		assertEquals("B3EC", hex("\uFA60".getBytes(JEF))); // FA60 => B3EC(cjk_ci,encode_only)
 		assertEquals("B7C3", hex("\u6075".getBytes(JEF))); // 6075 => B7C3
 		assertEquals("B7C3", hex("\uFA6B".getBytes(JEF))); // FA6B => B7C3(cjk_ci,encode_only)
