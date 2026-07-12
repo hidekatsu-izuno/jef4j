@@ -69,23 +69,31 @@ net.arnx.jef4j.util.Record[] records(String[][] variants, boolean encode) {
         if (encode || size == 4) {
             var compact = new char[count];
             var offset = 0;
-            for (var value : values) if (value != null) compact[offset++] = (char) Integer.parseUnsignedInt(value, 16);
+            for (var value : values) {
+                if (value != null) compact[offset++] = (char) Integer.parseUnsignedInt(value, 16);
+            }
             result[i] = new CharRecord((char) pattern, compact);
         } else if (size == 5) {
             var compact = new int[count];
             var offset = 0;
-            for (var value : values) if (value != null) compact[offset++] = Integer.parseUnsignedInt(value, 16);
+            for (var value : values) {
+                if (value != null) compact[offset++] = Integer.parseUnsignedInt(value, 16);
+            }
             result[i] = new IntRecord((char) pattern, compact);
         } else if (size == 10) {
             var compact = new long[count];
             var offset = 0;
-            for (var value : values) if (value != null) compact[offset++] = Long.parseUnsignedLong(value, 16);
+            for (var value : values) {
+                if (value != null) compact[offset++] = Long.parseUnsignedLong(value, 16);
+            }
             result[i] = new LongRecord((char) pattern, compact);
         } else throw new IllegalStateException("Invalid Unicode key length: " + size);
     }
-    for (var i = 0; i < result.length - 1; i++)
-        for (var j = i + 1; j < result.length; j++)
+    for (var i = 0; i < result.length - 1; i++) {
+        for (var j = i + 1; j < result.length; j++) {
             if (result[i] != null && result[i].equals(result[j])) result[j] = result[i];
+        }
+    }
     return result;
 }
 
@@ -95,21 +103,30 @@ void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
     for (var node : mapper.readTree(Files.newBufferedReader(Paths.get("src/test/resources", file)))) {
         var unicode = key(node, null);
         if ("FFFD".equals(unicode)) continue;
+
         var variants = new String[] { key(node, "hd"), key(node, "aj1"), has(node, "oneway") ? null : unicode };
         var code = node.get("code").asText();
         for (var i = 0; i < variants.length; i++) {
             if (variants[i] == null) continue;
             if (!has(node, "decode_only")) {
                 put(unicodeToCode, unicode, i, code);
-                if (!unicode.equals(variants[i])) put(unicodeToCode, variants[i], i, code);
+                if (!unicode.equals(variants[i])) {
+                    put(unicodeToCode, variants[i], i, code);
+                }
             }
-            if (!has(node, "encode_only")) put(codeToUnicode, code, i, variants[i]);
+            if (!has(node, "encode_only")) {
+                put(codeToUnicode, code, i, variants[i]);
+            }
         }
     }
     var encodeMap = new LongObjMap<net.arnx.jef4j.util.Record[]>();
-    for (var entry : unicodeToCode.entrySet()) encodeMap.put(Long.parseUnsignedLong(entry.getKey(), 16), records(entry.getValue(), true));
+    for (var entry : unicodeToCode.entrySet()) {
+        encodeMap.put(Long.parseUnsignedLong(entry.getKey(), 16), records(entry.getValue(), true));
+    }
     var decodeMap = new LongObjMap<net.arnx.jef4j.util.Record[]>();
-    for (var entry : codeToUnicode.entrySet()) decodeMap.put(Long.parseUnsignedLong(entry.getKey(), 16), records(entry.getValue(), false));
+    for (var entry : codeToUnicode.entrySet()) {
+        decodeMap.put(Long.parseUnsignedLong(entry.getKey(), 16), records(entry.getValue(), false));
+    }
     encoders.add(encodeMap);
     decoders.add(decodeMap);
 }
