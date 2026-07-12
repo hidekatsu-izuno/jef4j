@@ -391,9 +391,19 @@ public class FujitsuCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					boolean encodeOnly = false;
+
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("encode_only".equals(child.asText())) {
+								encodeOnly = true;
+							}
+						}
+					}
 
 					String unicode = toChars(node, true, true, false);
-					if (!unicode.equals("FFFD")) {
+					if (!unicode.equals("FFFD") && !encodeOnly) {
 						expected.put(node.get("code").asText(), unicode);
 					}
 				}
@@ -446,9 +456,19 @@ public class FujitsuCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					boolean encodeOnly = false;
+
+					JsonNode optionsNode = node.get("options");
+					if (optionsNode != null && optionsNode.isArray()) {
+						for (JsonNode child : optionsNode) {
+							if ("encode_only".equals(child.asText())) {
+								encodeOnly = true;
+							}
+						}
+					}
 
 					String unicode = toChars(node, true, false, true);
-					if (!unicode.equals("FFFD")) {
+					if (!unicode.equals("FFFD") && !encodeOnly) {
 						expected.put(node.get("code").asText(), unicode);
 					}
 				}
