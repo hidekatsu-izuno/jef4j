@@ -27,32 +27,29 @@ import java.util.List;
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
-@SuppressWarnings("unchecked")
-class FujitsuCharsetEncoder extends CharsetEncoder {
+class IbmCharsetEncoder extends CharsetEncoder {
 	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
 	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
 	private static final ByteBuffer DUMMY = ByteBuffer.allocate(0);
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuCharsetEncoder.class.getResourceAsStream("FujitsuEncodeMap.dat"))) {
+				IbmCharsetEncoder.class.getResourceAsStream("IbmEncodeMap.dat"))) {
 			SBCS_MAP.add((byte[])in.readObject());
 			SBCS_MAP.add((byte[])in.readObject());
-			SBCS_MAP.add((byte[])in.readObject());
-			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
-	private final FujitsuCharsetType type;
+	private final IbmCharsetType type;
 	private final byte[] smap;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
 
-	public FujitsuCharsetEncoder(Charset cs, FujitsuCharsetType type) {
+	public IbmCharsetEncoder(Charset cs, IbmCharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -328,7 +325,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		}
 	}
 	
-	private static float getAverageBytesPerChar(FujitsuCharsetType type) {
+	private static float getAverageBytesPerChar(IbmCharsetType type) {
 		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 0.5F;
@@ -336,7 +333,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static float getMaxBytesPerChar(FujitsuCharsetType type) {
+	private static float getMaxBytesPerChar(IbmCharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 6 : type.getMBCSTableNo() != -1 ? 3 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 1;
@@ -344,7 +341,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static byte[] getReplacementChar(FujitsuCharsetType type) {
+	private static byte[] getReplacementChar(IbmCharsetType type) {
 		return type.getMBCSTableNo() != -1 ? new byte[] { 0x40, 0x40 } : 
 			new byte[] { 0x40 };
 	}

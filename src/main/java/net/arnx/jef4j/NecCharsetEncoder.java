@@ -117,7 +117,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					map != null && (
 						c <= '\u009F'
 						|| c == '\u00A3' || c == '\u00A6' || c == '\u00AC'
-						|| c == '\u203E' 
+						|| c == '\u203E' || c == '\u20AC'
 						|| (c >= '\uFF61' && c <= '\uFF9F')
 					)
 				)) {
@@ -126,6 +126,8 @@ public class NecCharsetEncoder extends CharsetEncoder {
 					} else {
 						if (c == '\u203E') {
 							c = (char)(c - '\u203E' + '\u00B0');
+						} else if (c == '\u20AC') {
+							c = (char)(c - '\u20AC' + '\u00B1');
 						} else if (c >= '\uFF61' && c <= '\uFF9F') {
 							c = (char)(c - '\uFF61' + '\u00C0');
 						}

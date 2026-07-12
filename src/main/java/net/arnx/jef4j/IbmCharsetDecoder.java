@@ -27,30 +27,27 @@ import java.util.List;
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
-@SuppressWarnings("unchecked")
-class FujitsuCharsetDecoder extends CharsetDecoder {
+class IbmCharsetDecoder extends CharsetDecoder {
 	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
 	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
 	
 	static {
 		try (ObjectInputStream in = new ObjectInputStream(
-				FujitsuCharsetDecoder.class.getResourceAsStream("FujitsuDecodeMap.dat"))) {
+				IbmCharsetDecoder.class.getResourceAsStream("IbmDecodeMap.dat"))) {
 			SBCS_MAP.add((byte[])in.readObject());
 			SBCS_MAP.add((byte[])in.readObject());
-			SBCS_MAP.add((byte[])in.readObject());
-			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 	}
 	
-	private final FujitsuCharsetType type;
+	private final IbmCharsetType type;
 	private final byte[] smap;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	
-	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
+	public IbmCharsetDecoder(Charset cs, IbmCharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -200,7 +197,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 		kshifted = false;
 	}
 	
-	private static float getMaxCharsPerByte(FujitsuCharsetType type) {
+	private static float getMaxCharsPerByte(IbmCharsetType type) {
 		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

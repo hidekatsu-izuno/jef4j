@@ -50,6 +50,11 @@ public class Jef4jCharsetProvider extends CharsetProvider {
 					return new NecCharset(type);
 				}
 			}
+			for (IbmCharsetType type : IbmCharsetType.values()) {
+				if (type.getCharsetName().equalsIgnoreCase(cn)) {
+					return new IbmCharset(type);
+				}
+			}
 			return null;
 		});
 	}

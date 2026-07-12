@@ -64,13 +64,50 @@ void table(String title, String file, CharsetInfo[] sbcs, CharsetInfo[] mbcs) th
 }
 
 table("富士通文字コード表", "docs/fujitsu_mappings.html",
-    new CharsetInfo[] { new CharsetInfo("x-Fujitsu-EBCDIC: 富士通 EBCDIC (英小文字)", "fujitsu_ebcdic_mapping.json", 0, 0xf, 0, 0xf), new CharsetInfo("x-Fujitsu-EBCDIK: 富士通 EBCDIC (カナ文字)", "fujitsu_ebcdik_mapping.json", 0, 0xf, 0, 0xf), new CharsetInfo("x-Fujitsu-ASCII: 富士通 EBCDIC (ASCII)", "fujitsu_ascii_mapping.json", 0, 0xf, 0, 0xf) },
-    new CharsetInfo[] { new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 標準漢字/標準非漢字", "fujitsu_jef_mapping.json", 0xa1, 0xfe, 0xa, 0xf), new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 拡張漢字/拡張非漢字", "fujitsu_jef_mapping.json", 0x41, 0x7f, 0xa, 0xf) });
+    new CharsetInfo[] { 
+        new CharsetInfo("x-Fujitsu-EBCDIC: 富士通 EBCDIC (英小文字)", "fujitsu_ebcdic_mapping.json", 0, 0xf, 0, 0xf), 
+        new CharsetInfo("x-Fujitsu-EBCDIK: 富士通 EBCDIC (カナ文字)", "fujitsu_ebcdik_mapping.json", 0, 0xf, 0, 0xf), 
+        new CharsetInfo("x-Fujitsu-ASCII: 富士通 EBCDIC (ASCII)", "fujitsu_ascii_mapping.json", 0, 0xf, 0, 0xf)
+    },
+    new CharsetInfo[] {
+        new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 標準漢字/標準非漢字", "fujitsu_jef_mapping.json", 0xa1, 0xfe, 0xa, 0xf), 
+        new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 拡張漢字/拡張非漢字", "fujitsu_jef_mapping.json", 0x41, 0x7f, 0xa, 0xf)
+    }
+);
 table("日立文字コード表", "docs/hitachi_mappings.html",
-    new CharsetInfo[] { new CharsetInfo("x-Hitachi-EBCDIC: 日立 EBCDIC", "hitachi_ebcdic_mapping.json", 0, 0xf, 0, 0xf), new CharsetInfo("x-Hitachi-EBCDIK: 日立 EBCDIK", "hitachi_ebcdik_mapping.json", 0, 0xf, 0, 0xf) },
-    new CharsetInfo[] { new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(非漢字)", "hitachi_keis78_mapping.json", 0xa1, 0xac, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(漢字)", "hitachi_keis78_mapping.json", 0xb0, 0xce, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット1", "hitachi_keis78_mapping.json", 0xd1, 0xfe, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット3", "hitachi_keis78_mapping.json", 0x59, 0x80, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(非漢字)", "hitachi_keis83_mapping.json", 0xa1, 0xac, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(漢字)", "hitachi_keis83_mapping.json", 0xb0, 0xce, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット1", "hitachi_keis83_mapping.json", 0xd1, 0xfe, 0xa, 0xf), new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット3", "hitachi_keis83_mapping.json", 0x59, 0x80, 0xa, 0xf) });
+    new CharsetInfo[] {
+        new CharsetInfo("x-Hitachi-EBCDIC: 日立 EBCDIC", "hitachi_ebcdic_mapping.json", 0, 0xf, 0, 0xf), 
+        new CharsetInfo("x-Hitachi-EBCDIK: 日立 EBCDIK", "hitachi_ebcdik_mapping.json", 0, 0xf, 0, 0xf) 
+    },
+    new CharsetInfo[] {
+        new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(非漢字)", "hitachi_keis78_mapping.json", 0xa1, 0xac, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 基本文字セット(漢字)", "hitachi_keis78_mapping.json", 0xb0, 0xce, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット1", "hitachi_keis78_mapping.json", 0xd1, 0xfe, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS78: 日立 KEIS78 拡張文字セット3", "hitachi_keis78_mapping.json", 0x59, 0x80, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(非漢字)", "hitachi_keis83_mapping.json", 0xa1, 0xac, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 基本文字セット(漢字)", "hitachi_keis83_mapping.json", 0xb0, 0xce, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット1", "hitachi_keis83_mapping.json", 0xd1, 0xfe, 0xa, 0xf),
+        new CharsetInfo("x-Hitachi-KEIS83: 日立 KEIS83/90 拡張文字セット3", "hitachi_keis83_mapping.json", 0x59, 0x80, 0xa, 0xf)
+    }
+);
 table("NEC文字コード表", "docs/nec_mappings.html",
-    new CharsetInfo[] { new CharsetInfo("x-NEC-EBCDIK: NEC EBCDIC カタカナ", "nec_ebcdik_mapping.json", 0, 0xf, 0, 0xf), new CharsetInfo("x-NEC-JIS8: NEC JIS8 (JIS X0201)", "nec_jis8_mapping.json", 0, 0xf, 0, 0xf) },
-    new CharsetInfo[] { new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G0集合", "nec_jips_mapping.json", 0x21, 0x73, 0x2, 0x7), new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G1集合", "nec_jips_mapping.json", 0xa1, 0xdf, 0xa, 0xf), new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G2集合", "nec_jips_mapping.json", 0xa1, 0xfe, 0xa, 0xf) });
+    new CharsetInfo[] {
+        new CharsetInfo("x-NEC-EBCDIK: NEC EBCDIC カタカナ", "nec_ebcdik_mapping.json", 0, 0xf, 0, 0xf),
+        new CharsetInfo("x-NEC-JIS8: NEC JIS8 (JIS X0201)", "nec_jis8_mapping.json", 0, 0xf, 0, 0xf)
+    },
+    new CharsetInfo[] {
+        new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G0集合", "nec_jips_mapping.json", 0x21, 0x73, 0x2, 0x7),
+        new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G1集合", "nec_jips_mapping.json", 0xa1, 0xdf, 0xa, 0xf),
+        new CharsetInfo("x-NEC-JIPSJ: JIPS(J) G2集合", "nec_jips_mapping.json", 0xa1, 0xfe, 0xa, 0xf)
+    }
+);
+table("IBM文字コード表", "docs/ibm_mappings.html",
+    new CharsetInfo[] { 
+        new CharsetInfo("x-IBM-EBCDIC1390: IBM EBCDIC CCSID-1390 SBCS", "ibm_ebcdic1390_mapping.json", 0, 0xf, 0, 0xf), 
+        new CharsetInfo("x-IBM-EBCDIC1399: IBM EBCDIC CCSID-1399 SBCS", "ibm_ebcdic1399_mapping.json", 0, 0xf, 0, 0xf), 
+    },
+    new CharsetInfo[] { 
+    }
+);
 
 /exit

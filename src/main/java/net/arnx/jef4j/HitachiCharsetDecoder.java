@@ -75,6 +75,8 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 						c = (char)(c - '\u00C0' + '\uFF61');
 					} else if (c == '\u00B0') {
 						c = '\u203E';
+					} else if (c == '\u00B1') {
+						c = '\u20AC';
 					}
 					if (b != 0 && c == 0) {
 						return CoderResult.unmappableForLength(1);

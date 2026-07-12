@@ -35,6 +35,7 @@ void sbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
         var unicode = Integer.parseUnsignedInt(node.get("unicode").asText(), 16);
         var code = Integer.parseUnsignedInt(node.get("code").asText(), 16);
         if (unicode == 0x203e) unicode = 0x00b0;
+        else if (unicode == 0x20ac) unicode = 0x00b1;
         else if (unicode >= 0xff61) unicode = unicode - 0xff61 + 0x00c0;
         if (!has(node, "decode_only")) encoder[unicode] = (byte) code;
         if (!has(node, "encode_only")) decoder[code] = (byte) unicode;
@@ -143,11 +144,51 @@ void generate(String encodeFile, String decodeFile, String[] sbcsFiles, String[]
     }
 }
 
-generate("src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat", "src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat",
-    new String[] { "fujitsu_ebcdic_mapping.json", "fujitsu_ebcdik_mapping.json", "fujitsu_ascii_mapping.json" }, new String[] { "fujitsu_jef_mapping.json" });
-generate("src/main/resources/net/arnx/jef4j/HitachiEncodeMap.dat", "src/main/resources/net/arnx/jef4j/HitachiDecodeMap.dat",
-    new String[] { "hitachi_ebcdic_mapping.json", "hitachi_ebcdik_mapping.json" }, new String[] { "hitachi_keis78_mapping.json", "hitachi_keis83_mapping.json" });
-generate("src/main/resources/net/arnx/jef4j/NecEncodeMap.dat", "src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
-    new String[] { "nec_jis8_mapping.json", "nec_ebcdik_mapping.json", "nec_jis8_ebcdik_mapping.json" }, new String[] { "nec_jips_mapping.json" });
+generate(
+    "src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat",
+    "src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat",
+    new String[] {
+        "fujitsu_ebcdic_mapping.json",
+        "fujitsu_ebcdik_mapping.json",
+        "fujitsu_ascii_mapping.json"
+    }, 
+    new String[] {
+        "fujitsu_jef_mapping.json"
+    }
+);
+generate(
+    "src/main/resources/net/arnx/jef4j/HitachiEncodeMap.dat",
+    "src/main/resources/net/arnx/jef4j/HitachiDecodeMap.dat",
+    new String[] {
+        "hitachi_ebcdic_mapping.json",
+        "hitachi_ebcdik_mapping.json"
+    }, 
+    new String[] {
+        "hitachi_keis78_mapping.json",
+        "hitachi_keis83_mapping.json"
+    }
+);
+generate(
+    "src/main/resources/net/arnx/jef4j/NecEncodeMap.dat", 
+    "src/main/resources/net/arnx/jef4j/NecDecodeMap.dat",
+    new String[] {
+        "nec_jis8_mapping.json",
+        "nec_ebcdik_mapping.json",
+        "nec_jis8_ebcdik_mapping.json"
+    }, 
+    new String[] {
+        "nec_jips_mapping.json"
+    }
+);
+generate(
+    "src/main/resources/net/arnx/jef4j/IbmEncodeMap.dat",
+    "src/main/resources/net/arnx/jef4j/IbmDecodeMap.dat",
+    new String[] {
+        "ibm_ebcdic1390_mapping.json",
+        "ibm_ebcdic1399_mapping.json"
+    }, 
+    new String[] {
+    }
+);
 
 /exit
