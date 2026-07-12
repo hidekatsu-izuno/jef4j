@@ -371,6 +371,22 @@ byte[] bytes = text.getBytes(charset);
 
 [現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/nec_mappings.html)からご覧いただけます。
 
+### IBM系文字セット（ベータ）
+
+Java には標準で多くの IBM 系文字セットが用意されていますが、ラウンドトリップに問題があったこと、最新の文字集合をサポートしていないことから個別に用意したものです。
+
+|文字セット名|説明|
+|----------|----|
+|x-IBM-8482|IBM EBCDIC 日本語カタカナ（ユーロ対応）のSBCS。|
+|x-IBM-5123|IBM EBCDIC 日本語ラテン（ユーロ対応）のSBCS。|
+|x-IBM-11684|IBM 日本語ホストDBCS（JIS X 0213、ユーロ対応）。|
+|x-IBM-1390|CCSID 8482 と 11684 をSO/SIで切り替える、日本語カタカナ・漢字EBCDIC。|
+|x-IBM-1399|CCSID 5123 と 11684 をSO/SIで切り替える、日本語ラテン・漢字EBCDIC。|
+
+本ライブラリでは、コード領域 80A1～A0FE をUnicode私的利用領域 U+E000～U+EC1D にマッピングします。
+
+[現時点でのマッピングはこちら](https://hidekatsu-izuno.github.io/jef4j/docs/ibm_mappings.html)からご覧いただけます。
+
 ## ライセンス
 
 Apache License 2.0 で配布します。
