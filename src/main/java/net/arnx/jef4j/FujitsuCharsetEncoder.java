@@ -308,7 +308,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
-			out.put((byte)0x28);
+			out.put((byte)0x29);
 			kshifted = false;
 		}
 		return CoderResult.UNDERFLOW;

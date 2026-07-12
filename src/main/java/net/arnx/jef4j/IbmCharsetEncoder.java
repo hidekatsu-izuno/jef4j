@@ -153,7 +153,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 						if (!out.hasRemaining()) {
 							return CoderResult.OVERFLOW;
 						}
-						out.put((byte)0x29);
+						out.put((byte)0x0F);
 						kshifted = false;
 					}
 
@@ -201,7 +201,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 							if (!out.hasRemaining()) {
 								return CoderResult.OVERFLOW;
 							}
-							out.put((byte)0x28);
+							out.put((byte)0x0E);
 							kshifted = true;
 						}
 						
@@ -305,7 +305,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
-			out.put((byte)0x28);
+			out.put((byte)0x0F);
 			kshifted = false;
 		}
 		return CoderResult.UNDERFLOW;

@@ -292,10 +292,11 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		}
 
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
-			if (!out.hasRemaining()) {
+			if (out.remaining() < 2) {
 				return CoderResult.OVERFLOW;
 			}
-			out.put((byte)0x28);
+			out.put((byte)0x0A);
+			out.put((byte)0x41);
 			kshifted = false;
 		}
 		return CoderResult.UNDERFLOW;
