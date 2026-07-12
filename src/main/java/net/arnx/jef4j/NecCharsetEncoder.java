@@ -169,6 +169,20 @@ public class NecCharsetEncoder extends CharsetEncoder {
 						out.put(b2);
 						mark++;
 					} else if (c >= '\uE40A' && c <= '\uEF6B') { // Private Use Area
+						if (type.getSBCSTableNo() != -1 && !kshifted) {
+							if (out.remaining() < 2) {
+								return CoderResult.OVERFLOW;
+							}
+							if (type.getMBCSTableNo() == 1) {
+								out.put((byte)0x3F);
+								out.put((byte)0x75);
+							} else {
+								out.put((byte)0x1A);
+								out.put((byte)0x70);
+							}
+							kshifted = true;
+						}
+
 						byte b1 = (byte)((0xE0 + (c - 0xE40A) / 94) & 0xFF);
 						byte b2 = (byte)((0xA1 + (c - 0xE40A) % 94) & 0xFF);
 						if (type.getMBCSTableNo() == 1) {

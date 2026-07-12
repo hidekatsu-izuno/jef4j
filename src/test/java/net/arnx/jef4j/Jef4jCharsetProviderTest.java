@@ -74,4 +74,19 @@ public class Jef4jCharsetProviderTest {
 					(byte)0xCF, (byte)0xB6
 			}, Charset.forName("x-Fujitsu-JEF-HanyoDenshi")));
 	}
+
+	@Test
+	public void testIbmPrivateUseArea() {
+		Charset dbcs = Charset.forName("x-IBM-11684");
+		assertEquals("80A1A0FE", ByteUtils.hex("\uE000\uEC1D".getBytes(dbcs)));
+		assertEquals("\uE000\uEC1D", new String(new byte[] {
+				(byte)0x80, (byte)0xA1, (byte)0xA0, (byte)0xFE
+		}, dbcs));
+
+		Charset mixed = Charset.forName("x-IBM-1390");
+		assertEquals("C10E80A10FC2", ByteUtils.hex("A\uE000B".getBytes(mixed)));
+		assertEquals("A\uE000B", new String(new byte[] {
+				(byte)0xC1, (byte)0x0E, (byte)0x80, (byte)0xA1, (byte)0x0F, (byte)0xC2
+		}, mixed));
+	}
 }

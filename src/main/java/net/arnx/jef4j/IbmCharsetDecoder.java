@@ -27,6 +27,7 @@ import java.util.List;
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
+@SuppressWarnings("unchecked")
 class IbmCharsetDecoder extends CharsetDecoder {
 	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
 	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
@@ -36,6 +37,7 @@ class IbmCharsetDecoder extends CharsetDecoder {
 				IbmCharsetDecoder.class.getResourceAsStream("IbmDecodeMap.dat"))) {
 			SBCS_MAP.add((byte[])in.readObject());
 			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -64,31 +66,16 @@ class IbmCharsetDecoder extends CharsetDecoder {
 				int b = in.get() & 0xFF;
 				
 				if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
-					if (b == 0x28 || b == 0x38) {
+					if (b == 0x0E) {
 						kshifted = true;
 						mark++;
 						continue;
-					} else if (b == 0x29) {
+					} else if (b == 0x0F) {
 						kshifted = false;
 						mark++;
 						continue;
-					} else if (b == 0x30) {
-						if (!in.hasRemaining()) {
-							return CoderResult.UNDERFLOW;
-						}
-						
-						int mark2 = in.position();
-						int b2 = in.get() & 0xFF;
-						if (b2 == 0xE2) {
-							kshifted = true;
-							mark += 2;
-							continue;
-						} else {
-							in.position(mark2);
-							return CoderResult.unmappableForLength(1);
-						}
 					}
-				} else if (b == 0x28 || b == 0x38 || b == 0x29) {
+				} else if (smap == null && (b == 0x0E || b == 0x0F)) {
 					return CoderResult.unmappableForLength(1);
 				}
 				
@@ -117,12 +104,18 @@ class IbmCharsetDecoder extends CharsetDecoder {
 					
 					int b2 = in.get() & 0xFF;
 					if (b == 0x40 && b2 == 0x40) {
+						if (!out.hasRemaining()) {
+							return CoderResult.OVERFLOW;
+						}
 						out.put('\u3000');
 						mark += 2;
 					} else if (b2 == 0x28 || b2 == 0x38 || b2 == 0x29) {
 						return CoderResult.unmappableForLength(1);
 					} else if (b >= 0x80 && b <= 0xA0) { // Private Use Area
 						if (b2 >= 0xA1 && b2 <= 0xFE) {
+							if (!out.hasRemaining()) {
+								return CoderResult.OVERFLOW;
+							}
 							out.put((char)(0xE000 + (b - 0x80) * 94 + (b2 - 0xA1)));
 							mark += 2;
 						} else {

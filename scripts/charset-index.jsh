@@ -184,10 +184,11 @@ generate(
     "src/main/resources/net/arnx/jef4j/IbmEncodeMap.dat",
     "src/main/resources/net/arnx/jef4j/IbmDecodeMap.dat",
     new String[] {
-        "ibm_ebcdic1390_mapping.json",
-        "ibm_ebcdic1399_mapping.json"
+        "ibm_8482_mapping.json",
+        "ibm_5123_mapping.json"
     }, 
     new String[] {
+        "ibm_11684_mapping.json"
     }
 );
 

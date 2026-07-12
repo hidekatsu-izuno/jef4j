@@ -107,6 +107,9 @@ public class NecCharsetDecoder extends CharsetDecoder {
 
 						if (b >= 0x74 && b <= 0x7E) { // Private Use Area
 							if (b2 >= 0x21 && b2 <= 0x7E) {
+								if (!out.hasRemaining()) {
+									return CoderResult.OVERFLOW;
+								}
 								out.put((char)(0xE000 + (b - 0x74) * 94 + (b2 - 0x21)));
 								mark += 2;
 							} else {
@@ -114,6 +117,9 @@ public class NecCharsetDecoder extends CharsetDecoder {
 							}
 						} else if (b >= 0xE0 && b <= 0xFE) { // Private Use Area
 							if (b2 >= 0xA1 && b2 <= 0xFE) {
+								if (!out.hasRemaining()) {
+									return CoderResult.OVERFLOW;
+								}
 								out.put((char)(0xE40A + (b - 0xE0) * 94 + (b2 - 0xA1)));
 								mark += 2;
 							} else {

@@ -102,11 +102,13 @@ table("NEC文字コード表", "docs/nec_mappings.html",
     }
 );
 table("IBM文字コード表", "docs/ibm_mappings.html",
-    new CharsetInfo[] { 
-        new CharsetInfo("x-IBM-EBCDIC1390: IBM EBCDIC CCSID-1390 SBCS", "ibm_ebcdic1390_mapping.json", 0, 0xf, 0, 0xf), 
-        new CharsetInfo("x-IBM-EBCDIC1399: IBM EBCDIC CCSID-1399 SBCS", "ibm_ebcdic1399_mapping.json", 0, 0xf, 0, 0xf), 
+    new CharsetInfo[] {
+        new CharsetInfo("x-IBM-8482: IBM EBCDIC 日本語カタカナ（ユーロ対応）", "ibm_8482_mapping.json", 0, 0xf, 0, 0xf),
+        new CharsetInfo("x-IBM-5123: IBM EBCDIC 日本語ラテン（ユーロ対応）", "ibm_5123_mapping.json", 0, 0xf, 0, 0xf),
     },
-    new CharsetInfo[] { 
+    new CharsetInfo[] {
+        new CharsetInfo("x-IBM-11684: IBM漢字（4040–68FF）", "ibm_11684_mapping.json", 0x40, 0x68, 0x4, 0xf),
+        new CharsetInfo("x-IBM-11684: IBM漢字（B300–ECFF）", "ibm_11684_mapping.json", 0xb3, 0xec, 0x4, 0xf),
     }
 );
 

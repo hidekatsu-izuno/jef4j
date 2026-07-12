@@ -167,6 +167,16 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 					mark++;
 				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uEC1D') { // Private Use Area
+						if (type.getSBCSTableNo() != -1 && !kshifted) {
+							if (!out.hasRemaining()) {
+								return CoderResult.OVERFLOW;
+							}
+							out.put((byte)0x28);
+							kshifted = true;
+						}
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
 						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
 						mark++;

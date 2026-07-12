@@ -27,6 +27,7 @@ import java.util.List;
 import net.arnx.jef4j.util.LongObjMap;
 import net.arnx.jef4j.util.Record;
 
+@SuppressWarnings("unchecked")
 class IbmCharsetEncoder extends CharsetEncoder {
 	private static final List<byte[]> SBCS_MAP = new ArrayList<>();
 	private static final List<LongObjMap<Record[]>> MBCS_MAP = new ArrayList<>();
@@ -37,6 +38,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 				IbmCharsetEncoder.class.getResourceAsStream("IbmEncodeMap.dat"))) {
 			SBCS_MAP.add((byte[])in.readObject());
 			SBCS_MAP.add((byte[])in.readObject());
+			MBCS_MAP.add((LongObjMap<Record[]>)in.readObject());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
@@ -127,7 +129,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 				} else if (c <= '\u007F' || (
 					smap != null && (
 						c <= '\u009F'
-						|| c == '\u00A3' || c == '\u00A6' || c == '\u00AC'
+						|| c == '\u00A2' || c == '\u00A3' || c == '\u00A5' || c == '\u00A6' || c == '\u00AC'
 						|| c == '\u203E' || c == '\u20AC'
 						|| (c >= '\uFF61' && c <= '\uFF9F')
 					)
@@ -164,6 +166,16 @@ class IbmCharsetEncoder extends CharsetEncoder {
 					mark++;
 				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uEC1D') { // Private Use Area
+						if (type.getSBCSTableNo() != -1 && !kshifted) {
+							if (!out.hasRemaining()) {
+								return CoderResult.OVERFLOW;
+							}
+							out.put((byte)0x0E);
+							kshifted = true;
+						}
+						if (out.remaining() < 2) {
+							return CoderResult.OVERFLOW;
+						}
 						out.put((byte)((0x80 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
 						mark++;

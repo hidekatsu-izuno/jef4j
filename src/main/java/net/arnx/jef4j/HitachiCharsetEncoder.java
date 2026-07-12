@@ -153,6 +153,14 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 					mark++;
 				} else if (type.getMBCSTableNo() != -1) { // Double Bytes
 					if (c >= '\uE000' && c <= '\uEBBF') { // Private Use Area
+						if (type.getSBCSTableNo() != -1 && !kshifted) {
+							if (out.remaining() < 2) {
+								return CoderResult.OVERFLOW;
+							}
+							out.put((byte)0x0A);
+							out.put((byte)0x42);
+							kshifted = true;
+						}
 						out.put((byte)((0x81 + (c - 0xE000) / 94) & 0xFF));
 						out.put((byte)((0xA1 + (c - 0xE000) % 94) & 0xFF));
 						mark++;
