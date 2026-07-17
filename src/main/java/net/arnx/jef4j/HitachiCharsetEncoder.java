@@ -40,6 +40,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
     public HitachiCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -299,20 +300,21 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+				&& kshifted != type.isMBCSPreferred()) {
 			if (out.remaining() < 2) {
 				return CoderResult.OVERFLOW;
 			}
 			out.put((byte)0x0A);
-			out.put((byte)0x41);
-			kshifted = false;
+			out.put(type.isMBCSPreferred() ? (byte)0x42 : (byte)0x41);
+			kshifted = type.isMBCSPreferred();
 		}
 		return CoderResult.UNDERFLOW;
 	}
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 	}
 
 	private boolean isEndOfInput() {
@@ -334,7 +336,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 	private static float getMaxBytesPerChar(CharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
-			size += 2;
+			size += 4;
 		}
 		return size;
 	}

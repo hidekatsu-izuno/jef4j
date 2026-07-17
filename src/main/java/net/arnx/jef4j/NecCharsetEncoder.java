@@ -41,6 +41,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
     public NecCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -338,25 +339,26 @@ public class NecCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+				&& kshifted != type.isMBCSPreferred()) {
 			if (out.remaining() < 2) {
 				return CoderResult.OVERFLOW;
 			}
 			if (type.getMBCSTableNo() == 1) {
 				out.put((byte)0x3F);
-				out.put((byte)0x76);
+				out.put(type.isMBCSPreferred() ? (byte)0x75 : (byte)0x76);
 			} else {
 				out.put((byte)0x1A);
-				out.put((byte)0x71);
+				out.put(type.isMBCSPreferred() ? (byte)0x70 : (byte)0x71);
 			}
-			kshifted = false;
+			kshifted = type.isMBCSPreferred();
 		}
 		return CoderResult.UNDERFLOW;
 	}
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 	}
 
 	private boolean isEndOfInput() {
@@ -378,13 +380,14 @@ public class NecCharsetEncoder extends CharsetEncoder {
 	private static float getMaxBytesPerChar(CharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
-			size += 2;
+			size += 4;
 		}
 		return size;
 	}
 	
 	private static byte[] getReplacementChar(CharsetType type) {
-		return type.getMBCSTableNo() != -1 && type.getSBCSTableNo() == -1 ? 
+		return type.getMBCSTableNo() != -1
+				&& (type.getSBCSTableNo() == -1 || type.isMBCSPreferred()) ?
 			(type.getMBCSTableNo() == 1 ? new byte[] { 0x4F, 0x4F } : new byte[] { 0x21, 0x21 }) : 
 			(type.getSBCSTableNo() == 1 ? new byte[] { 0x40 } : new byte[] { 0x20 });
 	}

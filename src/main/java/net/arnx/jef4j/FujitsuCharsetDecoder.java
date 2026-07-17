@@ -53,6 +53,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	public FujitsuCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.smap = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -203,7 +204,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 	}
 	
 	private static float getMaxCharsPerByte(CharsetType type) {

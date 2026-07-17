@@ -40,6 +40,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
     public NecCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -193,7 +194,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 	}
 
     private static float getMaxCharsPerByte(CharsetType type) {

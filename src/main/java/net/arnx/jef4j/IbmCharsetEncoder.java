@@ -54,6 +54,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 	public IbmCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.smap = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -313,19 +314,20 @@ class IbmCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+				&& kshifted != type.isMBCSPreferred()) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
-			out.put((byte)0x0F);
-			kshifted = false;
+			out.put(type.isMBCSPreferred() ? (byte)0x0E : (byte)0x0F);
+			kshifted = type.isMBCSPreferred();
 		}
 		return CoderResult.UNDERFLOW;
 	}
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 		backup = null;
 	}
 

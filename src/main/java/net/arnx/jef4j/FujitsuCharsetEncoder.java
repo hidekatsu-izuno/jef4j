@@ -55,6 +55,7 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 	public FujitsuCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.smap = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -314,19 +315,20 @@ class FujitsuCharsetEncoder extends CharsetEncoder {
 			}
 		}
 
-		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1 && kshifted) {
+		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1
+				&& kshifted != type.isMBCSPreferred()) {
 			if (!out.hasRemaining()) {
 				return CoderResult.OVERFLOW;
 			}
-			out.put((byte)0x29);
-			kshifted = false;
+			out.put(type.isMBCSPreferred() ? (byte)0x28 : (byte)0x29);
+			kshifted = type.isMBCSPreferred();
 		}
 		return CoderResult.UNDERFLOW;
 	}
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 		backup = null;
 	}
 

@@ -38,6 +38,7 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
     public HitachiCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
+		this.kshifted = type.isMBCSPreferred();
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
@@ -182,7 +183,7 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 	
 	@Override
 	protected void implReset() {
-		kshifted = false;
+		kshifted = type.isMBCSPreferred();
 	}
 
     private static float getMaxCharsPerByte(CharsetType type) {
