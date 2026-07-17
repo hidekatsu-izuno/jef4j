@@ -1,10 +1,51 @@
 [tools]
 maven = "3.9.15"
 java = "21"
+gh = "latest"
 
 [tasks.build]
 description = "Build and verify the project"
 run = "mvn -q verify"
+
+[tasks.publish]
+description = "Verify, tag, and publish the release"
+depends = ["build"]
+run = '''
+set -eu
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "The working tree must be clean before publishing." >&2
+  exit 1
+fi
+
+gh auth status >/dev/null
+
+version="$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)"
+if [ -z "$version" ]; then
+  echo "Could not read the project version from pom.xml." >&2
+  exit 1
+fi
+case "$version" in
+  *-SNAPSHOT)
+    echo "Cannot publish a SNAPSHOT version: $version" >&2
+    exit 1
+    ;;
+esac
+
+tag="v${version}"
+jar="target/jef4j-${version}.jar"
+
+git tag "$tag"
+git push origin --tags
+mvn -Prelease clean deploy
+
+if [ ! -f "$jar" ]; then
+  echo "Release JAR was not generated: $jar" >&2
+  exit 1
+fi
+
+gh release create "$tag" "$jar" --verify-tag --generate-notes --title "$tag"
+'''
 
 [tasks.generate-index]
 description = "Generate charset encoder and decoder indexes"
