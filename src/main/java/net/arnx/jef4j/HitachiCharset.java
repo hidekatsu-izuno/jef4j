@@ -23,7 +23,7 @@ public class HitachiCharset extends Charset {
 	private final CharsetType type;
 
 	protected HitachiCharset(CharsetType type) {
-		super(type.getCharsetName(), new String[0]);
+		super(type.getCharsetName(), type.getAliases());
 		this.type = type;
 	}
 

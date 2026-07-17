@@ -23,7 +23,7 @@ public class NecCharset extends Charset {
 	private final CharsetType type;
 
 	protected NecCharset(CharsetType type) {
-		super(type.getCharsetName(), new String[0]);
+		super(type.getCharsetName(), type.getAliases());
 		this.type = type;
 	}
 
