@@ -234,6 +234,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd") || node.has("aj1")) {
+						continue;
+					}
 					boolean encodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -307,6 +310,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd") || node.has("aj1")) {
+						continue;
+					}
 					boolean encodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -376,6 +382,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("aj1")) {
+						continue;
+					}
 
 					String unicode = toChars(node, true, true, false);
 					if (!unicode.equals("FFFD")) {
@@ -430,6 +439,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("aj1")) {
+						continue;
+					}
 
 					String unicode = toChars(node, true, true, false);
 					if (!unicode.equals("FFFD")) {
@@ -489,6 +501,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd")) {
+						continue;
+					}
 
 					String unicode = toChars(node, true, false, true);
 					if (!unicode.equals("FFFD")) {
@@ -543,6 +558,9 @@ public class NecCharsetDecoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd")) {
+						continue;
+					}
 
 					String unicode = toChars(node, true, false, true);
 					if (!unicode.equals("FFFD")) {
@@ -655,9 +673,6 @@ public class NecCharsetDecoderTest {
 			for (int b2 = 0x21; b2 <= 0x7E; b2++) {
 				int be1 = Integer.parseInt(jeMap.get(ByteUtils.hex(b1, 2)), 16);
 				int be2 = Integer.parseInt(jeMap.get(ByteUtils.hex(b2, 2)), 16);
-				if (b1 == 0x74 && b2 == 0x21) {
-					System.out.println(ByteUtils.hex(be1, 2) + ByteUtils.hex(be2, 2));
-				}
 				bb.clear();
 				bb.put((byte)(be1 & 0xFF));
 				bb.put((byte)(be2 & 0xFF));
@@ -676,8 +691,6 @@ public class NecCharsetDecoderTest {
 			for (int b2 = 0xA1; b2 <= 0xFE; b2++) {
 				int be1 = Integer.parseInt(jeMap.get(ByteUtils.hex(b1, 2)), 16);
 				int be2 = Integer.parseInt(jeMap.get(ByteUtils.hex(b2, 2)), 16);
-				//System.out.println(ByteUtils.hex(be1, 2) + ByteUtils.hex(be2, 2));
-
 				bb.clear();
 				bb.put((byte)(be1 & 0xFF));
 				bb.put((byte)(be2 & 0xFF));

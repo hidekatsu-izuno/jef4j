@@ -232,6 +232,9 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd") || node.has("aj1")) {
+						continue;
+					}
 					boolean decodeOnly = false;
 					
 					JsonNode optionsNode = node.get("options");
@@ -325,6 +328,9 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd") || node.has("aj1")) {
+						continue;
+					}
 					boolean decodeOnly = false;
 					boolean oneway = false;
 					
@@ -484,6 +490,9 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("aj1")) {
+						continue;
+					}
 					boolean decodeOnly = false;
 
 					JsonNode optionsNode = node.get("options");
@@ -587,6 +596,9 @@ public class FujitsuCharsetEncoderTest {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
 					JsonNode node = mapper.readTree(parser);
+					if (node.has("hd")) {
+						continue;
+					}
 					boolean decodeOnly = false;
 
 					JsonNode optionsNode = node.get("options");

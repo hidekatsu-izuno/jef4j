@@ -21,6 +21,10 @@ String key(JsonNode node, String variant) {
         + "0".repeat(5 - unicode.length()) + unicode;
 }
 
+String groupKey(JsonNode node) {
+    return node.get("code").asText() + ":" + key(node, null);
+}
+
 void sbcs(String file, List<Object> encoders, List<Object> decoders) throws IOException {
     var encoder = new byte[256];
     var decoder = new byte[256];
@@ -101,15 +105,30 @@ net.arnx.jef4j.util.Record[] records(String[][] variants, boolean encode) {
 void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOException {
     Map<String, String[][]> unicodeToCode = new TreeMap<>();
     Map<String, String[][]> codeToUnicode = new TreeMap<>();
-    for (var node : mapper.readTree(Files.newBufferedReader(Paths.get("src/test/resources", file)))) {
+    var nodes = mapper.readTree(Files.newBufferedReader(Paths.get("src/test/resources", file)));
+    Map<String, Integer> groups = new HashMap<>();
+    for (var node : nodes) {
+        var variant = node.has("hd") ? 1 : node.has("aj1") ? 2 : 4;
+        if (!has(node, "decode_only")) variant |= 8;
+        groups.merge(groupKey(node), variant, (left, right) -> left | right);
+    }
+    for (var node : nodes) {
         var unicode = key(node, null);
         if ("FFFD".equals(unicode)) continue;
 
-        var variants = new String[] { key(node, "hd"), key(node, "aj1"), has(node, "oneway") ? null : unicode };
+        var variants = new String[3];
+        if (node.has("hd")) variants[0] = key(node, "hd");
+        if (node.has("aj1")) variants[1] = key(node, "aj1");
+        var group = groups.get(groupKey(node));
+        if ((!node.has("hd") && !node.has("aj1")) || (group & 4) == 0) {
+            if ((group & 1) == 0) variants[0] = unicode;
+            if ((group & 2) == 0) variants[1] = unicode;
+            if (!has(node, "oneway")) variants[2] = unicode;
+        }
         var code = node.get("code").asText();
         for (var i = 0; i < variants.length; i++) {
             if (variants[i] == null) continue;
-            if (!has(node, "decode_only")) {
+            if (!has(node, "decode_only") || ((!node.has("hd") && !node.has("aj1")) && (group & 8) != 0)) {
                 put(unicodeToCode, unicode, i, code);
                 if (!unicode.equals(variants[i])) {
                     put(unicodeToCode, variants[i], i, code);

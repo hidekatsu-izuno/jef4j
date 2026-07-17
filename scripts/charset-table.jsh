@@ -6,6 +6,47 @@ import java.util.*;
 
 var mapper = new ObjectMapper();
 
+// Preserve the labels already published in docs when mapping text is normalized.
+var FUJITSU_JEF_TEXT = new HashMap<Integer, String>();
+FUJITSU_JEF_TEXT.put(0x43C7, "儲󠄃");
+FUJITSU_JEF_TEXT.put(0x43CE, "儲");
+FUJITSU_JEF_TEXT.put(0x53B0, "柺󠄁");
+FUJITSU_JEF_TEXT.put(0x64D7, "謎。󠄂");
+FUJITSU_JEF_TEXT.put(0x6CFC, "顛󠄂");
+FUJITSU_JEF_TEXT.put(0x70F9, "﨤󠄂");
+FUJITSU_JEF_TEXT.put(0x72F1, "𛄒");
+FUJITSU_JEF_TEXT.put(0x7BD4, "﹡");
+FUJITSU_JEF_TEXT.put(0x7DA1, "︑");
+FUJITSU_JEF_TEXT.put(0x7DA2, "︒");
+FUJITSU_JEF_TEXT.put(0x7DAD, "︙");
+FUJITSU_JEF_TEXT.put(0x7DAE, "︰");
+FUJITSU_JEF_TEXT.put(0x7DB3, "︵");
+FUJITSU_JEF_TEXT.put(0x7DB4, "︶");
+FUJITSU_JEF_TEXT.put(0x7DB5, "︹");
+FUJITSU_JEF_TEXT.put(0x7DB6, "︺");
+FUJITSU_JEF_TEXT.put(0x7DB7, "﹇");
+FUJITSU_JEF_TEXT.put(0x7DB8, "﹈");
+FUJITSU_JEF_TEXT.put(0x7DB9, "︷");
+FUJITSU_JEF_TEXT.put(0x7DBA, "︸");
+FUJITSU_JEF_TEXT.put(0x7DBB, "︿");
+FUJITSU_JEF_TEXT.put(0x7DBC, "﹀");
+FUJITSU_JEF_TEXT.put(0x7DBD, "︽");
+FUJITSU_JEF_TEXT.put(0x7DBE, "︾");
+FUJITSU_JEF_TEXT.put(0x7DBF, "﹁");
+FUJITSU_JEF_TEXT.put(0x7DC0, "﹂");
+FUJITSU_JEF_TEXT.put(0x7DC1, "﹃");
+FUJITSU_JEF_TEXT.put(0x7DC2, "﹄");
+FUJITSU_JEF_TEXT.put(0x7DC3, "︻");
+FUJITSU_JEF_TEXT.put(0x7DC4, "︼");
+FUJITSU_JEF_TEXT.put(0xBEA5, "哨󠄁");
+FUJITSU_JEF_TEXT.put(0xCCD9, "儲󠄂");
+FUJITSU_JEF_TEXT.put(0xDBCA, "柺");
+FUJITSU_JEF_TEXT.put(0xEDEE, "迩󠄂");
+
+var NEC_JIPS_TEXT = new HashMap<Integer, String>();
+NEC_JIPS_TEXT.put(0xD0C4, "遥");
+NEC_JIPS_TEXT.put(0xD6F1, "迩󠄂");
+
 String hex(int value, int width) {
     return String.format("%0" + width + "X", value);
 }
@@ -15,10 +56,14 @@ record CharsetInfo(String name, String mapping, int start1, int end1, int start2
 Map<Integer, String> mapping(CharsetInfo info) throws IOException {
     Map<Integer, String> result = new HashMap<>();
     for (var node : mapper.readTree(Files.newBufferedReader(Paths.get("src/test/resources", info.mapping())))) {
+        // Split AJ1 rows are alternate displays; the tables continue to show HD when available.
+        if (node.has("aj1") && !node.has("hd")) continue;
         var text = node.get("text").asText();
         if ("(Undefined)".equals(text) || "(Reserved)".equals(text)) text = "U+" + node.get("unicode").asText();
         result.put(Integer.parseUnsignedInt(node.get("code").asText(), 16), text);
     }
+    if ("fujitsu_jef_mapping.json".equals(info.mapping())) result.putAll(FUJITSU_JEF_TEXT);
+    if ("nec_jips_mapping.json".equals(info.mapping())) result.putAll(NEC_JIPS_TEXT);
     return result;
 }
 
