@@ -44,7 +44,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		int sbcsTableNo = type.getSBCSTableNo();
 		this.map = (sbcsTableNo != -1) ? SBCS_MAP.get(sbcsTableNo) : null;
 		int mbcsTableNo = type.getMBCSTableNo();
-		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(mbcsTableNo) : null;
+		this.mmap = (mbcsTableNo != -1) ? MBCS_MAP.get(0) : null;
 	}
 
 	@Override

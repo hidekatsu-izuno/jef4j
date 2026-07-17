@@ -20,6 +20,8 @@ public class Jef4jCharsetProviderTest {
 		while (charsets.hasNext()) {
 			Charset charset = charsets.next();
 			actual.add(charset.name());
+			assertNotNull(charset.newEncoder());
+			assertNotNull(charset.newDecoder());
 		}
 
 		Set<String> expected = new TreeSet<>();
