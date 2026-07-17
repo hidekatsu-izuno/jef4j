@@ -30,14 +30,14 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		}
 	}
 
-    private final HitachiCharsetType type;
+    private final CharsetType type;
 	private final byte[] map;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
 
-    public HitachiCharsetEncoder(Charset cs, HitachiCharsetType type) {
+    public HitachiCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -323,7 +323,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		}
 	}
 
-	private static float getAverageBytesPerChar(HitachiCharsetType type) {
+	private static float getAverageBytesPerChar(CharsetType type) {
 		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 1;
@@ -331,7 +331,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static float getMaxBytesPerChar(HitachiCharsetType type) {
+	private static float getMaxBytesPerChar(CharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 2;
@@ -339,7 +339,7 @@ public class HitachiCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static byte[] getReplacementChar(HitachiCharsetType type) {
+	private static byte[] getReplacementChar(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? new byte[] { 0x40, 0x40 } : new byte[] { 0x40 };
 	}
 }

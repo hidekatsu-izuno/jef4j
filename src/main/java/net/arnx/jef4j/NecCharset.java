@@ -20,9 +20,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 public class NecCharset extends Charset {
-	private NecCharsetType type;
-	
-	protected NecCharset(NecCharsetType type) {
+	private final CharsetType type;
+
+	protected NecCharset(CharsetType type) {
 		super(type.getCharsetName(), new String[0]);
 		this.type = type;
 	}

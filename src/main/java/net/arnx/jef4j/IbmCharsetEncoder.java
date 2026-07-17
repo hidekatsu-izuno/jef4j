@@ -44,14 +44,14 @@ class IbmCharsetEncoder extends CharsetEncoder {
 		}
 	}
 	
-	private final IbmCharsetType type;
+	private final CharsetType type;
 	private final byte[] smap;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
 
-	public IbmCharsetEncoder(Charset cs, IbmCharsetType type) {
+	public IbmCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -337,7 +337,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 		}
 	}
 	
-	private static float getAverageBytesPerChar(IbmCharsetType type) {
+	private static float getAverageBytesPerChar(CharsetType type) {
 		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 0.5F;
@@ -345,7 +345,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static float getMaxBytesPerChar(IbmCharsetType type) {
+	private static float getMaxBytesPerChar(CharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 6 : type.getMBCSTableNo() != -1 ? 3 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 1;
@@ -353,7 +353,7 @@ class IbmCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static byte[] getReplacementChar(IbmCharsetType type) {
+	private static byte[] getReplacementChar(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? new byte[] { 0x40, 0x40 } : 
 			new byte[] { 0x40 };
 	}

@@ -29,13 +29,13 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 		}
 	}
 
-    private final HitachiCharsetType type;
+    private final CharsetType type;
 	private final byte[] map;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 
-    public HitachiCharsetDecoder(Charset cs, HitachiCharsetType type) {
+    public HitachiCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -185,7 +185,7 @@ public class HitachiCharsetDecoder extends CharsetDecoder {
 		kshifted = false;
 	}
 
-    private static float getMaxCharsPerByte(HitachiCharsetType type) {
+    private static float getMaxCharsPerByte(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

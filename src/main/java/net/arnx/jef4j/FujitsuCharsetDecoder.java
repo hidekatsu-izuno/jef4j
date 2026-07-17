@@ -44,13 +44,13 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 		}
 	}
 	
-	private final FujitsuCharsetType type;
+	private final CharsetType type;
 	private final byte[] smap;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	
-	public FujitsuCharsetDecoder(Charset cs, FujitsuCharsetType type) {
+	public FujitsuCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -206,7 +206,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 		kshifted = false;
 	}
 	
-	private static float getMaxCharsPerByte(FujitsuCharsetType type) {
+	private static float getMaxCharsPerByte(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

@@ -4,10 +4,34 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.arnx.jef4j.util.ByteUtils;
 
 public class Jef4jCharsetProviderTest {
+	@Test
+	public void testCharsets() {
+		Jef4jCharsetProvider provider = new Jef4jCharsetProvider();
+		Set<String> actual = new TreeSet<>();
+		Iterator<Charset> charsets = provider.charsets();
+		while (charsets.hasNext()) {
+			Charset charset = charsets.next();
+			actual.add(charset.name());
+		}
+
+		Set<String> expected = new TreeSet<>();
+		for (CharsetType type : CharsetType.values()) {
+			expected.add(type.getCharsetName());
+			assertSame(
+					provider.charsetForName(type.getCharsetName()),
+					provider.charsetForName(type.getCharsetName().toUpperCase(Locale.ROOT)));
+		}
+		assertEquals(expected, actual);
+	}
+
 	@Test
 	public void testEncoder() {
 		assertEquals(

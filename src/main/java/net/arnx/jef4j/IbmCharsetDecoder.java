@@ -43,13 +43,13 @@ class IbmCharsetDecoder extends CharsetDecoder {
 		}
 	}
 	
-	private final IbmCharsetType type;
+	private final CharsetType type;
 	private final byte[] smap;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	
-	public IbmCharsetDecoder(Charset cs, IbmCharsetType type) {
+	public IbmCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -190,7 +190,7 @@ class IbmCharsetDecoder extends CharsetDecoder {
 		kshifted = false;
 	}
 	
-	private static float getMaxCharsPerByte(IbmCharsetType type) {
+	private static float getMaxCharsPerByte(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

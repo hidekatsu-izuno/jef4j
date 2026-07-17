@@ -20,9 +20,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 public class HitachiCharset extends Charset {
-	private HitachiCharsetType type;
-	
-	protected HitachiCharset(HitachiCharsetType type) {
+	private final CharsetType type;
+
+	protected HitachiCharset(CharsetType type) {
 		super(type.getCharsetName(), new String[0]);
 		this.type = type;
 	}

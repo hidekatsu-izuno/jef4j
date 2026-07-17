@@ -31,13 +31,13 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		}
 	}
 
-    private final NecCharsetType type;
+    private final CharsetType type;
 	private final byte[] map;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 
-    public NecCharsetDecoder(Charset cs, NecCharsetType type) {
+    public NecCharsetDecoder(Charset cs, CharsetType type) {
 		super(cs, 1, getMaxCharsPerByte(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -196,7 +196,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 		kshifted = false;
 	}
 
-    private static float getMaxCharsPerByte(NecCharsetType type) {
+    private static float getMaxCharsPerByte(CharsetType type) {
 		return type.getMBCSTableNo() != -1 ? 2.0F : 1.0F;
 	}
 }

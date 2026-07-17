@@ -17,45 +17,31 @@ package net.arnx.jef4j;
 
 import java.nio.charset.Charset;
 import java.nio.charset.spi.CharsetProvider;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class Jef4jCharsetProvider extends CharsetProvider {
-	private final ConcurrentMap<String, Charset> map = new ConcurrentHashMap<>();
+	private final ConcurrentMap<CharsetType, Charset> map = new ConcurrentHashMap<>();
 	
 	public Jef4jCharsetProvider() {
 	}
 
 	@Override
 	public Iterator<Charset> charsets() {
-		return map.values().iterator();
+		return Arrays.stream(CharsetType.values())
+				.map(this::getCharset)
+				.iterator();
 	}
 
 	@Override
 	public Charset charsetForName(String charsetName) {
-		return map.computeIfAbsent(charsetName, cn -> {
-			for (FujitsuCharsetType type : FujitsuCharsetType.values()) {
-				if (type.getCharsetName().equalsIgnoreCase(cn)) {
-					return new FujitsuCharset(type);
-				}
-			}
-			for (HitachiCharsetType type : HitachiCharsetType.values()) {
-				if (type.getCharsetName().equalsIgnoreCase(cn)) {
-					return new HitachiCharset(type);
-				}
-			}
-			for (NecCharsetType type : NecCharsetType.values()) {
-				if (type.getCharsetName().equalsIgnoreCase(cn)) {
-					return new NecCharset(type);
-				}
-			}
-			for (IbmCharsetType type : IbmCharsetType.values()) {
-				if (type.getCharsetName().equalsIgnoreCase(cn)) {
-					return new IbmCharset(type);
-				}
-			}
-			return null;
-		});
+		CharsetType type = CharsetType.forName(charsetName);
+		return type != null ? getCharset(type) : null;
+	}
+
+	private Charset getCharset(CharsetType type) {
+		return map.computeIfAbsent(type, CharsetType::newCharset);
 	}
 }

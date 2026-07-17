@@ -20,9 +20,9 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
 public class IbmCharset extends Charset {
-	private IbmCharsetType type;
-	
-	protected IbmCharset(IbmCharsetType type) {
+	private final CharsetType type;
+
+	protected IbmCharset(CharsetType type) {
 		super(type.getCharsetName(), new String[0]);
 		this.type = type;
 	}

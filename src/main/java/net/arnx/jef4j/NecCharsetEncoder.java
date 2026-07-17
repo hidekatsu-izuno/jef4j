@@ -31,14 +31,14 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		}
 	}
 
-    private final NecCharsetType type;
+    private final CharsetType type;
 	private final byte[] map;
 	private final LongObjMap<Record[]> mmap;
 	
 	private boolean kshifted = false;
 	private StringBuilder backup;
 
-    public NecCharsetEncoder(Charset cs, NecCharsetType type) {
+    public NecCharsetEncoder(Charset cs, CharsetType type) {
 		super(cs, getAverageBytesPerChar(type), getMaxBytesPerChar(type), getReplacementChar(type));
 		this.type = type;
 		int sbcsTableNo = type.getSBCSTableNo();
@@ -367,7 +367,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		}
 	}
 
-	private static float getAverageBytesPerChar(NecCharsetType type) {
+	private static float getAverageBytesPerChar(CharsetType type) {
 		float size = type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 1;
@@ -375,7 +375,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static float getMaxBytesPerChar(NecCharsetType type) {
+	private static float getMaxBytesPerChar(CharsetType type) {
 		float size = type.getIVSTableNo() != -1 ? 4 : type.getMBCSTableNo() != -1 ? 2 : 1;
 		if (type.getSBCSTableNo() != -1 && type.getMBCSTableNo() != -1) {
 			size += 2;
@@ -383,7 +383,7 @@ public class NecCharsetEncoder extends CharsetEncoder {
 		return size;
 	}
 	
-	private static byte[] getReplacementChar(NecCharsetType type) {
+	private static byte[] getReplacementChar(CharsetType type) {
 		return type.getMBCSTableNo() != -1 && type.getSBCSTableNo() == -1 ? 
 			(type.getMBCSTableNo() == 1 ? new byte[] { 0x4F, 0x4F } : new byte[] { 0x21, 0x21 }) : 
 			(type.getSBCSTableNo() == 1 ? new byte[] { 0x40 } : new byte[] { 0x20 });
