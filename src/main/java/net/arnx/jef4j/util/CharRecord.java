@@ -36,14 +36,14 @@ public class CharRecord implements Record, Serializable {
 	}
 	
 	public boolean exists(int pos) {
-		if (pos == '\uFFFF') {
+		if (pattern == '\uFFFF') {
 			return true;
 		}
 		return (pattern & (char)(1 << (15 - pos))) != 0;
 	}
 	
 	public long get(int pos) {
-		if (pos == '\uFFFF') {
+		if (pattern == '\uFFFF') {
 			return array[pos];
 		}
 		return array[Integer.bitCount(pattern >> (16 - pos))];
