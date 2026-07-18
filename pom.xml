@@ -5,7 +5,7 @@
 
   <groupId>net.arnx</groupId>
   <artifactId>jef4j</artifactId>
-  <version>0.14.0</version>
+  <version>0.14.1</version>
   <packaging>jar</packaging>
 
   <name>jef4j</name>
@@ -42,8 +42,8 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.release>8</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <jackson.version>2.19.2</jackson.version>
-    <junit.version>5.12.2</junit.version>
+    <jackson.version>2.22.1</jackson.version>
+    <junit.version>6.1.2</junit.version>
   </properties>
 
   <dependencies>
