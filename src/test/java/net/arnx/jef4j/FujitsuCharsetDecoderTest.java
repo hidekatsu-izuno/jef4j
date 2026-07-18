@@ -36,7 +36,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuEbcdicDecoder() throws IOException {
-		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
+		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC-Lower");
 		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
 				(byte) 0x81, //
 				(byte) 0x28, //
@@ -106,7 +106,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuEbcdikDecoder() throws IOException {
-		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
+		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIC-Kana");
 		assertEquals("ｱ\uFFFDﾏﾍ\uFFFDｲ\uFFFD\uFFFDﾏ\uFFFDｳ", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83
@@ -173,7 +173,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuAsciiDecoder() throws IOException {
-		Charset ASCII = Charset.forName("x-Fujitsu-ASCII");
+		Charset ASCII = Charset.forName("x-Fujitsu-EBCDIC-Ascii");
 		assertEquals("a\uFFFDus\uFFFDb\uFFFD\uFFFDu\uFFFDc", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83
@@ -559,7 +559,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuJefEbcdicEncoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
+		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-EBCDIC-Lower+JEF");
 		assertEquals("aあb海cアd", new String(new byte[] {
 				(byte) 0x81,
 				(byte) 0x28, 
@@ -581,7 +581,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuJefEbcdikEncoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
+		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-EBCDIC-Kana+JEF");
 		assertEquals("ｱあｲ海ｳ", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83
@@ -590,7 +590,7 @@ public class FujitsuCharsetDecoderTest {
 
 	@Test
 	public void testFujitsuJefAsciiEncoder() throws IOException {
-		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
+		Charset JEF_ASCII = Charset.forName("x-Fujitsu-EBCDIC-Ascii+JEF");
 		assertEquals("aあb海c", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83

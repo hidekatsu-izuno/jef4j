@@ -41,14 +41,54 @@ public class MixedCharsetPriorityTest {
 	@Test
 	public void testFujitsuPriority() {
 		assertEncoding(
-				"x-Fujitsu-EBCDIC+JEF-HanyoDenshi",
+				"x-Fujitsu-EBCDIC-Lower+JEF-HanyoDenshi",
 				"AあB", "C128A4A229C2");
 		assertEncoding(
-				"x-Fujitsu-JEF-HanyoDenshi+EBCDIC",
+				"x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Lower",
 				"あA海󠄂", "A4A229C128B3A4");
-		assertAlias(
-				"x-Fujitsu-EBCDIC+JEF-HanyoDenshi",
-				"x-Fujitsu-JEF-HanyoDenshi-EBCDIC");
+	}
+
+	@Test
+	public void testFujitsuLegacyAliases() {
+		assertAliases("x-Fujitsu-EBCDIC-Lower", "x-Fujitsu-EBCDIC");
+		assertAliases("x-Fujitsu-EBCDIC-Kana", "x-Fujitsu-EBCDIK");
+		assertAliases("x-Fujitsu-EBCDIC-Ascii", "x-Fujitsu-ASCII");
+
+		assertAliases("x-Fujitsu-EBCDIC-Lower+JEF",
+				"x-Fujitsu-EBCDIC+JEF", "x-Fujitsu-JEF-EBCDIC");
+		assertAliases("x-Fujitsu-JEF+EBCDIC-Lower", "x-Fujitsu-JEF+EBCDIC");
+		assertAliases("x-Fujitsu-EBCDIC-Lower+JEF-HanyoDenshi",
+				"x-Fujitsu-EBCDIC+JEF-HanyoDenshi", "x-Fujitsu-JEF-HanyoDenshi-EBCDIC");
+		assertAliases("x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Lower",
+				"x-Fujitsu-JEF-HanyoDenshi+EBCDIC");
+		assertAliases("x-Fujitsu-EBCDIC-Lower+JEF-AdobeJapan1",
+				"x-Fujitsu-EBCDIC+JEF-AdobeJapan1", "x-Fujitsu-JEF-AdobeJapan1-EBCDIC");
+		assertAliases("x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Lower",
+				"x-Fujitsu-JEF-AdobeJapan1+EBCDIC");
+
+		assertAliases("x-Fujitsu-EBCDIC-Kana+JEF",
+				"x-Fujitsu-EBCDIK+JEF", "x-Fujitsu-JEF-EBCDIK");
+		assertAliases("x-Fujitsu-JEF+EBCDIC-Kana", "x-Fujitsu-JEF+EBCDIK");
+		assertAliases("x-Fujitsu-EBCDIC-Kana+JEF-HanyoDenshi",
+				"x-Fujitsu-EBCDIK+JEF-HanyoDenshi", "x-Fujitsu-JEF-HanyoDenshi-EBCDIK");
+		assertAliases("x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Kana",
+				"x-Fujitsu-JEF-HanyoDenshi+EBCDIK");
+		assertAliases("x-Fujitsu-EBCDIC-Kana+JEF-AdobeJapan1",
+				"x-Fujitsu-EBCDIK+JEF-AdobeJapan1", "x-Fujitsu-JEF-AdobeJapan1-EBCDIK");
+		assertAliases("x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Kana",
+				"x-Fujitsu-JEF-AdobeJapan1+EBCDIK");
+
+		assertAliases("x-Fujitsu-EBCDIC-Ascii+JEF",
+				"x-Fujitsu-ASCII+JEF", "x-Fujitsu-JEF-ASCII");
+		assertAliases("x-Fujitsu-JEF+EBCDIC-Ascii", "x-Fujitsu-JEF+ASCII");
+		assertAliases("x-Fujitsu-EBCDIC-Ascii+JEF-HanyoDenshi",
+				"x-Fujitsu-ASCII+JEF-HanyoDenshi", "x-Fujitsu-JEF-HanyoDenshi-ASCII");
+		assertAliases("x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Ascii",
+				"x-Fujitsu-JEF-HanyoDenshi+ASCII");
+		assertAliases("x-Fujitsu-EBCDIC-Ascii+JEF-AdobeJapan1",
+				"x-Fujitsu-ASCII+JEF-AdobeJapan1", "x-Fujitsu-JEF-AdobeJapan1-ASCII");
+		assertAliases("x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Ascii",
+				"x-Fujitsu-JEF-AdobeJapan1+ASCII");
 	}
 
 	@Test
@@ -102,5 +142,11 @@ public class MixedCharsetPriorityTest {
 		Charset charset = Charset.forName(alias);
 		assertEquals(canonicalName, charset.name());
 		assertTrue(charset.aliases().contains(alias));
+	}
+
+	private static void assertAliases(String canonicalName, String... aliases) {
+		for (String alias : aliases) {
+			assertAlias(canonicalName, alias);
+		}
 	}
 }

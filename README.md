@@ -43,9 +43,9 @@ byte[] bytes = text.getBytes(charset);
 
 1 バイト文字セット（SBCS）と2バイト文字セット（MBCS）を併用する文字セットは、`x-ベンダー-文字セット名+文字セット名` という名前になります。`+` の左側の文字セットが初期状態となり、右側の文字セットへはシフトコードで切り替えます。エンコード終了時には左側の文字セットへ戻します。
 
-例えば、富士通 EBCDIC を初期状態として JEF-HanyoDenshi と併用する場合は `x-Fujitsu-EBCDIC+JEF-HanyoDenshi`、JEF-HanyoDenshi を初期状態とする場合は `x-Fujitsu-JEF-HanyoDenshi+EBCDIC` を指定します。
+例えば、富士通 EBCDIC (英小文字) を初期状態として JEF-HanyoDenshi と併用する場合は `x-Fujitsu-EBCDIC-Lower+JEF-HanyoDenshi`、JEF-HanyoDenshi を初期状態とする場合は `x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Lower` を指定します。
 
-バージョン 0.13.0 まで使用していたハイフン形式の名前は、SBCS を初期状態とする新しい名前のエイリアスとして引き続き使用できます。
+バージョン 0.13.0 まで使用していたハイフン形式の名前と、旧富士通 SBCS 名を含む名前は、新しい名前のエイリアスとして引き続き使用できます。
 
 ## ビルド
 
@@ -60,12 +60,6 @@ mise run build
 ```sh
 mise run generate-index
 mise run generate-table
-```
-
-Maven Central への公開は Sonatype Central Portal 用トークンを `settings.xml` の `central` サーバーに設定したうえで、`release` プロファイル付きの `deploy` を実行します。
-
-```sh
-mvn -Prelease clean deploy
 ```
 
 ## JEF漢字コード
@@ -137,31 +131,27 @@ JEF の利用者定義文字 3102 文字は、Unicode 私的利用領域 E000～
 
 |文字セット名|説明|
 |----------|----|
-|x-Fujitsu-EBCDIC|富士通 EBCDIC (英小文字)|
-|x-Fujitsu-EBCDIK|富士通 EBCDIC (カナ文字)|
-|x-Fujitsu-ASCII|富士通 EBCDIC (ASCII)|
+|x-Fujitsu-EBCDIC-Lower|富士通 EBCDIC (英小文字)|
+|x-Fujitsu-EBCDIC-Kana|富士通 EBCDIC (カナ文字)|
+|x-Fujitsu-EBCDIC-Ascii|富士通 EBCDIC (ASCII)|
 |x-Fujitsu-JEF|富士通 JEF。異体字セレクタは出力されません。|
 |x-Fujitsu-JEF-Roundtrip|JEF のうち、相互変換（JEF⇔Unicode）が可能なコードのみに限定したものです。主にデータ移行用途です。|
 |x-Fujitsu-JEF-HanyoDenshi|富士通 JEF。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Fujitsu-JEF-AdobeJapan1|富士通 JEF。Adobe-Japan1の異体字セレクタを合わせて出力します。主にPDF用途です。|
-|x-Fujitsu-EBCDIC+JEF|EBCDIC (英小文字) を初期状態として JEF と併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-JEF+EBCDIC|JEF を初期状態として EBCDIC (英小文字) と併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-EBCDIC+JEF-HanyoDenshi|EBCDIC (英小文字) を初期状態として JEF と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-HanyoDenshi+EBCDIC|JEF を初期状態として EBCDIC (英小文字) と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-EBCDIC+JEF-AdobeJapan1|EBCDIC (英小文字) を初期状態として JEF と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-AdobeJapan1+EBCDIC|JEF を初期状態として EBCDIC (英小文字) と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-Fujitsu-EBCDIK+JEF|EBCDIK (カナ文字) を初期状態として JEF と併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-JEF+EBCDIK|JEF を初期状態として EBCDIK (カナ文字) と併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-EBCDIK+JEF-HanyoDenshi|EBCDIK (カナ文字) を初期状態として JEF と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-HanyoDenshi+EBCDIK|JEF を初期状態として EBCDIK (カナ文字) と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-EBCDIK+JEF-AdobeJapan1|EBCDIK (カナ文字) を初期状態として JEF と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-AdobeJapan1+EBCDIK|JEF を初期状態として EBCDIK (カナ文字) と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-Fujitsu-ASCII+JEF|ASCII互換のSBCSを初期状態として JEF と併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-JEF+ASCII|JEF を初期状態として ASCII互換のSBCSと併用します。異体字セレクタは出力されません。|
-|x-Fujitsu-ASCII+JEF-HanyoDenshi|ASCII互換のSBCSを初期状態として JEF と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-HanyoDenshi+ASCII|JEF を初期状態として ASCII互換のSBCSと併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-Fujitsu-ASCII+JEF-AdobeJapan1|ASCII互換のSBCSを初期状態として JEF と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-Fujitsu-JEF-AdobeJapan1+ASCII|JEF を初期状態として ASCII互換のSBCSと併用します。Adobe-Japan1の異体字セレクタを使用します。|
+
+富士通系の併用文字セットは次の通りです。左の列はSBCS、右の列はMBCSを初期状態とします。
+
+|SBCSを初期状態とする名前|MBCSを初期状態とする名前|組み合わせ|
+|-----------------------|-----------------------|----------|
+|x-Fujitsu-EBCDIC-Lower+JEF|x-Fujitsu-JEF+EBCDIC-Lower|EBCDIC (英小文字) と JEF|
+|x-Fujitsu-EBCDIC-Lower+JEF-HanyoDenshi|x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Lower|EBCDIC (英小文字) と JEF（IVD汎用電子）|
+|x-Fujitsu-EBCDIC-Lower+JEF-AdobeJapan1|x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Lower|EBCDIC (英小文字) と JEF（Adobe-Japan1）|
+|x-Fujitsu-EBCDIC-Kana+JEF|x-Fujitsu-JEF+EBCDIC-Kana|EBCDIC (カナ文字) と JEF|
+|x-Fujitsu-EBCDIC-Kana+JEF-HanyoDenshi|x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Kana|EBCDIC (カナ文字) と JEF（IVD汎用電子）|
+|x-Fujitsu-EBCDIC-Kana+JEF-AdobeJapan1|x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Kana|EBCDIC (カナ文字) と JEF（Adobe-Japan1）|
+|x-Fujitsu-EBCDIC-Ascii+JEF|x-Fujitsu-JEF+EBCDIC-Ascii|EBCDIC (ASCII) と JEF|
+|x-Fujitsu-EBCDIC-Ascii+JEF-HanyoDenshi|x-Fujitsu-JEF-HanyoDenshi+EBCDIC-Ascii|EBCDIC (ASCII) と JEF（IVD汎用電子）|
+|x-Fujitsu-EBCDIC-Ascii+JEF-AdobeJapan1|x-Fujitsu-JEF-AdobeJapan1+EBCDIC-Ascii|EBCDIC (ASCII) と JEF（Adobe-Japan1）|
 
 SBCS から JEF へ切り替えるときは K シフト、JEF から SBCS へ切り替えるときは A シフトを出力します。デコード時は K、K1、K2 のいずれの漢字シフトコードも受け入れます。
 
@@ -356,18 +346,17 @@ jef4j では現時点ではサポートしていません。
 |x-NEC-JIPSE|NEC JIPS(E)。異体字セレクタは出力されません。|
 |x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) 。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) 。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
-|x-NEC-JIS8+JIPSJ|JIS8 を初期状態として JIPS(J) と併用します。異体字セレクタは出力されません。|
-|x-NEC-JIPSJ+JIS8|JIPS(J) を初期状態として JIS8 と併用します。異体字セレクタは出力されません。|
-|x-NEC-JIS8+JIPSJ-HanyoDenshi|JIS8 を初期状態として JIPS(J) と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-NEC-JIPSJ-HanyoDenshi+JIS8|JIPS(J) を初期状態として JIS8 と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-NEC-JIS8+JIPSJ-AdobeJapan1|JIS8 を初期状態として JIPS(J) と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-NEC-JIPSJ-AdobeJapan1+JIS8|JIPS(J) を初期状態として JIS8 と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-NEC-EBCDIK+JIPSE|EBCDIK を初期状態として JIPS(E) と併用します。異体字セレクタは出力されません。|
-|x-NEC-JIPSE+EBCDIK|JIPS(E) を初期状態として EBCDIK と併用します。異体字セレクタは出力されません。|
-|x-NEC-EBCDIK+JIPSE-HanyoDenshi|EBCDIK を初期状態として JIPS(E) と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-NEC-JIPSE-HanyoDenshi+EBCDIK|JIPS(E) を初期状態として EBCDIK と併用します。IVD汎用電子の異体字セレクタを使用します。|
-|x-NEC-EBCDIK+JIPSE-AdobeJapan1|EBCDIK を初期状態として JIPS(E) と併用します。Adobe-Japan1の異体字セレクタを使用します。|
-|x-NEC-JIPSE-AdobeJapan1+EBCDIK|JIPS(E) を初期状態として EBCDIK と併用します。Adobe-Japan1の異体字セレクタを使用します。|
+
+NEC系の併用文字セットは次の通りです。左の列はSBCS、右の列はMBCSを初期状態とします。
+
+|SBCSを初期状態とする名前|MBCSを初期状態とする名前|組み合わせ|
+|-----------------------|-----------------------|----------|
+|x-NEC-JIS8+JIPSJ|x-NEC-JIPSJ+JIS8|JIS8 と JIPS(J)|
+|x-NEC-JIS8+JIPSJ-HanyoDenshi|x-NEC-JIPSJ-HanyoDenshi+JIS8|JIS8 と JIPS(J)（IVD汎用電子）|
+|x-NEC-JIS8+JIPSJ-AdobeJapan1|x-NEC-JIPSJ-AdobeJapan1+JIS8|JIS8 と JIPS(J)（Adobe-Japan1）|
+|x-NEC-EBCDIK+JIPSE|x-NEC-JIPSE+EBCDIK|EBCDIK と JIPS(E)|
+|x-NEC-EBCDIK+JIPSE-HanyoDenshi|x-NEC-JIPSE-HanyoDenshi+EBCDIK|EBCDIK と JIPS(E)（IVD汎用電子）|
+|x-NEC-EBCDIK+JIPSE-AdobeJapan1|x-NEC-JIPSE-AdobeJapan1+EBCDIK|EBCDIK と JIPS(E)（Adobe-Japan1）|
 
 従来の `x-NEC-JIPSJ-JIS8`、`x-NEC-JIPSE-EBCDIK` などのハイフン形式は、対応するSBCSを初期状態とする形式のエイリアスです。
 
@@ -447,7 +436,9 @@ Apache License 2.0 で配布します。
 - src/test/resources/*.json
 
 ## 変更履歴
-- 2026/7/12 version 0.14.0:
+- 2026/7/18 version 0.14.1:
+  - 富士通系EBCDICコードの名前をより適切なものに変更しました。ただし、従来の名前も引き続き利用可能です。
+- 2026/7/18 version 0.14.0:
   - 日立系文字セットのAdobe-Japan-1系文字セットが使用できなかった問題を修正しました。
   - その他、細かい不具合を修正し、コードの整理を行いました。
 - 2026/7/12 version 0.13.0:

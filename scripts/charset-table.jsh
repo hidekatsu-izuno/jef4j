@@ -110,9 +110,9 @@ void table(String title, String file, CharsetInfo[] sbcs, CharsetInfo[] mbcs) th
 
 table("富士通文字コード表", "docs/fujitsu_mappings.html",
     new CharsetInfo[] { 
-        new CharsetInfo("x-Fujitsu-EBCDIC: 富士通 EBCDIC (英小文字)", "fujitsu_ebcdic_lower_mapping.json", 0, 0xf, 0, 0xf),
-        new CharsetInfo("x-Fujitsu-EBCDIK: 富士通 EBCDIC (カナ文字)", "fujitsu_ebcdic_kana_mapping.json", 0, 0xf, 0, 0xf),
-        new CharsetInfo("x-Fujitsu-ASCII: 富士通 EBCDIC (ASCII)", "fujitsu_ebcdic_ascii_mapping.json", 0, 0xf, 0, 0xf)
+        new CharsetInfo("x-Fujitsu-EBCDIC-Lower: 富士通 EBCDIC (英小文字)", "fujitsu_ebcdic_lower_mapping.json", 0, 0xf, 0, 0xf),
+        new CharsetInfo("x-Fujitsu-EBCDIC-Kana: 富士通 EBCDIC (カナ文字)", "fujitsu_ebcdic_kana_mapping.json", 0, 0xf, 0, 0xf),
+        new CharsetInfo("x-Fujitsu-EBCDIC-Ascii: 富士通 EBCDIC (ASCII)", "fujitsu_ebcdic_ascii_mapping.json", 0, 0xf, 0, 0xf)
     },
     new CharsetInfo[] {
         new CharsetInfo("x-Fujitsu-JEF: 富士通 JEF 標準漢字/標準非漢字", "fujitsu_jef_mapping.json", 0xa1, 0xfe, 0xa, 0xf), 

@@ -39,7 +39,7 @@ public class FujitsuCharsetEncoderTest {
 	
 	@Test
 	public void testFujitsuEbcdicEncoder() throws IOException {
-		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC");
+		Charset EBCDIC = Charset.forName("x-Fujitsu-EBCDIC-Lower");
 		assertEquals("8140824083", hex("aあb海c".getBytes(EBCDIC)));
 
 		Map<String, String> expected = new TreeMap<>();
@@ -97,7 +97,7 @@ public class FujitsuCharsetEncoderTest {
 	
 	@Test
 	public void testFujitsuEbcdikEncoder() throws IOException {
-		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
+		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIC-Kana");
 		assertEquals("8140824083", hex("ｱあｲ海ｳ".getBytes(EBCDIK)));
 
 		Map<String, String> expected = new TreeMap<>();
@@ -155,7 +155,7 @@ public class FujitsuCharsetEncoderTest {
 	
 	@Test
 	public void testFujitsuAsciiEncoder() throws IOException {
-		Charset ASCII = Charset.forName("x-Fujitsu-ASCII");
+		Charset ASCII = Charset.forName("x-Fujitsu-EBCDIC-Ascii");
 		assertEquals("8140824083", hex("aあb海c".getBytes(ASCII)));
 
 		Map<String, String> expected = new TreeMap<>();
@@ -188,7 +188,7 @@ public class FujitsuCharsetEncoderTest {
 
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetEncoder ce = Charset.forName("x-Fujitsu-ASCII")
+		CharsetEncoder ce = Charset.forName("x-Fujitsu-EBCDIC-Ascii")
 				.newEncoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -418,7 +418,7 @@ public class FujitsuCharsetEncoderTest {
 			asciiChars.add(Character.toString((char) b));
 		}
 
-		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIK");
+		Charset EBCDIK = Charset.forName("x-Fujitsu-EBCDIC-Kana");
 		CharsetEncoder ee = EBCDIK.newEncoder()
 			.onUnmappableCharacter(CodingErrorAction.REPORT)
 			.onMalformedInput(CodingErrorAction.REPORT);
@@ -889,19 +889,19 @@ public class FujitsuCharsetEncoderTest {
 
 	@Test
 	public void testFujitsuJefEbcdicEncoder() throws IOException {
-		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-JEF-EBCDIC");
+		Charset JEF_EBCDIC = Charset.forName("x-Fujitsu-EBCDIC-Lower+JEF");
 		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_EBCDIC)));
 	}
 
 	@Test
 	public void testFujitsuJefEbcdikEncoder() throws IOException {
-		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-JEF-EBCDIK");
+		Charset JEF_EBCDIK = Charset.forName("x-Fujitsu-EBCDIC-Kana+JEF");
 		assertEquals("8128A4A2298228B3A42983", hex("ｱあｲ海ｳ".getBytes(JEF_EBCDIK)));
 	}
 
 	@Test
 	public void testFujitsuJefAsciiEncoder() throws IOException {
-		Charset JEF_ASCII = Charset.forName("x-Fujitsu-JEF-ASCII");
+		Charset JEF_ASCII = Charset.forName("x-Fujitsu-EBCDIC-Ascii+JEF");
 		assertEquals("8128A4A2298228B3A42983", hex("aあb海c".getBytes(JEF_ASCII)));
 	}
 		
