@@ -167,9 +167,9 @@ generate(
     "src/main/resources/net/arnx/jef4j/FujitsuEncodeMap.dat",
     "src/main/resources/net/arnx/jef4j/FujitsuDecodeMap.dat",
     new String[] {
-        "fujitsu_ebcdic_mapping.json",
-        "fujitsu_ebcdik_mapping.json",
-        "fujitsu_ascii_mapping.json"
+        "fujitsu_ebcdic_lower_mapping.json",
+        "fujitsu_ebcdic_kana_mapping.json",
+        "fujitsu_ebcdic_ascii_mapping.json"
     }, 
     new String[] {
         "fujitsu_jef_mapping.json"

@@ -54,7 +54,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				this.getClass().getResourceAsStream("/fujitsu_ebcdic_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ebcdic_lower_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -115,7 +115,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				this.getClass().getResourceAsStream("/fujitsu_ebcdik_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ebcdic_kana_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
@@ -182,7 +182,7 @@ public class FujitsuCharsetDecoderTest {
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
-				this.getClass().getResourceAsStream("/fujitsu_ascii_mapping.json"),
+				this.getClass().getResourceAsStream("/fujitsu_ebcdic_ascii_mapping.json"),
 				StandardCharsets.UTF_8)))) {
 			while (parser.nextToken() != JsonToken.END_ARRAY) {
 				if (parser.currentToken() == JsonToken.START_OBJECT) {
