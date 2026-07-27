@@ -126,10 +126,13 @@ void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
             if (!has(node, "oneway")) variants[2] = unicode;
         }
         var code = node.get("code").asText();
+        var variantOnly = has(node, "variant_only");
         for (var i = 0; i < variants.length; i++) {
             if (variants[i] == null) continue;
             if (!has(node, "decode_only") || ((!node.has("hd") && !node.has("aj1")) && (group & 8) != 0)) {
-                put(unicodeToCode, unicode, i, code);
+                if (!variantOnly) {
+                    put(unicodeToCode, unicode, i, code);
+                }
                 if (!unicode.equals(variants[i])) {
                     put(unicodeToCode, variants[i], i, code);
                 }

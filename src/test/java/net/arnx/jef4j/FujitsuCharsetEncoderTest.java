@@ -223,6 +223,7 @@ public class FujitsuCharsetEncoderTest {
 		assertEquals("B3EC", hex("\uFA60".getBytes(JEF))); // FA60 => B3EC(cjk_ci,encode_only)
 		assertEquals("B7C3", hex("\u6075".getBytes(JEF))); // 6075 => B7C3
 		assertEquals("B7C3", hex("\uFA6B".getBytes(JEF))); // FA6B => B7C3(cjk_ci,encode_only)
+		assertEquals("47C9", hex("\u585A".getBytes(JEF)));
 
 		Map<String, String> expected = new TreeMap<>();
 		
@@ -482,6 +483,9 @@ public class FujitsuCharsetEncoderTest {
 
 	@Test
 	public void testFujitsuJefHanyoDenshiEncoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-HanyoDenshi");
+		assertEquals("47C9", hex("\u585A".getBytes(JEF)));
+
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
@@ -494,18 +498,21 @@ public class FujitsuCharsetEncoderTest {
 						continue;
 					}
 					boolean decodeOnly = false;
+					boolean variantOnly = false;
 
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
 							if ("decode_only".equals(child.asText())) {
 								decodeOnly = true;
+							} else if ("variant_only".equals(child.asText())) {
+								variantOnly = true;
 							}
 						}
 					}
 
 					String unicode = toChars(node, false, false);
-					if (!unicode.equals("FFFD") && !decodeOnly) {
+					if (!unicode.equals("FFFD") && !decodeOnly && !variantOnly) {
 						expected.put(unicode, node.get("code").asText());
 					}
 
@@ -519,7 +526,7 @@ public class FujitsuCharsetEncoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetEncoder ce = Charset.forName("x-Fujitsu-JEF-HanyoDenshi")
+		CharsetEncoder ce = JEF
 				.newEncoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
@@ -588,6 +595,9 @@ public class FujitsuCharsetEncoderTest {
 	
 	@Test
 	public void testFujitsuJefAdobeJapan1Encoder() throws IOException {
+		Charset JEF = Charset.forName("x-Fujitsu-JEF-AdobeJapan1");
+		assertEquals("47C9", hex("\u585A".getBytes(JEF)));
+
 		Map<String, String> expected = new TreeMap<>();
 
 		try (JsonParser parser = factory.createParser(new BufferedReader(new InputStreamReader(
@@ -600,18 +610,21 @@ public class FujitsuCharsetEncoderTest {
 						continue;
 					}
 					boolean decodeOnly = false;
+					boolean variantOnly = false;
 
 					JsonNode optionsNode = node.get("options");
 					if (optionsNode != null && optionsNode.isArray()) {
 						for (JsonNode child : optionsNode) {
 							if ("decode_only".equals(child.asText())) {
 								decodeOnly = true;
+							} else if ("variant_only".equals(child.asText())) {
+								variantOnly = true;
 							}
 						}
 					}
 
 					String unicode = toChars(node, false, false);
-					if (!unicode.equals("FFFD") && !decodeOnly) {
+					if (!unicode.equals("FFFD") && !decodeOnly && !variantOnly) {
 						expected.put(unicode, node.get("code").asText());
 					}
 
@@ -625,7 +638,7 @@ public class FujitsuCharsetEncoderTest {
 		
 		Map<String, String> actual = new TreeMap<>();
 		
-		CharsetEncoder ce = Charset.forName("x-Fujitsu-JEF-AdobeJapan1")
+		CharsetEncoder ce = JEF
 				.newEncoder()
 				.onUnmappableCharacter(CodingErrorAction.REPORT)
 				.onMalformedInput(CodingErrorAction.REPORT);
