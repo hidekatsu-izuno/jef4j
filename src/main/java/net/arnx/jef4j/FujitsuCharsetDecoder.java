@@ -92,7 +92,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 							return CoderResult.unmappableForLength(1);
 						}
 					}
-				} else if (b == 0x28 || b == 0x38 || b == 0x29) {
+				} else if (mmap == null && (b == 0x28 || b == 0x38 || b == 0x29)) {
 					return CoderResult.unmappableForLength(1);
 				}
 				
@@ -114,7 +114,7 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 					}
 					out.put(c);
 					mark++;
-				} else if (type.getMBCSTableNo() != -1 && b >= 0x40 && b <= 0xFE) {
+				} else if (type.getMBCSTableNo() != -1) {
 					if (!in.hasRemaining()) {
 						return CoderResult.UNDERFLOW;
 					}
@@ -126,7 +126,9 @@ class FujitsuCharsetDecoder extends CharsetDecoder {
 						}
 						out.put('\u3000');
 						mark += 2;
-					} else if (b2 == 0x28 || b2 == 0x38 || b2 == 0x29) {
+					} else if (b < 0x40 || b > 0xFE) {
+						return CoderResult.unmappableForLength(2);
+					} else if (smap != null && (b2 == 0x28 || b2 == 0x38 || b2 == 0x29)) {
 						return CoderResult.unmappableForLength(1);
 					} else if (b >= 0x80 && b <= 0xA0) { // Private Use Area
 						if (b2 >= 0xA1 && b2 <= 0xFE) {

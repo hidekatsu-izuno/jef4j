@@ -185,7 +185,7 @@ public class HitachiCharsetDecoderTest {
 	@Test
 	public void testHitachiKeis78Decoder() throws IOException {
 		Charset KEIS78 = Charset.forName("x-Hitachi-KEIS78");
-		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
+		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
 			(byte)0x81, 
 			(byte)0x0A, (byte)0x41, 
 			(byte)0xA4, 
@@ -265,7 +265,7 @@ public class HitachiCharsetDecoderTest {
 	@Test
 	public void testHitachiKeis83Decoder() throws IOException {
 		Charset KEIS83 = Charset.forName("x-Hitachi-KEIS83");
-		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
+		assertEquals("\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
 			(byte)0x81, 
 			(byte)0x0A, (byte)0x41, 
 			(byte)0xA4, 

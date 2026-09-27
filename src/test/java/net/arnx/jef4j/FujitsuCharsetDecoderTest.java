@@ -235,7 +235,7 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuJefDecoder() throws IOException {
 		Charset JEF = Charset.forName("x-Fujitsu-JEF");
-		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
+		assertEquals("\uFFFDあ\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83
 		}, JEF));
@@ -311,7 +311,7 @@ public class FujitsuCharsetDecoderTest {
 	@Test
 	public void testFujitsuJefRoundtripDecoder() throws IOException {
 		Charset JEF = Charset.forName("x-Fujitsu-JEF-Roundtrip");
-		assertEquals("\uFFFD\uFFFDあ\uFFFD\uFFFD\uFFFD海\uFFFD\uFFFD", new String(new byte[] {
+		assertEquals("\uFFFDあ\uFFFD\uFFFD\uFFFD\uFFFD", new String(new byte[] {
 				(byte) 0x81, (byte) 0x28, (byte) 0xA4, (byte) 0xA2, (byte) 0x29, (byte) 0x82, (byte) 0x28, (byte) 0xB3,
 				(byte) 0xA4, (byte) 0x29, (byte) 0x83
 		}, JEF));

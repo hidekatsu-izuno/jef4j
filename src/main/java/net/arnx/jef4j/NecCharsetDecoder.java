@@ -92,15 +92,14 @@ public class NecCharsetDecoder extends CharsetDecoder {
 					out.put(c);
 					mark++;
 				} else if (type.getMBCSTableNo() != -1) {
+					if (!in.hasRemaining()) {
+						return CoderResult.UNDERFLOW;
+					}
 					if (type.getMBCSTableNo() == 1) {
 						b = EBCDIK_JIS8_MAP[b & 0xFF] & 0xFF;
 					}
 
 					if ((b >= 0x21 && b <= 0x7E) || (b >= 0xA1 && b <= 0xFE)) {
-						if (!in.hasRemaining()) {
-							return CoderResult.UNDERFLOW;
-						}
-						
 						int b2 = in.get() & 0xFF;
 						if (type.getMBCSTableNo() == 1) {
 							b2 = EBCDIK_JIS8_MAP[b2 & 0xFF] & 0xFF;
@@ -180,7 +179,7 @@ public class NecCharsetDecoder extends CharsetDecoder {
 							mark += 2;
 						}
 					} else {
-						return CoderResult.unmappableForLength(1);
+						return CoderResult.unmappableForLength(2);
 					}
 				} else {
 					return CoderResult.unmappableForLength(1);
