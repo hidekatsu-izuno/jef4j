@@ -139,7 +139,30 @@ enum CharsetType {
 	IBM_8482_PLUS_11684("x-IBM-8482+11684", new String[] { "x-IBM-1390" }, 0, 0, -1, IbmCharset::new),
 	IBM_11684_PLUS_8482("x-IBM-11684+8482", new String[0], 0, 0, -1, true, false, IbmCharset::new),
 	IBM_5123_PLUS_11684("x-IBM-5123+11684", new String[] { "x-IBM-1399" }, 1, 0, -1, IbmCharset::new),
-	IBM_11684_PLUS_5123("x-IBM-11684+5123", new String[0], 1, 0, -1, true, false, IbmCharset::new);
+	IBM_11684_PLUS_5123("x-IBM-11684+5123", new String[0], 1, 0, -1, true, false, IbmCharset::new),
+
+	WINDOWS_31J_RT("x-Windows-31J-RoundTrip", new String[0], -1, -1, -1,
+			type -> new RoundTripCharset(type, Charset.forName("Windows-31J"),
+					new char[] {
+						'\u00A2', '\u00A3', '\u00A5', '\u00AB', '\u00AC', '\u00AF',
+						'\u00B5', '\u00B7', '\u00B8', '\u00BB', '\u203E', '\u3094'
+					},
+					new int[] {
+						0x8790, 0x8792, 0x8795, 0x8797, 0x879A, 0x879C,
+						0xED40, 0xED7E, 0xED80, 0xEDFC, 0xEE40, 0xEE7E,
+						0xEE80, 0xEEEC, 0xEEEF, 0xEEFC, 0xFA4A, 0xFA54, 0xFA58, 0xFA5B
+					},
+					b -> (b >= 0x81 && b <= 0x9F) || (b >= 0xE0 && b <= 0xFC) ? 2 : 1)),
+	EUC_JP_OPEN_RT("x-eucJP-Open-RoundTrip", new String[0], -1, -1, -1,
+			type -> new RoundTripCharset(type, Charset.forName("x-eucJP-open"),
+					new char[] { '\u00A5', '\u203E' },
+					new int[] {
+						0xADE2, 0xADE2, 0xADF0, 0xADF2, 0xADF5, 0xADF7, 0xADFA, 0xADFC,
+						0xF9A1, 0xF9FE, 0xFAA1, 0xFAFE, 0xFBA1, 0xFBFE,
+						0xFCA1, 0xFCEE, 0xFCF1, 0xFCFE,
+						0x8FF3FD, 0x8FF3FE, 0x8FF4A1, 0x8FF4A8, 0x8FF4AB, 0x8FF4AD
+					},
+					b -> b < 0x80 ? 1 : b == 0x8F ? 3 : 2));
 
 	private static final Map<String, CharsetType> TYPES_BY_NAME;
 
