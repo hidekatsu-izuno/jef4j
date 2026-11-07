@@ -102,7 +102,35 @@ net.arnx.jef4j.util.Record[] records(String[][] variants, boolean encode) {
     return result;
 }
 
-void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOException {
+Map<String, String> variant(Map<String, String[][]> map, int index) {
+    Map<String, String> result = new TreeMap<>();
+    for (var entry : map.entrySet()) {
+        var values = entry.getValue()[index];
+        if (values == null) continue;
+        var prefix = entry.getKey().substring(0, entry.getKey().length() - 1);
+        for (var i = 0; i < values.length; i++) {
+            if (values[i] != null) result.put(prefix + Integer.toHexString(i).toUpperCase(Locale.ROOT), values[i]);
+        }
+    }
+    return result;
+}
+
+void retainRoundTrip(Map<String, String[][]> encoders, Map<String, String[][]> decoders) {
+    var encodeMap = variant(encoders, 2);
+    var decodeMap = variant(decoders, 2);
+    for (var values : encoders.values()) values[2] = null;
+    for (var values : decoders.values()) values[2] = null;
+    for (var entry : encodeMap.entrySet()) {
+        var unicode = entry.getKey();
+        var code = entry.getValue();
+        if (unicode.equals(decodeMap.get(code))) {
+            put(encoders, unicode, 2, code);
+            put(decoders, code, 2, unicode);
+        }
+    }
+}
+
+void mbcs(String file, List<Object> encoders, List<Object> decoders, boolean roundTrip) throws IOException {
     Map<String, String[][]> unicodeToCode = new TreeMap<>();
     Map<String, String[][]> codeToUnicode = new TreeMap<>();
     var nodes = mapper.readTree(Files.newBufferedReader(Paths.get("src/test/resources", file)));
@@ -123,7 +151,10 @@ void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
         if ((!node.has("hd") && !node.has("aj1")) || (group & 4) == 0) {
             if ((group & 1) == 0) variants[0] = unicode;
             if ((group & 2) == 0) variants[1] = unicode;
-            if (!has(node, "oneway")) variants[2] = unicode;
+            if (!has(node, "oneway")
+                    && (!roundTrip || (!has(node, "decode_only") && !has(node, "encode_only")))) {
+                variants[2] = unicode;
+            }
         }
         var code = node.get("code").asText();
         var variantOnly = has(node, "variant_only");
@@ -142,6 +173,8 @@ void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
             }
         }
     }
+    // JIPS/KEIS use the third slot for pairs that are exact inverses without IVS.
+    if (roundTrip) retainRoundTrip(unicodeToCode, codeToUnicode);
     var encodeMap = new LongObjMap<net.arnx.jef4j.util.Record[]>();
     for (var entry : unicodeToCode.entrySet()) {
         encodeMap.put(Long.parseUnsignedLong(entry.getKey(), 16), records(entry.getValue(), true));
@@ -154,10 +187,11 @@ void mbcs(String file, List<Object> encoders, List<Object> decoders) throws IOEx
     decoders.add(decodeMap);
 }
 
-void generate(String encodeFile, String decodeFile, String[] sbcsFiles, String[] mbcsFiles) throws IOException {
+void generate(String encodeFile, String decodeFile, String[] sbcsFiles, String[] mbcsFiles,
+        boolean roundTrip) throws IOException {
     List<Object> encoders = new ArrayList<>(), decoders = new ArrayList<>();
     for (var file : sbcsFiles) sbcs(file, encoders, decoders);
-    for (var file : mbcsFiles) mbcs(file, encoders, decoders);
+    for (var file : mbcsFiles) mbcs(file, encoders, decoders, roundTrip);
     try (var out = new ObjectOutputStream(Files.newOutputStream(Paths.get(encodeFile)))) {
         for (var map : encoders) out.writeObject(map);
     }
@@ -176,7 +210,7 @@ generate(
     }, 
     new String[] {
         "fujitsu_jef_mapping.json"
-    }
+    }, false
 );
 generate(
     "src/main/resources/net/arnx/jef4j/HitachiEncodeMap.dat",
@@ -188,7 +222,7 @@ generate(
     new String[] {
         "hitachi_keis78_mapping.json",
         "hitachi_keis83_mapping.json"
-    }
+    }, true
 );
 generate(
     "src/main/resources/net/arnx/jef4j/NecEncodeMap.dat", 
@@ -200,7 +234,7 @@ generate(
     }, 
     new String[] {
         "nec_jips_mapping.json"
-    }
+    }, true
 );
 generate(
     "src/main/resources/net/arnx/jef4j/IbmEncodeMap.dat",
@@ -211,7 +245,7 @@ generate(
     }, 
     new String[] {
         "ibm_11684_mapping.json"
-    }
+    }, false
 );
 
 /exit

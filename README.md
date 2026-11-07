@@ -235,17 +235,21 @@ KEIS のユーザ定義文字は、Unicode 私的利用領域には以下のよ�
 |x-Hitachi-EBCDIC|日立 EBCDIC|
 |x-Hitachi-EBCDIK|日立 EBCDIK|
 |x-Hitachi-KEIS78|日立 KEIS78。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS78-Roundtrip|日立 KEIS78 のうち、KEIS⇔Unicode の相互変換が可能なコードに限定したものです。異体字セレクタは出力されません。|
 |x-Hitachi-KEIS78-HanyoDenshi|日立 KEIS78。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS78-AdobeJapan1|日立 KEIS78。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 |x-Hitachi-KEIS78-ShiftSpaceSingle|日立 KEIS78。異体字セレクタは出力されません。0x4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS78-ShiftSpaceSingle-HanyoDenshi|日立 KEIS78。IVD汎用電子の異体字セレクタを使用し、0x4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS78-ShiftSpaceSingle-AdobeJapan1|日立 KEIS78。Adobe-Japan1の異体字セレクタを使用し、0x4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS83|日立 KEIS83/90。異体字セレクタは出力されません。|
+|x-Hitachi-KEIS83-Roundtrip|日立 KEIS83/90 のうち、KEIS⇔Unicode の相互変換が可能なコードに限定したものです。異体字セレクタは出力されません。|
 |x-Hitachi-KEIS83-HanyoDenshi|日立 KEIS83/90。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-Hitachi-KEIS83-AdobeJapan1|日立 KEIS83/90。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 |x-Hitachi-KEIS83-ShiftSpaceSingle|日立 KEIS83/90。異体字セレクタは出力されません。0x4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS83-ShiftSpaceSingle-HanyoDenshi|日立 KEIS83/90。IVD汎用電子の異体字セレクタを使用し、0x4040は半角空白2文字にデコードされます。|
 |x-Hitachi-KEIS83-ShiftSpaceSingle-AdobeJapan1|日立 KEIS83/90。Adobe-Japan1の異体字セレクタを使用し、0x4040は半角空白2文字にデコードされます。|
+
+Roundtrip 版は2バイト単独のデータ移行向けです。`decode_only`・`oneway` の対応や往復で値が変わる対応を変換不能として扱います。利用者定義文字も往復できます。変換不能を検出するには `newDecoder()` / `newEncoder()` を `CodingErrorAction.REPORT`（既定値）で使用してください。
 
 日立系の併用文字セットは次の通りです。左の列はSBCS、右の列はMBCSを初期状態とします。
 
@@ -356,11 +360,15 @@ jef4j では現時点ではサポートしていません。
 |x-NEC-JIS8|NEC JIS X0201|
 |x-NEC-EBCDIK|NEC EBCDIC カタカナ|
 |x-NEC-JIPSJ|NEC JIPS(J)。異体字セレクタは出力されません。|
+|x-NEC-JIPSJ-Roundtrip|NEC JIPS(J) のうち、JIPS⇔Unicode の相互変換が可能なコードに限定したものです。異体字セレクタは出力されません。|
 |x-NEC-JIPSJ-HanyoDenshi|NEC JIPS(J)。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSJ-AdobeJapan1|NEC JIPS(J)。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
 |x-NEC-JIPSE|NEC JIPS(E)。異体字セレクタは出力されません。|
+|x-NEC-JIPSE-Roundtrip|NEC JIPS(E) のうち、JIPS⇔Unicode の相互変換が可能なコードに限定したものです。異体字セレクタは出力されません。|
 |x-NEC-JIPSE-HanyoDenshi|NEC JIPS(E) 。異体字セレクタにはIVD汎用電子のものが使用されます。|
 |x-NEC-JIPSE-AdobeJapan1|NEC JIPS(E) 。異体字セレクタにはAdobe-Japan1のものが使用されます（主にPDF用途）。|
+
+Roundtrip 版は2バイト単独のデータ移行向けです。`decode_only`・`oneway` の対応や往復で値が変わる対応を変換不能として扱います。利用者定義文字も往復できます。変換不能を検出するには `newDecoder()` / `newEncoder()` を `CodingErrorAction.REPORT`（既定値）で使用してください。
 
 NEC系の併用文字セットは次の通りです。左の列はSBCS、右の列はMBCSを初期状態とします。
 
